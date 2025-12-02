@@ -87,100 +87,104 @@ const MOCK_CONVERSATIONS = [
         ]
     }
 ];
-{
-    id: 101,
+
+const MOCK_STUDENTS_DATA = [
+    {
+        id: 101,
         name: "João Silva",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Joao",
-                grades: [7.5, 8.0, 8.5, 9.0],
-                    attendance: 95,
-                        engagement: 88,
-                            projects: 4,
-                                status: "excellent",
-                                    alerts: [],
-                                        evolution: [
-                                            { project: "Horta Sustentável", grade: 9.0, date: "2023-11-15" },
-                                            { project: "Robótica", grade: 8.5, date: "2023-10-20" },
-                                            { project: "Teatro", grade: 8.0, date: "2023-09-10" },
-                                            { project: "Jornal Digital", grade: 7.5, date: "2023-08-05" }
-                                        ]
-},
-{
-    id: 102,
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Joao",
+        grades: [7.5, 8.0, 8.5, 9.0],
+        attendance: 95,
+        engagement: 88,
+        projects: 4,
+        status: "excellent",
+        alerts: [],
+        evolution: [
+            { project: "Horta Sustentável", grade: 9.0, date: "2023-11-15" },
+            { project: "Robótica", grade: 8.5, date: "2023-10-20" },
+            { project: "Teatro", grade: 8.0, date: "2023-09-10" },
+            { project: "Jornal Digital", grade: 7.5, date: "2023-08-05" }
+        ]
+    },
+    {
+        id: 102,
         name: "Maria Oliveira",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
-                grades: [9.0, 9.5, 9.0, 9.5],
-                    attendance: 98,
-                        engagement: 95,
-                            projects: 4,
-                                status: "excellent",
-                                    alerts: [],
-                                        evolution: [
-                                            { project: "Horta Sustentável", grade: 9.5, date: "2023-11-15" },
-                                            { project: "Robótica", grade: 9.0, date: "2023-10-20" },
-                                            { project: "Teatro", grade: 9.5, date: "2023-09-10" },
-                                            { project: "Jornal Digital", grade: 9.0, date: "2023-08-05" }
-                                        ]
-},
-{
-    id: 103,
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
+        grades: [9.0, 9.5, 9.0, 9.5],
+        attendance: 98,
+        engagement: 95,
+        projects: 4,
+        status: "excellent",
+        alerts: [],
+        evolution: [
+            { project: "Horta Sustentável", grade: 9.5, date: "2023-11-15" },
+            { project: "Robótica", grade: 9.0, date: "2023-10-20" },
+            { project: "Teatro", grade: 9.5, date: "2023-09-10" },
+            { project: "Jornal Digital", grade: 9.0, date: "2023-08-05" }
+        ]
+    },
+    {
+        id: 103,
         name: "Pedro Santos",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pedro",
-                grades: [6.0, 5.5, 6.5, 5.0],
-                    attendance: 75,
-                        engagement: 60,
-                            projects: 4,
-                                status: "at-risk",
-                                    alerts: ["Baixa frequência", "Notas em queda", "Baixo engajamento"],
-                                        evolution: [
-                                            { project: "Horta Sustentável", grade: 5.0, date: "2023-11-15" },
-                                            { project: "Robótica", grade: 6.5, date: "2023-10-20" },
-                                            { project: "Teatro", grade: 5.5, date: "2023-09-10" },
-                                            { project: "Jornal Digital", grade: 6.0, date: "2023-08-05" }
-                                        ]
-},
-{
-    id: 104,
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pedro",
+        grades: [6.0, 5.5, 6.5, 5.0],
+        attendance: 75,
+        engagement: 60,
+        projects: 4,
+        status: "at-risk",
+        alerts: ["Baixa frequência", "Notas em queda", "Baixo engajamento"],
+        evolution: [
+            { project: "Horta Sustentável", grade: 5.0, date: "2023-11-15" },
+            { project: "Robótica", grade: 6.5, date: "2023-10-20" },
+            { project: "Teatro", grade: 5.5, date: "2023-09-10" },
+            { project: "Jornal Digital", grade: 6.0, date: "2023-08-05" }
+        ]
+    },
+    {
+        id: 104,
         name: "Ana Costa",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=AnaC",
-                grades: [8.0, 8.5, 8.0, 8.5],
-                    attendance: 92,
-                        engagement: 85,
-                            projects: 4,
-                                status: "good",
-                                    alerts: [],
-                                        evolution: [
-                                            { project: "Horta Sustentável", grade: 8.5, date: "2023-11-15" },
-                                            { project: "Robótica", grade: 8.0, date: "2023-10-20" },
-                                            { project: "Teatro", grade: 8.5, date: "2023-09-10" },
-                                            { project: "Jornal Digital", grade: 8.0, date: "2023-08-05" }
-                                        ]
-},
-{
-    id: 105,
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=AnaC",
+        grades: [8.0, 8.5, 8.0, 8.5],
+        attendance: 92,
+        engagement: 85,
+        projects: 4,
+        status: "good",
+        alerts: [],
+        evolution: [
+            { project: "Horta Sustentável", grade: 8.5, date: "2023-11-15" },
+            { project: "Robótica", grade: 8.0, date: "2023-10-20" },
+            { project: "Teatro", grade: 8.5, date: "2023-09-10" },
+            { project: "Jornal Digital", grade: 8.0, date: "2023-08-05" }
+        ]
+    },
+    {
+        id: 105,
         name: "Lucas Pereira",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas",
-                grades: [7.0, 7.5, 8.0, 8.5],
-                    attendance: 88,
-                        engagement: 82,
-                            projects: 4,
-                                status: "improving",
-                                    alerts: [],
-                                        evolution: [
-                                            { project: "Horta Sustentável", grade: 8.5, date: "2023-11-15" },
-                                            { project: "Robótica", grade: 8.0, date: "2023-10-20" },
-                                            { project: "Teatro", grade: 7.5, date: "2023-09-10" },
-                                            { project: "Jornal Digital", grade: 7.0, date: "2023-08-05" }
-                                        ]
-},
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas",
+        grades: [7.0, 7.5, 8.0, 8.5],
+        attendance: 88,
+        engagement: 82,
+        projects: 4,
+        status: "improving",
+        alerts: [],
+        evolution: [
+            { project: "Horta Sustentável", grade: 8.5, date: "2023-11-15" },
+            { project: "Robótica", grade: 8.0, date: "2023-10-20" },
+            { project: "Teatro", grade: 7.5, date: "2023-09-10" },
+            { project: "Jornal Digital", grade: 7.0, date: "2023-08-05" }
+        ]
+    }
 ];
-{ id: 101, name: "João Silva", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Joao", status: "Presente" },
-{ id: 102, name: "Maria Oliveira", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria", status: "Presente" },
-{ id: 103, name: "Pedro Santos", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pedro", status: "Ausente" },
-{ id: 104, name: "Ana Costa", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=AnaC", status: "Presente" },
-{ id: 105, name: "Lucas Pereira", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas", status: "Presente" },
-{ id: 106, name: "Julia Souza", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Julia", status: "Presente" },
-{ id: 107, name: "Beatriz Lima", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Bia", status: "Ausente" },
-{ id: 108, name: "Gabriel Alves", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Griel", status: "Presente" },
+
+const MOCK_STUDENTS_LIST = [
+    { id: 101, name: "João Silva", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Joao", status: "Presente" },
+    { id: 102, name: "Maria Oliveira", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria", status: "Presente" },
+    { id: 103, name: "Pedro Santos", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pedro", status: "Ausente" },
+    { id: 104, name: "Ana Costa", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=AnaC", status: "Presente" },
+    { id: 105, name: "Lucas Pereira", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas", status: "Presente" },
+    { id: 106, name: "Julia Souza", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Julia", status: "Presente" },
+    { id: 107, name: "Beatriz Lima", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Bia", status: "Ausente" },
+    { id: 108, name: "Gabriel Alves", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Griel", status: "Presente" }
 ];
 
 const MOCK_STUDENT_PERFORMANCE = [
@@ -378,8 +382,8 @@ const NavItem = ({ icon, label, active, onClick }) => (
     <button
         onClick={onClick}
         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${active
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             }`}
     >
         {icon}
@@ -704,8 +708,8 @@ const TeacherAttendance = () => {
                     <button
                         onClick={() => setShowHistory(!showHistory)}
                         className={`px-4 py-2 rounded-xl border font-semibold shadow-sm transition flex items-center gap-2 ${showHistory
-                                ? 'bg-indigo-600 text-white border-indigo-600'
-                                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                            ? 'bg-indigo-600 text-white border-indigo-600'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                             }`}
                     >
                         <Clock size={18} />
@@ -784,7 +788,7 @@ const TeacherAttendance = () => {
                                                     <div className="w-20 bg-slate-100 h-2 rounded-full">
                                                         <div
                                                             className={`h-full rounded-full ${percentage >= 80 ? 'bg-green-500' :
-                                                                    percentage >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                                                                percentage >= 60 ? 'bg-yellow-500' : 'bg-red-500'
                                                                 }`}
                                                             style={{ width: `${percentage}%` }}
                                                         ></div>
@@ -794,8 +798,8 @@ const TeacherAttendance = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`px-2 py-1 rounded text-xs font-bold ${percentage >= 80 ? 'bg-green-100 text-green-700' :
-                                                        percentage >= 60 ? 'bg-yellow-100 text-yellow-700' :
-                                                            'bg-red-100 text-red-700'
+                                                    percentage >= 60 ? 'bg-yellow-100 text-yellow-700' :
+                                                        'bg-red-100 text-red-700'
                                                     }`}>
                                                     {percentage >= 80 ? 'Excelente' : percentage >= 60 ? 'Regular' : 'Crítico'}
                                                 </span>
@@ -832,8 +836,8 @@ const TeacherAttendance = () => {
                             <button
                                 onClick={() => toggleStatus(student.id)}
                                 className={`px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 ${student.status === "Presente"
-                                        ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                        : "bg-red-100 text-red-700 hover:bg-red-200"
+                                    ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                    : "bg-red-100 text-red-700 hover:bg-red-200"
                                     }`}
                             >
                                 {student.status === "Presente" ? <Check size={16} /> : <X size={16} />}
@@ -1176,7 +1180,7 @@ const TeacherPerformance = () => {
                         <div className="w-full bg-slate-100 h-2 rounded-full">
                             <div
                                 className={`h-full rounded-full ${selectedStudent.attendance >= 90 ? 'bg-green-500' :
-                                        selectedStudent.attendance >= 75 ? 'bg-yellow-500' : 'bg-red-500'
+                                    selectedStudent.attendance >= 75 ? 'bg-yellow-500' : 'bg-red-500'
                                     }`}
                                 style={{ width: `${selectedStudent.attendance}%` }}
                             ></div>
@@ -1238,8 +1242,8 @@ const TeacherPerformance = () => {
                                     <div className="w-full bg-slate-100 h-8 rounded-lg overflow-hidden relative">
                                         <div
                                             className={`h-full rounded-lg flex items-center justify-end px-3 transition-all ${item.grade >= 9 ? 'bg-green-500' :
-                                                    item.grade >= 7 ? 'bg-blue-500' :
-                                                        item.grade >= 6 ? 'bg-yellow-500' : 'bg-red-500'
+                                                item.grade >= 7 ? 'bg-blue-500' :
+                                                    item.grade >= 6 ? 'bg-yellow-500' : 'bg-red-500'
                                                 }`}
                                             style={{ width: `${item.grade * 10}%` }}
                                         >
@@ -1363,8 +1367,8 @@ const TeacherPerformance = () => {
                 <button
                     onClick={() => setFilterStatus('all')}
                     className={`px-4 py-2 rounded-lg font-bold text-sm transition ${filterStatus === 'all'
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                            : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                        : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
                         }`}
                 >
                     Todos ({students.length})
@@ -1372,8 +1376,8 @@ const TeacherPerformance = () => {
                 <button
                     onClick={() => setFilterStatus('at-risk')}
                     className={`px-4 py-2 rounded-lg font-bold text-sm transition ${filterStatus === 'at-risk'
-                            ? 'bg-red-600 text-white shadow-lg shadow-red-200'
-                            : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                        ? 'bg-red-600 text-white shadow-lg shadow-red-200'
+                        : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
                         }`}
                 >
                     ⚠️ Em Risco ({students.filter(s => s.status === 'at-risk').length})
@@ -1381,8 +1385,8 @@ const TeacherPerformance = () => {
                 <button
                     onClick={() => setFilterStatus('excellent')}
                     className={`px-4 py-2 rounded-lg font-bold text-sm transition ${filterStatus === 'excellent'
-                            ? 'bg-green-600 text-white shadow-lg shadow-green-200'
-                            : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                        ? 'bg-green-600 text-white shadow-lg shadow-green-200'
+                        : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
                         }`}
                 >
                     🌟 Excelentes ({students.filter(s => s.status === 'excellent').length})
@@ -1420,8 +1424,8 @@ const TeacherPerformance = () => {
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
                                             <span className={`text-lg font-bold ${parseFloat(average) >= 9 ? 'text-green-600' :
-                                                    parseFloat(average) >= 7 ? 'text-blue-600' :
-                                                        parseFloat(average) >= 6 ? 'text-yellow-600' : 'text-red-600'
+                                                parseFloat(average) >= 7 ? 'text-blue-600' :
+                                                    parseFloat(average) >= 6 ? 'text-yellow-600' : 'text-red-600'
                                                 }`}>
                                                 {average}
                                             </span>
@@ -1433,7 +1437,7 @@ const TeacherPerformance = () => {
                                             <div className="w-20 bg-slate-100 h-2 rounded-full">
                                                 <div
                                                     className={`h-full rounded-full ${student.attendance >= 90 ? 'bg-green-500' :
-                                                            student.attendance >= 75 ? 'bg-yellow-500' : 'bg-red-500'
+                                                        student.attendance >= 75 ? 'bg-yellow-500' : 'bg-red-500'
                                                         }`}
                                                     style={{ width: `${student.attendance}%` }}
                                                 ></div>
@@ -1925,8 +1929,8 @@ const ProjectDetails = ({ project, onBack }) => {
                 <button
                     onClick={() => setActiveSection('overview')}
                     className={`flex-1 px-4 py-3 rounded-xl font-bold text-sm transition ${activeSection === 'overview'
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                            : 'text-slate-600 hover:bg-slate-100'
+                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                        : 'text-slate-600 hover:bg-slate-100'
                         }`}
                 >
                     <BarChart2 size={16} className="inline mr-2" />
@@ -1935,8 +1939,8 @@ const ProjectDetails = ({ project, onBack }) => {
                 <button
                     onClick={() => setActiveSection('timeline')}
                     className={`flex-1 px-4 py-3 rounded-xl font-bold text-sm transition ${activeSection === 'timeline'
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                            : 'text-slate-600 hover:bg-slate-100'
+                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                        : 'text-slate-600 hover:bg-slate-100'
                         }`}
                 >
                     <Clock size={16} className="inline mr-2" />
@@ -1945,8 +1949,8 @@ const ProjectDetails = ({ project, onBack }) => {
                 <button
                     onClick={() => setActiveSection('students')}
                     className={`flex-1 px-4 py-3 rounded-xl font-bold text-sm transition ${activeSection === 'students'
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                            : 'text-slate-600 hover:bg-slate-100'
+                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                        : 'text-slate-600 hover:bg-slate-100'
                         }`}
                 >
                     <Users size={16} className="inline mr-2" />
@@ -2141,9 +2145,9 @@ const TeacherDashboard = ({ projects, onProjectClick }) => (
                 >
                     <div className="flex justify-between mb-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${p.theme === 'green' ? 'bg-green-100 text-green-700' :
-                                p.theme === 'blue' ? 'bg-blue-100 text-blue-700' :
-                                    p.theme === 'purple' ? 'bg-purple-100 text-purple-700' :
-                                        'bg-red-100 text-red-700'
+                            p.theme === 'blue' ? 'bg-blue-100 text-blue-700' :
+                                p.theme === 'purple' ? 'bg-purple-100 text-purple-700' :
+                                    'bg-red-100 text-red-700'
                             }`}>
                             {p.subject}
                         </span>
@@ -2221,7 +2225,7 @@ const StudentHome = ({ projects, onProjectClick }) => {
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
                                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0 ${p.theme === 'green' ? 'bg-green-500' :
-                                            p.theme === 'red' ? 'bg-red-500' : 'bg-indigo-500'
+                                        p.theme === 'red' ? 'bg-red-500' : 'bg-indigo-500'
                                         }`}>
                                         <Book size={20} />
                                     </div>
@@ -2482,8 +2486,8 @@ const StudentAchievements = () => (
 
                 return (
                     <div key={a.id} className={`p-6 rounded-2xl border transition-all relative overflow-hidden ${a.unlocked
-                            ? 'bg-white border-indigo-100 shadow-lg'
-                            : 'bg-slate-50 border-slate-200 opacity-70'
+                        ? 'bg-white border-indigo-100 shadow-lg'
+                        : 'bg-slate-50 border-slate-200 opacity-70'
                         }`}>
                         {a.unlocked && (
                             <div className="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-sm">
