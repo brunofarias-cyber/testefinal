@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview - Componentes BProjetos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(to br, #f0f4ff via #f5f1ff to #fff5f1);
+        }
+
+        .scroll-smooth {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="mb-12">
+            <h1
+                class="text-5xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                Preview - Componentes BProjetos ✨
+            </h1>
+            <p class="text-xl text-slate-600 mb-6">
+                Visualização dos 4 componentes faltantes implementados com sucesso
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <a href="#messaging"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition text-center">
+                    💬 MessagingSystem
+                </a>
+                <a href="#teams"
+                    class="px-4 py-2 bg-purple-600 text-white rounded-lg font-bold hover:bg-purple-700 transition text-center">
+                    👥 TeamManagement
+                </a>
+                <a href="#progress"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition text-center">
+                    📊 StudentProgress
+                </a>
+                <a href="#notifications"
+                    class="px-4 py-2 bg-orange-600 text-white rounded-lg font-bold hover:bg-orange-700 transition text-center">
+                    🔔 NotificationCenter
+                </a>
+            </div>
+        </div>
+
+        <!-- 1. MESSAGING SYSTEM -->
+        <section id="messaging" class="mb-16 scroll-mt-20">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-8">
+                    <h2 class="text-3xl font-extrabold mb-2">💬 MessagingSystem</h2>
+                    <p class="text-indigo-100">Chat entre professor e aluno com histórico de mensagens</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-8">
+                    <!-- Left: Lista de Conversas -->
+                    <div class="border-r border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-4">Conversas Ativas</h3>
+                        <div class="space-y-3">
+                            <div class="p-4 bg-indigo-50 border-2 border-indigo-300 rounded-xl cursor-pointer">
+                                <div class="flex gap-3">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Joao" alt="João"
+                                        class="w-10 h-10 rounded-full">
+                                    <div class="flex-1">
+                                        <p class="font-bold text-slate-800 flex items-center gap-2">
+                                            João Silva
+                                            <span
+                                                class="w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">2</span>
+                                        </p>
+                                        <p class="text-sm text-slate-600">Qual é o melhor tipo de solo...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
+                                <div class="flex gap-3">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Maria" alt="Maria"
+                                        class="w-10 h-10 rounded-full">
+                                    <div class="flex-1">
+                                        <p class="font-bold text-slate-800">Maria Oliveira</p>
+                                        <p class="text-sm text-slate-500">Obrigada pela explicação!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Chat -->
+                    <div class="flex flex-col">
+                        <h3 class="font-bold text-slate-800 mb-4">Chat com João Silva</h3>
+                        <div class="bg-slate-50 rounded-xl p-4 h-64 overflow-y-auto mb-4 space-y-3 flex-1">
+                            <div class="flex justify-start">
+                                <div
+                                    class="bg-white border border-slate-200 px-4 py-2 rounded-2xl rounded-bl-none max-w-xs">
+                                    <p class="text-sm text-slate-800">Qual é o melhor tipo de solo para cenouras?</p>
+                                    <p class="text-xs text-slate-400 mt-1">14:30</p>
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <div class="bg-indigo-600 text-white px-4 py-2 rounded-2xl rounded-br-none max-w-xs">
+                                    <p class="text-sm">Olá João! Para cenouras, recomendo um solo solto e bem drenado...
+                                    </p>
+                                    <p class="text-xs text-indigo-100 mt-1">14:35</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" placeholder="Digite sua mensagem..."
+                                class="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <button
+                                class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-6 border-t border-slate-200">
+                    <h4 class="font-bold text-slate-800 mb-3">✨ Features:</h4>
+                    <ul class="grid grid-cols-2 gap-3 text-sm text-slate-700">
+                        <li>✅ Chat em tempo real</li>
+                        <li>✅ Histórico de mensagens</li>
+                        <li>✅ Notificação de não lidos</li>
+                        <li>✅ Busca de conversas</li>
+                        <li>✅ Auto-scroll</li>
+                        <li>✅ Timestamps</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. TEAM MANAGEMENT -->
+        <section id="teams" class="mb-16 scroll-mt-20">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+                <div class="bg-gradient-to-r from-purple-600 to-pink-700 text-white p-8">
+                    <h2 class="text-3xl font-extrabold mb-2">👥 TeamManagement</h2>
+                    <p class="text-purple-100">Criar, gerenciar e organizar equipes de trabalho</p>
+                </div>
+
+                <div class="p-8">
+                    <!-- Cards de Equipes -->
+                    <h3 class="font-bold text-slate-800 mb-6">Equipes Criadas</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <!-- Equipe 1 -->
+                        <div
+                            class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition group relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-2 h-full bg-indigo-500 group-hover:bg-indigo-600"></div>
+                            <div class="pl-4">
+                                <h4 class="text-xl font-bold text-slate-800 mb-1">Equipe Alpha</h4>
+                                <p class="text-sm text-slate-500 mb-4">Projeto: Horta Sustentável</p>
+
+                                <div class="mb-4">
+                                    <p class="text-xs font-bold text-slate-500 uppercase mb-2">Membros: 3/3</p>
+                                    <div class="flex -space-x-2">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Joao"
+                                            class="w-8 h-8 rounded-full border-2 border-white">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Maria"
+                                            class="w-8 h-8 rounded-full border-2 border-white">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Pedro"
+                                            class="w-8 h-8 rounded-full border-2 border-white">
+                                    </div>
+                                </div>
+
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full"
+                                        style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Equipe 2 -->
+                        <div
+                            class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition group relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-2 h-full bg-purple-500 group-hover:bg-purple-600"></div>
+                            <div class="pl-4">
+                                <h4 class="text-xl font-bold text-slate-800 mb-1">Equipe Beta</h4>
+                                <p class="text-sm text-slate-500 mb-4">Projeto: Robótica Sucata</p>
+
+                                <div class="mb-4">
+                                    <p class="text-xs font-bold text-slate-500 uppercase mb-2">Membros: 2/2</p>
+                                    <div class="flex -space-x-2">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=AnaC"
+                                            class="w-8 h-8 rounded-full border-2 border-white">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas"
+                                            class="w-8 h-8 rounded-full border-2 border-white">
+                                    </div>
+                                </div>
+
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-full"
+                                        style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Preview -->
+                    <div
+                        class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-6 border-2 border-dashed border-slate-300">
+                        <h4 class="font-bold text-slate-800 mb-4">Modal: Criar Nova Equipe</h4>
+                        <div class="bg-white rounded-xl p-4 space-y-3">
+                            <div>
+                                <label class="text-sm font-bold text-slate-700">Nome da Equipe</label>
+                                <input type="text" placeholder="Ex: Equipe Gamma"
+                                    class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="text-sm font-bold text-slate-700">Projeto</label>
+                                <input type="text" placeholder="Ex: Teatro Shakespeare"
+                                    class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="text-sm font-bold text-slate-700 mb-2 block">Tamanho</label>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <button class="p-2 border-2 border-indigo-500 bg-indigo-50 rounded-lg text-center">
+                                        <p class="text-lg">👫</p>
+                                        <p class="text-xs font-bold">Duplas</p>
+                                    </button>
+                                    <button
+                                        class="p-2 border-2 border-slate-200 rounded-lg text-center hover:bg-slate-50">
+                                        <p class="text-lg">👥</p>
+                                        <p class="text-xs font-bold">Trios</p>
+                                    </button>
+                                    <button
+                                        class="p-2 border-2 border-slate-200 rounded-lg text-center hover:bg-slate-50">
+                                        <p class="text-lg">👥👥</p>
+                                        <p class="text-xs font-bold">4 pessoas</p>
+                                    </button>
+                                    <button
+                                        class="p-2 border-2 border-slate-200 rounded-lg text-center hover:bg-slate-50">
+                                        <p class="text-lg">👥👥👥</p>
+                                        <p class="text-xs font-bold">5-6</p>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-6 border-t border-slate-200">
+                    <h4 class="font-bold text-slate-800 mb-3">✨ Features:</h4>
+                    <ul class="grid grid-cols-2 gap-3 text-sm text-slate-700">
+                        <li>✅ Criar equipes</li>
+                        <li>✅ Adicionar/remover membros</li>
+                        <li>✅ Gerenciar papéis</li>
+                        <li>✅ Templates de tamanho</li>
+                        <li>✅ Editar informações</li>
+                        <li>✅ Deletar equipes</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. STUDENT PROGRESS -->
+        <section id="progress" class="mb-16 scroll-mt-20">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+                <div class="bg-gradient-to-r from-blue-600 to-cyan-700 text-white p-8">
+                    <h2 class="text-3xl font-extrabold mb-2">📊 StudentProgress</h2>
+                    <p class="text-blue-100">Dashboard completo de progresso e desempenho do aluno</p>
+                </div>
+
+                <div class="p-8">
+                    <!-- Header do Aluno -->
+                    <div
+                        class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-8 text-white mb-8 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+                        <div class="relative z-10 flex items-center gap-6 mb-6">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Maria"
+                                class="w-20 h-20 rounded-full border-4 border-white/20 shadow-xl">
+                            <div>
+                                <h3 class="text-3xl font-extrabold">Maria Oliveira</h3>
+                                <p class="text-indigo-100">🎓 Aluno | Ranking #2 de 28</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                                <p class="text-xs opacity-80 font-bold mb-1">MÉDIA</p>
+                                <p class="text-3xl font-extrabold">9.2</p>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                                <p class="text-xs opacity-80 font-bold mb-1">FREQUÊNCIA</p>
+                                <p class="text-3xl font-extrabold">98%</p>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                                <p class="text-xs opacity-80 font-bold mb-1">PROJETOS</p>
+                                <p class="text-3xl font-extrabold">4/4</p>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                                <p class="text-xs opacity-80 font-bold mb-1">XP</p>
+                                <p class="text-3xl font-extrabold">Nível 5</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Abas -->
+                    <div class="flex gap-2 mb-8 overflow-x-auto">
+                        <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold whitespace-nowrap">Visão
+                            Geral</button>
+                        <button
+                            class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold hover:bg-slate-50 whitespace-nowrap">Projetos</button>
+                        <button
+                            class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold hover:bg-slate-50 whitespace-nowrap">Competências</button>
+                        <button
+                            class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg font-bold hover:bg-slate-50 whitespace-nowrap">Metas</button>
+                    </div>
+
+                    <!-- Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                            <h4 class="text-lg font-bold text-slate-800 mb-4">📈 Notas por Mês</h4>
+                            <div class="flex items-end gap-2 h-40">
+                                <div class="flex-1 flex flex-col items-center">
+                                    <div class="bg-gradient-to-t from-indigo-500 to-purple-500 w-full rounded-t-lg"
+                                        style="height: 90px;"></div>
+                                    <p class="text-xs font-bold mt-2">Aug</p>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center">
+                                    <div class="bg-gradient-to-t from-indigo-500 to-purple-500 w-full rounded-t-lg"
+                                        style="height: 95px;"></div>
+                                    <p class="text-xs font-bold mt-2">Sep</p>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center">
+                                    <div class="bg-gradient-to-t from-indigo-500 to-purple-500 w-full rounded-t-lg"
+                                        style="height: 90px;"></div>
+                                    <p class="text-xs font-bold mt-2">Oct</p>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center">
+                                    <div class="bg-gradient-to-t from-indigo-500 to-purple-500 w-full rounded-t-lg"
+                                        style="height: 92px;"></div>
+                                    <p class="text-xs font-bold mt-2">Nov</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                            <h4 class="text-lg font-bold text-slate-800 mb-4">⭐ Progresso XP</h4>
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-2xl font-extrabold text-yellow-600">Nível 5</span>
+                                    <span class="font-bold text-slate-600">2.850 XP</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-yellow-400 to-orange-500 h-full"
+                                        style="width: 81%;"></div>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-2">650 XP para o Nível 6</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Badges -->
+                    <div class="mb-8">
+                        <h4 class="font-bold text-slate-800 mb-4">🏆 Emblemas (3/4)</h4>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div
+                                class="p-4 rounded-xl text-center bg-gradient-to-br from-yellow-100 to-orange-100 border-2 border-yellow-300">
+                                <p class="text-2xl mb-1">⭐</p>
+                                <p class="text-xs font-bold">Madrugador</p>
+                            </div>
+                            <div
+                                class="p-4 rounded-xl text-center bg-gradient-to-br from-yellow-100 to-orange-100 border-2 border-yellow-300">
+                                <p class="text-2xl mb-1">📈</p>
+                                <p class="text-xs font-bold">A Volta</p>
+                            </div>
+                            <div
+                                class="p-4 rounded-xl text-center bg-gradient-to-br from-yellow-100 to-orange-100 border-2 border-yellow-300">
+                                <p class="text-2xl mb-1">✅</p>
+                                <p class="text-xs font-bold">Pontual</p>
+                            </div>
+                            <div class="p-4 rounded-xl text-center bg-slate-100 border-2 border-slate-200 opacity-60">
+                                <p class="text-2xl mb-1">🔒</p>
+                                <p class="text-xs font-bold">Explorador</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-6 border-t border-slate-200">
+                    <h4 class="font-bold text-slate-800 mb-3">✨ Features:</h4>
+                    <ul class="grid grid-cols-2 gap-3 text-sm text-slate-700">
+                        <li>✅ 4 abas (Overview, Projetos, Competências, Metas)</li>
+                        <li>✅ Gráficos interativos</li>
+                        <li>✅ Sistema de XP e Níveis</li>
+                        <li>✅ Badges conquistadas</li>
+                        <li>✅ Ranking na turma</li>
+                        <li>✅ Análise de competências BNCC</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. NOTIFICATION CENTER -->
+        <section id="notifications" class="mb-16 scroll-mt-20">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+                <div class="bg-gradient-to-r from-orange-600 to-red-700 text-white p-8">
+                    <h2 class="text-3xl font-extrabold mb-2">🔔 NotificationCenter</h2>
+                    <p class="text-orange-100">Central completa de notificações com filtros e ações</p>
+                </div>
+
+                <div class="p-8">
+                    <!-- Stats -->
+                    <h3 class="font-bold text-slate-800 mb-4">Notificações (Você tem 3 não lidas)</h3>
+                    <div class="grid grid-cols-5 gap-4 mb-8">
+                        <div class="p-4 rounded-xl border-2 border-indigo-300 bg-indigo-50 cursor-pointer">
+                            <p class="text-xs text-slate-500 font-bold uppercase">Total</p>
+                            <p class="text-2xl font-extrabold text-slate-800">8</p>
+                        </div>
+                        <div class="p-4 rounded-xl border-2 border-red-300 bg-red-50 cursor-pointer">
+                            <p class="text-xs text-slate-500 font-bold uppercase">Não Lidas</p>
+                            <p class="text-2xl font-extrabold text-red-600">3</p>
+                        </div>
+                        <div class="p-4 rounded-xl border-2 border-orange-300 bg-orange-50 cursor-pointer">
+                            <p class="text-xs text-slate-500 font-bold uppercase">Prazos</p>
+                            <p class="text-2xl font-extrabold text-orange-600">2</p>
+                        </div>
+                        <div class="p-4 rounded-xl border-2 border-purple-300 bg-purple-50 cursor-pointer">
+                            <p class="text-xs text-slate-500 font-bold uppercase">Feedback</p>
+                            <p class="text-2xl font-extrabold text-purple-600">1</p>
+                        </div>
+                        <div class="p-4 rounded-xl border-2 border-yellow-300 bg-yellow-50 cursor-pointer">
+                            <p class="text-xs text-slate-500 font-bold uppercase">Conquistas</p>
+                            <p class="text-2xl font-extrabold text-yellow-600">1</p>
+                        </div>
+                    </div>
+
+                    <!-- Notificações -->
+                    <div class="space-y-3">
+                        <!-- Notification 1 -->
+                        <div class="rounded-2xl border-2 border-indigo-200 bg-indigo-50 p-4">
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="relative w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-xl">⏰</span>
+                                    <div
+                                        class="absolute -top-1 -right-1 w-4 h-4 bg-indigo-600 rounded-full border-2 border-white">
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-indigo-900">Prazo se aproximando: Horta Sustentável</h4>
+                                    <p class="text-sm text-indigo-800 font-medium mt-1">Faltam 2 dias para entregar o
+                                        relatório...</p>
+                                    <div class="flex gap-2 mt-2">
+                                        <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-bold">Alta
+                                            prioridade</span>
+                                        <span class="text-xs text-slate-500">5m atrás</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notification 2 -->
+                        <div class="rounded-2xl border-2 border-indigo-200 bg-indigo-50 p-4">
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="relative w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-xl">💬</span>
+                                    <div
+                                        class="absolute -top-1 -right-1 w-4 h-4 bg-indigo-600 rounded-full border-2 border-white">
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-indigo-900">Feedback recebido: Teatro Shakespeare</h4>
+                                    <p class="text-sm text-indigo-800 font-medium mt-1">Profª Ana Silva deixou um
+                                        feedback...</p>
+                                    <div class="flex gap-2 mt-2">
+                                        <span
+                                            class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs font-bold">Média
+                                            prioridade</span>
+                                        <span class="text-xs text-slate-500">1h atrás</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notification 3 -->
+                        <div class="rounded-2xl border-2 border-indigo-200 bg-indigo-50 p-4">
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="relative w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-xl">🏆</span>
+                                    <div
+                                        class="absolute -top-1 -right-1 w-4 h-4 bg-indigo-600 rounded-full border-2 border-white">
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-indigo-900">Emblema Desbloqueado!</h4>
+                                    <p class="text-sm text-indigo-800 font-medium mt-1">Você conquistou o emblema
+                                        'Madrugador'...</p>
+                                    <div class="flex gap-2 mt-2">
+                                        <span class="text-xs text-slate-500">2d atrás</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notification 4 (Lida) -->
+                        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4">
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-xl">📌</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800">Nova tarefa atribuída: Robótica</h4>
+                                    <p class="text-sm text-slate-600 mt-1">Prof. Roberto Lima atribuiu você...</p>
+                                    <div class="flex gap-2 mt-2">
+                                        <span class="text-xs text-slate-500">3d atrás</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-6 border-t border-slate-200">
+                    <h4 class="font-bold text-slate-800 mb-3">✨ Features:</h4>
+                    <ul class="grid grid-cols-2 gap-3 text-sm text-slate-700">
+                        <li>✅ 6 tipos de notificações</li>
+                        <li>✅ Filtros por tipo</li>
+                        <li>✅ Busca em tempo real</li>
+                        <li>✅ Marcar como lida/não lida</li>
+                        <li>✅ Indicador de prioridade</li>
+                        <li>✅ Ações em massa</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-3xl text-white p-12 text-center">
+            <h2 class="text-4xl font-extrabold mb-4">🎉 Todos os 4 Componentes Prontos!</h2>
+            <p class="text-xl text-indigo-100 mb-8">
+                MessagingSystem • TeamManagement • StudentProgress • NotificationCenter
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                    <p class="text-3xl mb-2">💬</p>
+                    <p class="font-bold">Chat</p>
+                    <p class="text-sm text-indigo-100">8 recursos</p>
+                </div>
+                <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                    <p class="text-3xl mb-2">👥</p>
+                    <p class="font-bold">Equipes</p>
+                    <p class="text-sm text-indigo-100">6 recursos</p>
+                </div>
+                <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                    <p class="text-3xl mb-2">📊</p>
+                    <p class="font-bold">Progresso</p>
+                    <p class="text-sm text-indigo-100">6 recursos</p>
+                </div>
+                <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                    <p class="text-3xl mb-2">🔔</p>
+                    <p class="font-bold">Notificações</p>
+                    <p class="text-sm text-indigo-100">6 recursos</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>

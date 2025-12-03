@@ -6,8 +6,6 @@ services:
     buildCommand: npm install && npm run build:render
     startCommand: npm run start:prod
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: NODE_VERSION
         value: 20.16.11
       - key: DATABASE_URL
