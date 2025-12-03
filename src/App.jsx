@@ -37,6 +37,8 @@ import {
 import TeacherPlanning from "./components/TeacherPlanning";
 import MessagingSystem from "./components/MessagingSystem";
 import TeacherPerformance from "./components/TeacherPerformance";
+import { AuthManager, LoginScreen } from "./components/AuthSystem";
+import StudentDashboard from "./components/StudentDashboard";
 
 // --- DADOS MOCKADOS ---
 
@@ -251,7 +253,7 @@ const BrandLogo = ({ size = 40, className = "" }) => (
     </svg>
 );
 
-const Sidebar = ({ activeTab, setActiveTab, role, onLogout }) => {
+const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
     const getRoleLabel = () => {
         if (role === 'teacher') return 'Professor';
         if (role === 'student') return 'Aluno';
@@ -318,6 +320,12 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout }) => {
             </div>
 
             <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+                {currentUser && (
+                    <div className="mb-3 px-1">
+                        <p className="text-sm font-bold text-slate-800 truncate">{currentUser.name}</p>
+                        <p className="text-xs text-slate-500 truncate">{currentUser.email}</p>
+                    </div>
+                )}
                 <button onClick={onLogout} className="flex items-center gap-3 px-3 py-3 w-full hover:bg-white hover:shadow-md rounded-xl transition-all text-left group border border-transparent hover:border-slate-100">
                     <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 group-hover:bg-red-100 group-hover:text-red-600 transition-colors">
                         <LogOut size={18} />
@@ -1908,19 +1916,35 @@ function App() {
     const [viewState, setViewState] = useState('landing');
     const [activeTab, setActiveTab] = useState('dashboard');
     const [role, setRole] = useState('teacher');
+    const [currentUser, setCurrentUser] = useState(null);
     const [projects] = useState(MOCK_PROJECTS);
     const [calendarEvents, setCalendarEvents] = useState(INITIAL_EVENTS);
     const [selectedProject, setSelectedProject] = useState(null);
 
-    const handleEnterApp = (selectedRole) => {
-        setRole(selectedRole);
+    useEffect(() => {
+        const user = AuthManager.getCurrentUser();
+        if (user) {
+            setCurrentUser(user);
+            setRole(user.role);
+            setViewState('app');
+            if (user.role === 'coordinator') setActiveTab('kanban');
+            else if (user.role === 'student') setActiveTab('student-home');
+            else setActiveTab('dashboard');
+        }
+    }, []);
+
+    const handleLogin = (user) => {
+        setCurrentUser(user);
+        setRole(user.role);
         setViewState('app');
-        if (selectedRole === 'coordinator') setActiveTab('kanban');
-        else if (selectedRole === 'student') setActiveTab('student-home');
+        if (user.role === 'coordinator') setActiveTab('kanban');
+        else if (user.role === 'student') setActiveTab('student-home');
         else setActiveTab('dashboard');
     };
 
     const handleLogout = () => {
+        AuthManager.logout();
+        setCurrentUser(null);
         setViewState('landing');
         setActiveTab('dashboard');
         setSelectedProject(null);
@@ -1968,7 +1992,7 @@ function App() {
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'student') {
-            if (activeTab === 'student-home' || activeTab === 'projects') return <StudentHome projects={projects} onProjectClick={handleProjectClick} />;
+            if (activeTab === 'student-home' || activeTab === 'projects') return <StudentDashboard />;
             if (activeTab === 'progress') return <StudentProgress />;
             if (activeTab === 'achievements') return <StudentAchievements />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
@@ -1979,11 +2003,11 @@ function App() {
         return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Sistema BProjetos</h3><p className="text-slate-500">Navegue pelo menu lateral para explorar as funcionalidades!</p></div>;
     };
 
-    if (viewState === 'landing') return <LandingPage onEnter={handleEnterApp} />;
+    if (viewState === 'landing') return <LoginScreen onLogin={handleLogin} />;
 
     return (
         <div className="flex min-h-screen bg-slate-50">
-            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} role={role} onLogout={handleLogout} />
+            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} role={role} onLogout={handleLogout} currentUser={currentUser} />
             <main className="flex-1 ml-72 p-8 min-h-screen">
                 <div className="flex justify-between items-center mb-8">
                     <div>
@@ -1991,9 +2015,9 @@ function App() {
                         <div className="text-sm font-bold text-slate-600 bg-white px-3 py-1 rounded-lg shadow-sm border border-slate-100 inline-block">Demo v5.0</div>
                     </div>
                     <div className="flex items-center gap-3 bg-white p-2 rounded-full shadow-sm border border-slate-100 pr-4">
-                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${role}`} className="w-8 h-8 rounded-full bg-slate-100" />
+                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser?.name || role}`} className="w-8 h-8 rounded-full bg-slate-100" />
                         <div className="text-xs text-right">
-                            <p className="font-bold text-slate-700 capitalize">{role}</p>
+                            <p className="font-bold text-slate-700 capitalize">{currentUser?.name || role}</p>
                         </div>
                     </div>
                 </div>
