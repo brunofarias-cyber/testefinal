@@ -16,7 +16,7 @@ export function registerRoutes(app: Express) {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const [user] = await db.insert(users).values({
-                username,
+                username: username || email.split('@')[0],
                 password: hashedPassword,
                 role: role || "student",
                 name,
@@ -25,27 +25,31 @@ export function registerRoutes(app: Express) {
 
             const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET);
 
-            res.json({ user: { ...user, password: undefined }, token });
+            res.json({ success: true, user: { ...user, password: undefined }, token });
         } catch (error: any) {
-            res.status(400).json({ error: error.message });
+            res.status(400).json({ success: false, error: error.message });
         }
     });
 
     app.post("/api/auth/login", async (req: Request, res: Response) => {
         try {
-            const { username, password } = req.body;
+            const { email, password, username } = req.body;
 
-            const [user] = await db.select().from(users).where(eq(users.username, username));
+            // Support both email and username login
+            const loginField = email || username;
+            const [user] = email
+                ? await db.select().from(users).where(eq(users.email, email))
+                : await db.select().from(users).where(eq(users.username, username));
 
             if (!user || !(await bcrypt.compare(password, user.password))) {
-                return res.status(401).json({ error: "Invalid credentials" });
+                return res.status(401).json({ success: false, error: "Invalid credentials" });
             }
 
             const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET);
 
-            res.json({ user: { ...user, password: undefined }, token });
+            res.json({ success: true, user: { ...user, password: undefined }, token });
         } catch (error: any) {
-            res.status(400).json({ error: error.message });
+            res.status(400).json({ success: false, error: error.message });
         }
     });
 

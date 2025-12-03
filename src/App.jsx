@@ -37,7 +37,7 @@ import {
 import TeacherPlanning from "./components/TeacherPlanning";
 import MessagingSystem from "./components/MessagingSystem";
 import TeacherPerformance from "./components/TeacherPerformance";
-import { AuthManager, LoginScreen } from "./components/AuthSystem";
+import { AuthManager, LoginScreen } from "./components/AuthSystemAPI";
 import StudentDashboard from "./components/StudentDashboard";
 import StudentProgress from "./components/StudentProgress";
 import StudentNotifications from "./components/StudentNotifications";
