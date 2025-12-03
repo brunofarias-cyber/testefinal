@@ -2,11 +2,14 @@ services:
   - type: web
     name: bprojetos
     env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    plan: free
+    buildCommand: npm install && npm run build:render
+    startCommand: npm run start:prod
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: NODE_VERSION
-        value: 18.20.0
+        value: 20.16.11
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
