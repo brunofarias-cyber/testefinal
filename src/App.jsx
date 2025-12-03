@@ -40,6 +40,7 @@ import TeacherPerformance from "./components/TeacherPerformance";
 import { AuthManager, LoginScreen } from "./components/AuthSystem";
 import StudentDashboard from "./components/StudentDashboard";
 import StudentProgress from "./components/StudentProgress";
+import StudentNotifications from "./components/StudentNotifications";
 
 // --- DADOS MOCKADOS ---
 
@@ -1998,7 +1999,7 @@ function App() {
             if (activeTab === 'achievements') return <StudentAchievements />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
             if (activeTab === 'messages') return <MessagingSystem userRole="student" />;
-            if (activeTab === 'notifications') return <NotificationCenter userRole="student" />;
+            if (activeTab === 'notifications') return <StudentNotifications />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Sistema BProjetos</h3><p className="text-slate-500">Navegue pelo menu lateral para explorar as funcionalidades!</p></div>;
