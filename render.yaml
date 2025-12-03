@@ -1,8 +1,7 @@
 services:
   - type: web
     name: bprojetos
-    env: node
-    plan: free
+    runtime: node
     buildCommand: npm install && npm run build:render
     startCommand: npm run start:prod
     envVars:
