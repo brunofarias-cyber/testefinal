@@ -39,6 +39,7 @@ import MessagingSystem from "./components/MessagingSystem";
 import TeacherPerformance from "./components/TeacherPerformance";
 import { AuthManager, LoginScreen } from "./components/AuthSystem";
 import StudentDashboard from "./components/StudentDashboard";
+import StudentProgress from "./components/StudentProgress";
 
 // --- DADOS MOCKADOS ---
 
