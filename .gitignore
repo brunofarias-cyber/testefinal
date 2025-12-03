@@ -35,3 +35,4 @@ gunicorn
 psycopg2-binary
 *.pyc
 __pycache__/
+node_modules
