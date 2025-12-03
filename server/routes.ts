@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
-import { users, projects, tasks, events, attendance, messages } from "./db/schema";
+import { users, projects, tasks, events, attendance, messages, submissions, notifications } from "./db/schema";
 import { eq, and } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -236,6 +236,140 @@ export function registerRoutes(app: Express) {
 
             const allUsers = await db.select().from(users);
             res.json(allUsers.map(u => ({ ...u, password: undefined })));
+        } catch (error: any) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+
+    // ========== SUBMISSIONS ROUTES ==========
+
+    app.post("/api/submissions", async (req: Request, res: Response) => {
+        try {
+            const [submission] = await db.insert(submissions).values(req.body).returning();
+
+            // Create notification for teacher
+            const [project] = await db.select().from(projects).where(eq(projects.id, req.body.projectId));
+            if (project?.teacherId) {
+                await db.insert(notifications).values({
+                    recipientId: project.teacherId,
+                    type: "message",
+                    title: "Nova submissão",
+                    message: "Um aluno enviou trabalho",
+                    relatedProjectId: req.body.projectId,
+                });
+            }
+
+            res.status(201).json(submission);
+        } catch (error: any) {
+            res.status(400).json({ error: error.message });
+        }
+    });
+
+    app.get("/api/submissions/project/:projectId", async (req: Request, res: Response) => {
+        try {
+            const projectSubmissions = await db.select().from(submissions)
+                .where(eq(submissions.projectId, parseInt(req.params.projectId)));
+            res.json(projectSubmissions);
+        } catch (error: any) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+
+    app.post("/api/submissions/:id/grade", async (req: Request, res: Response) => {
+        try {
+            const [submission] = await db.update(submissions)
+                .set({
+                    grade: req.body.grade,
+                    feedback: req.body.feedback,
+                    gradedBy: req.body.gradedBy,
+                    gradedAt: new Date(),
+                })
+                .where(eq(submissions.id, parseInt(req.params.id)))
+                .returning();
+
+            // Create notification for student
+            await db.insert(notifications).values({
+                recipientId: submission.studentId,
+                type: "feedback",
+                title: "Feedback recebido",
+                message: "Seu trabalho foi avaliado",
+                relatedProjectId: submission.projectId,
+            });
+
+            res.json(submission);
+        } catch (error: any) {
+            res.status(400).json({ error: error.message });
+        }
+    });
+
+    // ========== NOTIFICATIONS ROUTES ==========
+
+    app.get("/api/notifications", async (req: Request, res: Response) => {
+        try {
+            const { userId } = req.query;
+            if (!userId) {
+                return res.status(400).json({ error: "userId is required" });
+            }
+
+            const userNotifications = await db.select().from(notifications)
+                .where(eq(notifications.recipientId, parseInt(userId as string)))
+                .orderBy(notifications.createdAt);
+            res.json(userNotifications);
+        } catch (error: any) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+
+    app.put("/api/notifications/:id/read", async (req: Request, res: Response) => {
+        try {
+            const [notification] = await db.update(notifications)
+                .set({ read: true })
+                .where(eq(notifications.id, parseInt(req.params.id)))
+                .returning();
+            res.json(notification);
+        } catch (error: any) {
+            res.status(400).json({ error: error.message });
+        }
+    });
+
+    app.delete("/api/notifications/:id", async (req: Request, res: Response) => {
+        try {
+            await db.delete(notifications).where(eq(notifications.id, parseInt(req.params.id)));
+            res.json({ success: true });
+        } catch (error: any) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+
+    // ========== ANALYTICS ROUTES ==========
+
+    app.get("/api/analytics/performance/:studentId", async (req: Request, res: Response) => {
+        try {
+            const studentId = parseInt(req.params.studentId);
+
+            // Get submissions
+            const studentSubmissions = await db.select().from(submissions)
+                .where(eq(submissions.studentId, studentId));
+
+            const avgGrade = studentSubmissions.length > 0
+                ? studentSubmissions.reduce((sum, s) => sum + (s.grade || 0), 0) / studentSubmissions.length
+                : 0;
+
+            // Get attendance
+            const studentAttendance = await db.select().from(attendance)
+                .where(eq(attendance.studentId, studentId));
+
+            const presentCount = studentAttendance.filter(a => a.status === "Presente").length;
+            const attendancePercentage = studentAttendance.length > 0
+                ? (presentCount / studentAttendance.length) * 100
+                : 0;
+
+            res.json({
+                averageGrade: avgGrade.toFixed(1),
+                attendancePercentage: attendancePercentage.toFixed(1),
+                submissionCount: studentSubmissions.length,
+                attendanceRecords: studentAttendance.length,
+            });
         } catch (error: any) {
             res.status(500).json({ error: error.message });
         }
