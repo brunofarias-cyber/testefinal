@@ -8,8 +8,8 @@ services:
     region: oregon
     plan: free
     branch: main
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: bash build.sh
+    startCommand: node server.js
     envVars:
       - key: DATABASE_URL
         sync: false
@@ -20,6 +20,8 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         sync: false
       - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: JWT_SECRET
         sync: false
       - key: NODE_ENV
         value: production
