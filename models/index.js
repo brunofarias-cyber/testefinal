@@ -6,7 +6,17 @@ import { SubmissionModel } from './Submission.js';
 import { AttendanceModel } from './Attendance.js';
 import { NotificationModel } from './Notification.js';
 
-// Inicializar models
+// BNCC Models
+import BnccGeneralCompetency from './BnccGeneralCompetency.js';
+import BnccDiscipline from './BnccDiscipline.js';
+import BnccSkill from './BnccSkill.js';
+import SkillGeneralCompetency from './SkillGeneralCompetency.js';
+import ProjectSkill from './ProjectSkill.js';
+import SkillIndicator from './SkillIndicator.js';
+import StudentSkillEvaluation from './StudentSkillEvaluation.js';
+import StudentSkillSummary from './StudentSkillSummary.js';
+
+// Inicializar models antigos
 const User = UserModel(sequelize);
 const Project = ProjectModel(sequelize);
 const Task = TaskModel(sequelize);
@@ -14,7 +24,10 @@ const Submission = SubmissionModel(sequelize);
 const Attendance = AttendanceModel(sequelize);
 const Notification = NotificationModel(sequelize);
 
-// Associações
+// ==========================================
+// ASSOCIAÇÕES EXISTENTES
+// ==========================================
+
 User.hasMany(Project, { foreignKey: 'teacherId', as: 'projects' });
 Project.belongsTo(User, { foreignKey: 'teacherId', as: 'teacher' });
 
@@ -42,4 +55,112 @@ Notification.belongsTo(User, { foreignKey: 'recipientId', as: 'recipient' });
 Project.hasMany(Notification, { foreignKey: 'relatedProjectId', as: 'notifications' });
 Notification.belongsTo(Project, { foreignKey: 'relatedProjectId', as: 'project' });
 
-export { User, Project, Task, Submission, Attendance, Notification, sequelize };
+// ==========================================
+// ASSOCIAÇÕES BNCC
+// ==========================================
+
+// BnccDiscipline → BnccSkill (One-to-Many)
+BnccDiscipline.hasMany(BnccSkill, {
+    foreignKey: 'disciplineId',
+    as: 'skills'
+});
+BnccSkill.belongsTo(BnccDiscipline, {
+    foreignKey: 'disciplineId',
+    as: 'discipline'
+});
+
+// BnccSkill ↔ BnccGeneralCompetency (Many-to-Many)
+BnccSkill.belongsToMany(BnccGeneralCompetency, {
+    through: SkillGeneralCompetency,
+    foreignKey: 'skillId',
+    otherKey: 'competencyId',
+    as: 'competencies'
+});
+BnccGeneralCompetency.belongsToMany(BnccSkill, {
+    through: SkillGeneralCompetency,
+    foreignKey: 'competencyId',
+    otherKey: 'skillId',
+    as: 'skills'
+});
+
+// Project → ProjectSkill (One-to-Many)
+Project.hasMany(ProjectSkill, {
+    foreignKey: 'projectId',
+    as: 'projectSkills'
+});
+ProjectSkill.belongsTo(Project, {
+    foreignKey: 'projectId',
+    as: 'project'
+});
+
+// Project → SkillIndicator (One-to-Many)
+Project.hasMany(SkillIndicator, {
+    foreignKey: 'projectId',
+    as: 'skillIndicators'
+});
+SkillIndicator.belongsTo(Project, {
+    foreignKey: 'projectId',
+    as: 'project'
+});
+
+// Project → StudentSkillEvaluation (One-to-Many)
+Project.hasMany(StudentSkillEvaluation, {
+    foreignKey: 'projectId',
+    as: 'skillEvaluations'
+});
+StudentSkillEvaluation.belongsTo(Project, {
+    foreignKey: 'projectId',
+    as: 'project'
+});
+
+// Project → StudentSkillSummary (One-to-Many)
+Project.hasMany(StudentSkillSummary, {
+    foreignKey: 'projectId',
+    as: 'skillSummaries'
+});
+StudentSkillSummary.belongsTo(Project, {
+    foreignKey: 'projectId',
+    as: 'project'
+});
+
+// User (Student) → StudentSkillEvaluation (One-to-Many)
+User.hasMany(StudentSkillEvaluation, {
+    foreignKey: 'studentId',
+    as: 'skillEvaluations'
+});
+StudentSkillEvaluation.belongsTo(User, {
+    foreignKey: 'studentId',
+    as: 'student'
+});
+
+// User (Student) → StudentSkillSummary (One-to-Many)
+User.hasMany(StudentSkillSummary, {
+    foreignKey: 'studentId',
+    as: 'skillSummaries'
+});
+StudentSkillSummary.belongsTo(User, {
+    foreignKey: 'studentId',
+    as: 'student'
+});
+
+export {
+    // Existing models
+    User,
+    Project,
+    Task,
+    Submission,
+    Attendance,
+    Notification,
+
+    // BNCC models
+    BnccGeneralCompetency,
+    BnccDiscipline,
+    BnccSkill,
+    SkillGeneralCompetency,
+    ProjectSkill,
+    SkillIndicator,
+    StudentSkillEvaluation,
+    StudentSkillSummary,
+
+    sequelize
+};

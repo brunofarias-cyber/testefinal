@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { User, Project, Task, Submission, Attendance, Notification, sequelize } from './models/index.js';
 import { seedDatabase } from './seeds-data.js';
+import { seedBNCCData } from './seeds/bncc-data.js';
+import bnccRoutes from './routes/bncc.js';
 
 dotenv.config();
 
@@ -326,6 +328,11 @@ app.get('/api/users/:role', async (req, res) => {
 
 // ===== HEALTH CHECK =====
 
+// ===== ROTAS BNCC =====
+app.use('/api/bncc', bnccRoutes);
+
+// ===== HEALTH CHECK =====
+
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
 });
@@ -343,6 +350,7 @@ sequelize.sync({ force: true })
 
         // Rodar seed automaticamente
         await seedDatabase();
+        await seedBNCCData();
 
         app.listen(PORT, () => {
             console.log(`🚀 Servidor rodando em porta ${PORT}`);
