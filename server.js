@@ -4,13 +4,17 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { User, Project, Task, Submission, Attendance, Notification, sequelize } from './models/index.js';
 import { seedDatabase } from './seeds-data.js';
-import { seedBNCCData } from './seeds/bncc-data.js';
+import seedBNCCData from './seeds/bncc-data.js';
+import seedReferences from './scripts/seed-references.js';
 import bnccRoutes from './routes/bncc.js';
 import bnccDashboardRoutes from './routes/bncc-dashboard.js';
 import bnccPdfRoutes from './routes/bncc-pdf.js';
 import bnccRubricsRoutes from './routes/bncc-rubrics.js';
 import bnccHistoryRoutes from './routes/bncc-history.js';
 import bnccAdvancedRoutes from './routes/bncc-advanced.js';
+import theoreticalReferencesRoutes from './routes/theoretical-references.js';
+import aiFeaturesRoutes from './routes/ai-features.js';
+import googleClassroomRoutes from './routes/google-classroom.js';
 
 dotenv.config();
 
@@ -340,6 +344,9 @@ app.use('/api/bncc-pdf', bnccPdfRoutes);
 app.use('/api/bncc-rubrics', bnccRubricsRoutes);
 app.use('/api/bncc-history', bnccHistoryRoutes);
 app.use('/api/bncc-advanced', bnccAdvancedRoutes);
+app.use('/api', theoreticalReferencesRoutes);
+app.use('/api/ai', aiFeaturesRoutes);
+app.use('/api/google-classroom', googleClassroomRoutes);
 
 // ===== HEALTH CHECK =====
 
@@ -362,6 +369,7 @@ if (process.env.NODE_ENV !== 'test') {
             // Rodar seed automaticamente apenas se não for teste
             await seedDatabase();
             await seedBNCCData();
+            await seedReferences();
 
             app.listen(PORT, () => {
                 console.log(`🚀 Servidor rodando em porta ${PORT}`);

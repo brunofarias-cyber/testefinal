@@ -22,6 +22,10 @@ const StudentSkillEvaluation = sequelize.define('StudentSkillEvaluation', {
         allowNull: false,
         field: 'student_id',
     },
+    teamId: {
+        type: DataTypes.INTEGER,
+        field: 'team_id',
+    },
     skillCode: {
         type: DataTypes.STRING(20),
         allowNull: false,
@@ -49,6 +53,19 @@ const StudentSkillEvaluation = sequelize.define('StudentSkillEvaluation', {
     evaluatedBy: {
         type: DataTypes.INTEGER,
         field: 'evaluated_by',
+    },
+    aiGenerated: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        field: 'ai_generated',
+    },
+    aiConfidence: {
+        type: DataTypes.INTEGER,
+        field: 'ai_confidence',
+    },
+    aiAnalysis: {
+        type: DataTypes.JSON,
+        field: 'ai_analysis',
     },
     evaluatedAt: {
         type: DataTypes.DATE,

@@ -17,6 +17,12 @@ import StudentSkillEvaluation from './StudentSkillEvaluation.js';
 import StudentSkillSummary from './StudentSkillSummary.js';
 import BnccNotification from './BnccNotification.js';
 import StudentSkillShare from './StudentSkillShare.js';
+import TheoreticalReferenceModel from './TheoreticalReference.js';
+import StudentFeedbackModel from './StudentFeedback.js';
+import EvaluationBenchmarksModel from './EvaluationBenchmarks.js';
+import TutorInteractionModel from './TutorInteraction.js';
+import AssignmentModel from './Assignment.js';
+import ClassModel from './Class.js';
 
 // Inicializar models antigos
 const User = UserModel(sequelize);
@@ -25,6 +31,12 @@ const Task = TaskModel(sequelize);
 const Submission = SubmissionModel(sequelize);
 const Attendance = AttendanceModel(sequelize);
 const Notification = NotificationModel(sequelize);
+const TheoreticalReference = TheoreticalReferenceModel(sequelize);
+const StudentFeedback = StudentFeedbackModel(sequelize);
+const EvaluationBenchmarks = EvaluationBenchmarksModel(sequelize);
+const TutorInteraction = TutorInteractionModel(sequelize);
+const Assignment = AssignmentModel(sequelize);
+const Class = ClassModel(sequelize);
 
 // ==========================================
 // ASSOCIAÇÕES EXISTENTES
@@ -165,6 +177,38 @@ export {
     StudentSkillSummary,
     BnccNotification,
     StudentSkillShare,
+    TheoreticalReference,
+    StudentFeedback,
+    EvaluationBenchmarks,
+    TutorInteraction,
+    Assignment,
+    Class,
 
+    sequelize
+};
+
+export default {
+    User,
+    Project,
+    Task,
+    Submission,
+    Attendance,
+    Notification,
+    BnccGeneralCompetency,
+    BnccDiscipline,
+    BnccSkill,
+    SkillGeneralCompetency,
+    ProjectSkill,
+    SkillIndicator,
+    StudentSkillEvaluation,
+    StudentSkillSummary,
+    BnccNotification,
+    StudentSkillShare,
+    TheoreticalReference,
+    StudentFeedback,
+    EvaluationBenchmarks,
+    TutorInteraction,
+    Assignment,
+    Class,
     sequelize
 };

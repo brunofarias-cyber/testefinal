@@ -48,6 +48,12 @@ export const UserModel = (sequelize) => {
             type: DataTypes.BOOLEAN,
             defaultValue: true
         },
+        googleRefreshToken: {
+            type: DataTypes.TEXT,
+        },
+        lastSyncAt: {
+            type: DataTypes.DATE,
+        },
         createdAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW

@@ -32,7 +32,9 @@ import {
     TrendingUp,
     Star,
     Video,
-    Target
+    Target,
+    BookOpen,
+    Filter
 } from "lucide-react";
 import TeacherPlanning from "./components/TeacherPlanning";
 import MessagingSystem from "./components/MessagingSystem";
@@ -44,6 +46,8 @@ import StudentNotifications from "./components/StudentNotifications";
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
 import StudentGrades from "./components/StudentGrades";
 import TeacherRubricEditablePoints from "./components/TeacherRubricEditablePoints";
+import TeacherBnccPage from "./pages/TeacherBnccPage";
+import StudentBnccPage from "./pages/StudentBnccPage";
 
 // --- DADOS MOCKADOS ---
 
@@ -197,11 +201,12 @@ const MOCK_PROJECTS = [
             { id: 't2', title: 'Preparar solo', status: 'done', assignee: 'Maria' },
             { id: 't3', title: 'Regar plantas (Semana 1)', status: 'todo', assignee: 'Pedro' },
             { id: 't4', title: 'Tirar fotos para relatório', status: 'in-progress', assignee: 'João' }
-        ]
+        ],
+        bnccCoverage: 85
     },
-    { id: 2, title: "Jornal Digital", subject: "Port & Hist", status: "Planejamento", progress: 15, students: 18, nextDeadline: "2023-11-20", deadlineLabel: "Definição de Pautas", theme: "blue", teacher: "Carlos Souza", delayed: false, tasks: [] },
-    { id: 3, title: "Robótica Sucata", subject: "Fís & Art", status: "Para Avaliação", progress: 100, students: 30, nextDeadline: "2023-10-30", deadlineLabel: "Apresentação Final", theme: "purple", teacher: "Roberto Lima", delayed: false, tasks: [] },
-    { id: 4, title: "Teatro Shake", subject: "Lit & Ing", status: "Atrasado", progress: 40, students: 22, nextDeadline: "2023-10-15", deadlineLabel: "Ensaios Gerais", theme: "red", teacher: "Mariana Dias", delayed: true, tasks: [] }
+    { id: 2, title: "Jornal Digital", subject: "Port & Hist", status: "Planejamento", progress: 15, students: 18, nextDeadline: "2023-11-20", deadlineLabel: "Definição de Pautas", theme: "blue", teacher: "Carlos Souza", delayed: false, tasks: [], bnccCoverage: 40 },
+    { id: 3, title: "Robótica Sucata", subject: "Fís & Art", status: "Para Avaliação", progress: 100, students: 30, nextDeadline: "2023-10-30", deadlineLabel: "Apresentação Final", theme: "purple", teacher: "Roberto Lima", delayed: false, tasks: [], bnccCoverage: 92 },
+    { id: 4, title: "Teatro Shake", subject: "Lit & Ing", status: "Atrasado", progress: 40, students: 22, nextDeadline: "2023-10-15", deadlineLabel: "Ensaios Gerais", theme: "red", teacher: "Mariana Dias", delayed: true, tasks: [], bnccCoverage: 25 }
 ];
 
 const MOCK_ACHIEVEMENTS = [
@@ -301,6 +306,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<MessageSquare size={20} />} label="Mensagens" active={activeTab === 'messages'} onClick={() => setActiveTab('messages')} />
                                 <NavItem icon={<ClipboardList size={20} />} label="Relatórios" active={activeTab === 'reports'} onClick={() => setActiveTab('reports')} />
                                 <NavItem icon={<FileText size={20} />} label="Rubricas" active={activeTab === 'rubrics'} onClick={() => setActiveTab('rubrics')} />
+                                <NavItem icon={<BookOpen size={20} />} label="BNCC" active={activeTab === 'bncc'} onClick={() => setActiveTab('bncc')} />
                             </>
                         )}
                         {role === 'student' && (
@@ -312,6 +318,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<MessageSquare size={20} />} label="Mensagens" active={activeTab === 'messages'} onClick={() => setActiveTab('messages')} />
                                 <NavItem icon={<AlertCircle size={20} />} label="Notificações" active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} />
                                 <NavItem icon={<Award size={20} />} label="Conquistas" active={activeTab === 'achievements'} onClick={() => setActiveTab('achievements')} />
+                                <NavItem icon={<Target size={20} />} label="Competências" active={activeTab === 'skills'} onClick={() => setActiveTab('skills')} />
                             </>
                         )}
                         {role === 'coordinator' && (
@@ -1345,10 +1352,10 @@ const ProjectDetails = ({ project, onBack }) => {
                             <div>
                                 <div className="flex justify-between mb-1">
                                     <span className="text-sm font-medium text-slate-600">Conhecimento</span>
-                                    <span className="text-sm font-bold text-indigo-600">85%</span>
+                                    <span className="text-sm font-bold text-indigo-600">{project.bnccCoverage || 0}%</span>
                                 </div>
                                 <div className="w-full bg-slate-100 h-2 rounded-full">
-                                    <div className="bg-indigo-500 h-full rounded-full" style={{ width: '85%' }}></div>
+                                    <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${project.bnccCoverage || 0}%` }}></div>
                                 </div>
                             </div>
                             <div>
@@ -1479,49 +1486,79 @@ const ProjectDetails = ({ project, onBack }) => {
 };
 
 // Dashboard do Professor
-const TeacherDashboard = ({ projects, onProjectClick }) => (
-    <div className="space-y-8">
-        <div className="flex justify-between items-end">
-            <div>
-                <h2 className="text-3xl font-bold text-slate-800">Painel do Professor</h2>
-                <p className="text-slate-500">Visão geral dos projetos em andamento.</p>
-            </div>
-            <button className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 flex items-center gap-2">
-                <Plus size={18} /> Novo Projeto
-            </button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((p) => (
-                <div
-                    key={p.id}
-                    onClick={() => onProjectClick(p)}
-                    className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition cursor-pointer group"
-                >
-                    <div className="flex justify-between mb-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${p.theme === 'green' ? 'bg-green-100 text-green-700' :
-                            p.theme === 'blue' ? 'bg-blue-100 text-blue-700' :
-                                p.theme === 'purple' ? 'bg-purple-100 text-purple-700' :
-                                    'bg-red-100 text-red-700'
-                            }`}>
-                            {p.subject}
-                        </span>
-                        {p.delayed && <AlertCircle size={18} className="text-red-500" />}
-                    </div>
-                    <h3 className="font-bold text-lg text-slate-800 mb-1 group-hover:text-indigo-600 transition-colors">{p.title}</h3>
-                    <p className="text-sm text-slate-500 mb-4">{p.students} Alunos • {p.status}</p>
-                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div className="bg-indigo-600 h-full" style={{ width: `${p.progress}%` }}></div>
-                    </div>
-                    <p className="text-xs text-slate-400 mt-2 text-right">{p.progress}%</p>
-                    <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="text-xs font-bold text-indigo-600">Ver detalhes</span>
-                        <ArrowRight size={16} className="text-indigo-600" />
-                    </div>
+const TeacherDashboard = ({ projects, onProjectClick }) => {
+    const [filterBncc, setFilterBncc] = useState('all');
+
+    const filteredProjects = projects.filter(p => {
+        if (filterBncc === 'all') return true;
+        if (filterBncc === 'high') return (p.bnccCoverage || 0) >= 80;
+        if (filterBncc === 'low') return (p.bnccCoverage || 0) < 80;
+        return true;
+    });
+
+    return (
+        <div className="space-y-8">
+            <div className="flex justify-between items-end">
+                <div>
+                    <h2 className="text-3xl font-bold text-slate-800">Painel do Professor</h2>
+                    <p className="text-slate-500">Visão geral dos projetos em andamento.</p>
                 </div>
-            ))}
+                <div className="flex gap-3">
+                    <div className="relative">
+                        <select
+                            value={filterBncc}
+                            onChange={(e) => setFilterBncc(e.target.value)}
+                            className="appearance-none bg-white border border-slate-200 text-slate-600 px-4 py-2.5 rounded-xl font-semibold hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-8 cursor-pointer"
+                        >
+                            <option value="all">Todos os Projetos</option>
+                            <option value="high">Alta Cobertura BNCC</option>
+                            <option value="low">Baixa Cobertura BNCC</option>
+                        </select>
+                        <Filter size={16} className="absolute right-3 top-3.5 text-slate-400 pointer-events-none" />
+                    </div>
+                    <button className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 flex items-center gap-2">
+                        <Plus size={18} /> Novo Projeto
+                    </button>
+                </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProjects.map((p) => (
+                    <div
+                        key={p.id}
+                        onClick={() => onProjectClick(p)}
+                        className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition cursor-pointer group"
+                    >
+                        <div className="flex justify-between mb-4">
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${p.theme === 'green' ? 'bg-green-100 text-green-700' :
+                                p.theme === 'blue' ? 'bg-blue-100 text-blue-700' :
+                                    p.theme === 'purple' ? 'bg-purple-100 text-purple-700' :
+                                        'bg-red-100 text-red-700'
+                                }`}>
+                                {p.subject}
+                            </span>
+                            {p.delayed && <AlertCircle size={18} className="text-red-500" />}
+                            {p.bnccCoverage && (
+                                <span className="ml-2 bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full text-[10px] font-bold border border-indigo-100 flex items-center gap-1">
+                                    <BookOpen size={10} /> {p.bnccCoverage}%
+                                </span>
+                            )}
+                        </div>
+                        <h3 className="font-bold text-lg text-slate-800 mb-1 group-hover:text-indigo-600 transition-colors">{p.title}</h3>
+                        <p className="text-sm text-slate-500 mb-4">{p.students} Alunos • {p.status}</p>
+                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div className="bg-indigo-600 h-full" style={{ width: `${p.progress}%` }}></div>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-2 text-right">{p.progress}%</p>
+                        <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="text-xs font-bold text-indigo-600">Ver detalhes</span>
+                            <ArrowRight size={16} className="text-indigo-600" />
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 // Home do Aluno com modal de envio
 const StudentHome = ({ projects, onProjectClick }) => {
@@ -1990,6 +2027,7 @@ function App() {
             if (activeTab === 'messages') return <MessagingSystem userRole="teacher" />;
             if (activeTab === 'reports') return <TeacherReports />;
             if (activeTab === 'rubrics') return <TeacherRubricEditablePoints />;
+            if (activeTab === 'bncc') return <TeacherBnccPage projectId={1} classId={1} />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'coordinator') {
@@ -2007,6 +2045,7 @@ function App() {
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
             if (activeTab === 'messages') return <MessagingSystem userRole="student" />;
             if (activeTab === 'notifications') return <StudentNotifications />;
+            if (activeTab === 'skills') return <StudentBnccPage studentId={currentUser?.id || 101} />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Sistema BProjetos</h3><p className="text-slate-500">Navegue pelo menu lateral para explorar as funcionalidades!</p></div>;

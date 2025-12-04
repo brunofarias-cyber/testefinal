@@ -50,6 +50,10 @@ const StudentSkillSummary = sequelize.define('StudentSkillSummary', {
         type: DataTypes.DECIMAL(4, 1),
         field: 'average_points',
     },
+    status: {
+        type: DataTypes.ENUM('excellent', 'good', 'improving', 'at-risk'),
+        defaultValue: 'improving',
+    },
     generalCompetenciesData: {
         type: DataTypes.JSON,
         field: 'general_competencies_data',
