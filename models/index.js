@@ -15,6 +15,8 @@ import ProjectSkill from './ProjectSkill.js';
 import SkillIndicator from './SkillIndicator.js';
 import StudentSkillEvaluation from './StudentSkillEvaluation.js';
 import StudentSkillSummary from './StudentSkillSummary.js';
+import BnccNotification from './BnccNotification.js';
+import StudentSkillShare from './StudentSkillShare.js';
 
 // Inicializar models antigos
 const User = UserModel(sequelize);
@@ -161,6 +163,8 @@ export {
     SkillIndicator,
     StudentSkillEvaluation,
     StudentSkillSummary,
+    BnccNotification,
+    StudentSkillShare,
 
     sequelize
 };

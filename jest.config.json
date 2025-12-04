@@ -1,0 +1,45 @@
+{
+    "testMatch": [
+        "**/tests/**/*.test.js",
+        "**/__tests__/**/*.test.jsx"
+    ],
+    "transform": {},
+    "extensionsToTreatAsEsm": [
+        ".jsx"
+    ],
+    "moduleNameMapper": {
+        "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "collectCoverageFrom": [
+        "routes/**/*.js",
+        "models/**/*.js",
+        "src/components/**/*.{js,jsx}",
+        "!models/index.js"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+        "text",
+        "lcov",
+        "html"
+    ],
+    "testTimeout": 10000,
+    "projects": [
+        {
+            "displayName": "backend",
+            "testEnvironment": "node",
+            "testMatch": [
+                "**/tests/**/*.test.js"
+            ]
+        },
+        {
+            "displayName": "frontend",
+            "testEnvironment": "jsdom",
+            "testMatch": [
+                "**/__tests__/**/*.test.jsx"
+            ],
+            "setupFilesAfterEnv": [
+                "<rootDir>/src/setupTests.js"
+            ]
+        }
+    ]
+}

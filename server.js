@@ -6,6 +6,11 @@ import { User, Project, Task, Submission, Attendance, Notification, sequelize } 
 import { seedDatabase } from './seeds-data.js';
 import { seedBNCCData } from './seeds/bncc-data.js';
 import bnccRoutes from './routes/bncc.js';
+import bnccDashboardRoutes from './routes/bncc-dashboard.js';
+import bnccPdfRoutes from './routes/bncc-pdf.js';
+import bnccRubricsRoutes from './routes/bncc-rubrics.js';
+import bnccHistoryRoutes from './routes/bncc-history.js';
+import bnccAdvancedRoutes from './routes/bncc-advanced.js';
 
 dotenv.config();
 
@@ -330,6 +335,11 @@ app.get('/api/users/:role', async (req, res) => {
 
 // ===== ROTAS BNCC =====
 app.use('/api/bncc', bnccRoutes);
+app.use('/api/bncc-dashboard', bnccDashboardRoutes);
+app.use('/api/bncc-pdf', bnccPdfRoutes);
+app.use('/api/bncc-rubrics', bnccRubricsRoutes);
+app.use('/api/bncc-history', bnccHistoryRoutes);
+app.use('/api/bncc-advanced', bnccAdvancedRoutes);
 
 // ===== HEALTH CHECK =====
 
@@ -343,23 +353,25 @@ app.get('/', (req, res) => {
 
 // ===== SINCRONIZAR E INICIAR =====
 
-sequelize.sync({ alter: true })
-    .then(async () => {
-        console.log('✅ PostgreSQL conectado');
-        console.log('⚠️  Tabelas recriadas (force: true)');
+if (process.env.NODE_ENV !== 'test') {
+    sequelize.sync({ alter: true })
+        .then(async () => {
+            console.log('✅ PostgreSQL conectado');
+            console.log('⚠️  Tabelas recriadas (force: true)');
 
-        // Rodar seed automaticamente
-        await seedDatabase();
-        await seedBNCCData();
+            // Rodar seed automaticamente apenas se não for teste
+            await seedDatabase();
+            await seedBNCCData();
 
-        app.listen(PORT, () => {
-            console.log(`🚀 Servidor rodando em porta ${PORT}`);
-            console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
+            app.listen(PORT, () => {
+                console.log(`🚀 Servidor rodando em porta ${PORT}`);
+                console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
+            });
+        })
+        .catch(err => {
+            console.error('❌ Erro ao conectar PostgreSQL:', err);
+            process.exit(1);
         });
-    })
-    .catch(err => {
-        console.error('❌ Erro ao conectar PostgreSQL:', err);
-        process.exit(1);
-    });
+}
 
 export default app;
