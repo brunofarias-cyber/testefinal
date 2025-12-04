@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BProjetos - Credenciais de Teste</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 via-slate-50 to-purple-50 min-h-screen p-6">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-extrabold text-slate-800 mb-2">🔐 BProjetos</h1>
+            <p class="text-xl text-slate-600">Credenciais de Teste - PostgreSQL + Neon</p>
+        </div>
+
+        <!-- 3 Cards de Credenciais -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Professor -->
+            <div
+                class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-8 text-white shadow-2xl hover:shadow-3xl transition">
+                <div class="text-5xl mb-4">👨‍🏫</div>
+                <h2 class="text-2xl font-bold mb-1">Professor</h2>
+                <p class="text-blue-100 mb-6">Ana Silva</p>
+
+                <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 mb-4">
+                    <p class="text-xs font-bold text-blue-100 uppercase mb-1">Email</p>
+                    <p class="font-mono text-sm break-all">professor@bprojetos.com</p>
+                </div>
+
+                <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+                    <p class="text-xs font-bold text-blue-100 uppercase mb-1">Senha</p>
+                    <p class="font-mono text-sm">prof123</p>
+                </div>
+
+                <button onclick="copyToClipboard('professor@bprojetos.com', 'prof123')"
+                    class="w-full mt-4 bg-white text-blue-600 hover:bg-blue-50 font-bold py-2 rounded-lg transition">
+                    📋 Copiar
+                </button>
+            </div>
+
+            <!-- Aluno -->
+            <div
+                class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-8 text-white shadow-2xl hover:shadow-3xl transition">
+                <div class="text-5xl mb-4">👨‍🎓</div>
+                <h2 class="text-2xl font-bold mb-1">Aluno</h2>
+                <p class="text-purple-100 mb-6">João Silva</p>
+
+                <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 mb-4">
+                    <p class="text-xs font-bold text-purple-100 uppercase mb-1">Email</p>
+                    <p class="font-mono text-sm break-all">aluno@bprojetos.com</p>
+                </div>
+
+                <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+                    <p class="text-xs font-bold text-purple-100 uppercase mb-1">Senha</p>
+                    <p class="font-mono text-sm">aluno123</p>
+                </div>
+
+                <button onclick="copyToClipboard('aluno@bprojetos.com', 'aluno123')"
+                    class="w-full mt-4 bg-white text-purple-600 hover:bg-purple-50 font-bold py-2 rounded-lg transition">
+                    📋 Copiar
+                </button>
+            </div>
+
+            <!-- Coordenador -->
+            <div
+                class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-8 text-white shadow-2xl hover:shadow-3xl transition">
+                <div class="text-5xl mb-4">👨‍💼</div>
+                <h2 class="text-2xl font-bold mb-1">Coordenador</h2>
+                <p class="text-orange-100 mb-6">Roberto Lima</p>
+
+                <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 mb-4">
+                    <p class="text-xs font-bold text-orange-100 uppercase mb-1">Email</p>
+                    <p class="font-mono text-sm break-all">coordenador@bprojetos.com</p>
+                </div>
+
+                <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+                    <p class="text-xs font-bold text-orange-100 uppercase mb-1">Senha</p>
+                    <p class="font-mono text-sm">coord123</p>
+                </div>
+
+                <button onclick="copyToClipboard('coordenador@bprojetos.com', 'coord123')"
+                    class="w-full mt-4 bg-white text-orange-600 hover:bg-orange-50 font-bold py-2 rounded-lg transition">
+                    📋 Copiar
+                </button>
+            </div>
+        </div>
+
+        <!-- Como Usar -->
+        <div class="bg-white rounded-2xl border-2 border-slate-200 p-8 shadow-lg mb-8">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6">🚀 Como Usar</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Step 1 -->
+                <div class="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border-l-4 border-blue-600">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl font-bold text-blue-600">1️⃣</span>
+                        <h3 class="text-xl font-bold text-slate-800">Copiar Credenciais</h3>
+                    </div>
+                    <p class="text-slate-600">Escolha um perfil acima e clique em "Copiar" para salvar as credenciais na
+                        área de transferência.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border-l-4 border-purple-600">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl font-bold text-purple-600">2️⃣</span>
+                        <h3 class="text-xl font-bold text-slate-800">Fazer Login</h3>
+                    </div>
+                    <p class="text-slate-600">Na aplicação (localhost:5173), cole o email e senha nos campos de login.
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border-l-4 border-green-600">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl font-bold text-green-600">3️⃣</span>
+                        <h3 class="text-xl font-bold text-slate-800">Receber Token</h3>
+                    </div>
+                    <p class="text-slate-600">A API retorna um token JWT que você pode usar para acessar rotas
+                        protegidas.</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border-l-4 border-orange-600">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl font-bold text-orange-600">4️⃣</span>
+                        <h3 class="text-xl font-bold text-slate-800">Explorar API</h3>
+                    </div>
+                    <p class="text-slate-600">Use o token para acessar projetos, tarefas, notificações e outras rotas.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teste com cURL -->
+        <div class="bg-slate-900 text-green-400 rounded-2xl p-8 shadow-lg mb-8 overflow-x-auto">
+            <h2 class="text-2xl font-bold text-white mb-4">💻 Teste com cURL</h2>
+            <pre class="font-mono text-sm">curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "professor@bprojetos.com",
+    "password": "prof123"
+  }'</pre>
+            <p class="text-green-300 text-xs mt-4">Execute no terminal para fazer login e obter token JWT</p>
+        </div>
+
+        <!-- Rotas Disponíveis -->
+        <div class="bg-white rounded-2xl border-2 border-slate-200 p-8 shadow-lg mb-8">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6">📡 Rotas Disponíveis</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                    <p class="font-bold text-blue-900 text-sm mb-2">POST /api/auth/login</p>
+                    <p class="text-xs text-blue-700">Fazer login e obter token JWT</p>
+                </div>
+
+                <div class="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                    <p class="font-bold text-green-900 text-sm mb-2">GET /api/users/profile</p>
+                    <p class="text-xs text-green-700">Obter perfil do usuário logado (requer token)</p>
+                </div>
+
+                <div class="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
+                    <p class="font-bold text-purple-900 text-sm mb-2">GET /api/projects</p>
+                    <p class="text-xs text-purple-700">Listar todos os projetos</p>
+                </div>
+
+                <div class="p-4 bg-orange-50 rounded-lg border-l-4 border-orange-500">
+                    <p class="font-bold text-orange-900 text-sm mb-2">GET /api/notifications</p>
+                    <p class="text-xs text-orange-700">Listar notificações do usuário (requer token)</p>
+                </div>
+
+                <div class="p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
+                    <p class="font-bold text-red-900 text-sm mb-2">GET /api/users/:role</p>
+                    <p class="text-xs text-red-700">Listar usuários por role (teacher, student, coordinator)</p>
+                </div>
+
+                <div class="p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
+                    <p class="font-bold text-indigo-900 text-sm mb-2">GET /api/health</p>
+                    <p class="text-xs text-indigo-700">Health check da API</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dados de Teste -->
+        <div class="bg-white rounded-2xl border-2 border-slate-200 p-8 shadow-lg">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6">✅ Dados Criados Automaticamente</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-slate-50 rounded-xl">
+                    <h3 class="font-bold text-slate-800 mb-4">👥 Usuários (4)</h3>
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li>✅ Professor: Ana Silva</li>
+                        <li>✅ Aluno: João Silva</li>
+                        <li>✅ Aluno: Maria Oliveira</li>
+                        <li>✅ Coordenador: Roberto Lima</li>
+                    </ul>
+                </div>
+
+                <div class="p-6 bg-slate-50 rounded-xl">
+                    <h3 class="font-bold text-slate-800 mb-4">📚 Projetos (3)</h3>
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li>✅ Horta Sustentável (65% progresso)</li>
+                        <li>✅ Robótica com Sucata (45% progresso)</li>
+                        <li>✅ Jornal Digital (10% progresso)</li>
+                    </ul>
+                </div>
+
+                <div class="p-6 bg-slate-50 rounded-xl">
+                    <h3 class="font-bold text-slate-800 mb-4">✏️ Tarefas (3)</h3>
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li>✅ Pesquisar plantas (concluída)</li>
+                        <li>✅ Preparar solo (em progresso)</li>
+                        <li>✅ Documentar processo (pendente)</li>
+                    </ul>
+                </div>
+
+                <div class="p-6 bg-slate-50 rounded-xl">
+                    <h3 class="font-bold text-slate-800 mb-4">📤 Submissões (2)</h3>
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li>✅ João: Avaliada (nota 9.0)</li>
+                        <li>✅ Maria: Pendente de avaliação</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Links Rápidos -->
+        <div class="mt-8 bg-blue-600 text-white rounded-2xl p-8 shadow-lg text-center">
+            <h2 class="text-2xl font-bold mb-4">🔗 Links Rápidos</h2>
+            <div class="flex gap-4 justify-center">
+                <a href="http://localhost:5173" target="_blank"
+                    class="bg-white text-blue-600 hover:bg-blue-50 font-bold px-6 py-3 rounded-lg transition">
+                    🎨 Frontend (React)
+                </a>
+                <a href="http://localhost:3000" target="_blank"
+                    class="bg-white/20 hover:bg-white/30 backdrop-blur font-bold px-6 py-3 rounded-lg transition">
+                    ⚙️ Backend (API)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(email, password) {
+            const text = `Email: ${email}\nSenha: ${password}`;
+            navigator.clipboard.writeText(text).then(() => {
+                alert(`✅ Credenciais copiadas!\n\n${text}`);
+            });
+        }
+    </script>
+</body>
+
+</html>

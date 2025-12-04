@@ -41,6 +41,9 @@ import { AuthManager, LoginScreen } from "./components/AuthSystemAPI";
 import StudentDashboard from "./components/StudentDashboard";
 import StudentProgress from "./components/StudentProgress";
 import StudentNotifications from "./components/StudentNotifications";
+import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
+import StudentGrades from "./components/StudentGrades";
+import TeacherRubricEditablePoints from "./components/TeacherRubricEditablePoints";
 
 // --- DADOS MOCKADOS ---
 
@@ -304,6 +307,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                             <>
                                 <NavItem icon={<Book size={20} />} label="Projetos" active={activeTab === 'projects'} onClick={() => setActiveTab('projects')} />
                                 <NavItem icon={<BarChart2 size={20} />} label="Progresso" active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} />
+                                <NavItem icon={<Award size={20} />} label="Notas" active={activeTab === 'grades'} onClick={() => setActiveTab('grades')} />
                                 <NavItem icon={<Calendar size={20} />} label="Calendário" active={activeTab === 'calendar'} onClick={() => setActiveTab('calendar')} />
                                 <NavItem icon={<MessageSquare size={20} />} label="Mensagens" active={activeTab === 'messages'} onClick={() => setActiveTab('messages')} />
                                 <NavItem icon={<AlertCircle size={20} />} label="Notificações" active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} />
@@ -315,6 +319,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<Grid size={20} />} label="Kanban" active={activeTab === 'kanban'} onClick={() => setActiveTab('kanban')} />
                                 <NavItem icon={<Users size={20} />} label="Professores" active={activeTab === 'teachers'} onClick={() => setActiveTab('teachers')} />
                                 <NavItem icon={<BarChart2 size={20} />} label="Indicadores" active={activeTab === 'metrics'} onClick={() => setActiveTab('metrics')} />
+                                <NavItem icon={<TrendingUp size={20} />} label="Dashboard Avançado" active={activeTab === 'coordinator-advanced'} onClick={() => setActiveTab('coordinator-advanced')} />
                             </>
                         )}
                     </nav>
@@ -1984,18 +1989,20 @@ function App() {
             if (activeTab === 'performance') return <TeacherPerformance />;
             if (activeTab === 'messages') return <MessagingSystem userRole="teacher" />;
             if (activeTab === 'reports') return <TeacherReports />;
-            if (activeTab === 'rubrics') return <TeacherRubrics />;
+            if (activeTab === 'rubrics') return <TeacherRubricEditablePoints />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'coordinator') {
             if (activeTab === 'kanban') return <CoordinatorKanban projects={projects} />;
             if (activeTab === 'teachers') return <CoordinatorTeachersList />;
             if (activeTab === 'metrics') return <CoordinatorMetrics />;
+            if (activeTab === 'coordinator-advanced') return <CoordinatorAdvanced />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'student') {
             if (activeTab === 'student-home' || activeTab === 'projects') return <StudentDashboard />;
             if (activeTab === 'progress') return <StudentProgress />;
+            if (activeTab === 'grades') return <StudentGrades />;
             if (activeTab === 'achievements') return <StudentAchievements />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
             if (activeTab === 'messages') return <MessagingSystem userRole="student" />;

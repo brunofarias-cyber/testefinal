@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { User, Project, Task, Submission, Attendance, Notification, sequelize } from './models/index.js';
+import { seedDatabase } from './seeds-data.js';
 
 dotenv.config();
 
@@ -336,9 +337,13 @@ app.get('/', (req, res) => {
 // ===== SINCRONIZAR E INICIAR =====
 
 sequelize.sync({ force: true })
-    .then(() => {
+    .then(async () => {
         console.log('✅ PostgreSQL conectado');
         console.log('⚠️  Tabelas recriadas (force: true)');
+
+        // Rodar seed automaticamente
+        await seedDatabase();
+
         app.listen(PORT, () => {
             console.log(`🚀 Servidor rodando em porta ${PORT}`);
             console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
