@@ -8,7 +8,7 @@ const ProjectSkill = sequelize.define('ProjectSkill', {
         autoIncrement: true,
     },
     projectId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         field: 'project_id',
         references: {

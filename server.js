@@ -343,7 +343,7 @@ app.get('/', (req, res) => {
 
 // ===== SINCRONIZAR E INICIAR =====
 
-sequelize.sync({ force: true })
+sequelize.sync({ alter: true })
     .then(async () => {
         console.log('✅ PostgreSQL conectado');
         console.log('⚠️  Tabelas recriadas (force: true)');

@@ -8,7 +8,7 @@ const StudentSkillEvaluation = sequelize.define('StudentSkillEvaluation', {
         autoIncrement: true,
     },
     projectId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         field: 'project_id',
         references: {
@@ -18,7 +18,7 @@ const StudentSkillEvaluation = sequelize.define('StudentSkillEvaluation', {
         onDelete: 'CASCADE',
     },
     studentId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         field: 'student_id',
     },
