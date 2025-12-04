@@ -39,6 +39,15 @@ const verifyToken = (req, res, next) => {
     }
 };
 
+// ===== HEALTH CHECK =====
+app.get('/api/health', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
 // ===== AUTENTICAÇÃO =====
 
 app.post('/api/auth/register', async (req, res) => {

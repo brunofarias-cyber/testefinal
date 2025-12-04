@@ -1,13 +1,28 @@
+# Render Deployment Configuration
+
 services:
+  # Backend Service
   - type: web
-    name: bprojetos
-    runtime: node
+    name: bprojetos-backend
+    env: node
+    region: oregon
+    plan: free
+    branch: main
     buildCommand: npm install
-    startCommand: node server.js
+    startCommand: npm start
     envVars:
-      - key: NODE_VERSION
-        value: 20.16.11
       - key: DATABASE_URL
         sync: false
-      - key: JWT_SECRET
+      - key: ANTHROPIC_API_KEY
         sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+    healthCheckPath: /api/health
