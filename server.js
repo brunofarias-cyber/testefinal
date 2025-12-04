@@ -17,6 +17,11 @@ app.get("/health", (req, res) => {
     res.json({ status: "ok" });
 });
 
+// Root route
+app.get("/", (req, res) => {
+    res.send("Backend is running! 🚀 <br> Access the frontend at <a href='http://localhost:5173'>http://localhost:5173</a>");
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
