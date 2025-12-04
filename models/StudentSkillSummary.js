@@ -70,7 +70,7 @@ const StudentSkillSummary = sequelize.define('StudentSkillSummary', {
             fields: ['project_id', 'student_id']
         },
         {
-            name: 'idx_student_project',
+            name: 'idx_summary_student_project',
             fields: ['student_id', 'project_id']
         }
     ]

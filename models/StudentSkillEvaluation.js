@@ -62,7 +62,7 @@ const StudentSkillEvaluation = sequelize.define('StudentSkillEvaluation', {
     updatedAt: false,
     indexes: [
         {
-            name: 'idx_student_project',
+            name: 'idx_eval_student_project',
             fields: ['student_id', 'project_id']
         },
         {

@@ -1,14 +1,6 @@
--- Execute no Neon Dashboard para limpar tabelas BNCC
+-- Execute no Neon Dashboard (dashboard.neon.tech > SQL Editor)
+-- Isso vai deletar o índice duplicado que está causando o erro
 
--- Deletar tabelas BNCC (ordem importa por causa das foreign keys)
-DROP TABLE IF EXISTS skill_general_competencies CASCADE;
-DROP TABLE IF EXISTS project_skills CASCADE;
-DROP TABLE IF EXISTS skill_indicators CASCADE;
-DROP TABLE IF EXISTS student_skill_evaluations CASCADE;
-DROP TABLE IF EXISTS student_skill_summary CASCADE;
-DROP TABLE IF EXISTS bncc_skills CASCADE;
-DROP TABLE IF EXISTS bncc_disciplines CASCADE;
-DROP TABLE IF EXISTS bncc_general_competencies CASCADE;
+DROP INDEX IF EXISTS idx_student_project CASCADE;
 
--- Após executar isso, reinicie o servidor
--- As tabelas serão recriadas corretamente
+-- Após executar, rode npm run dev novamente
