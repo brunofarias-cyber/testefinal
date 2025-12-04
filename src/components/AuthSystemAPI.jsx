@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle, ArrowRight } from "lucide-react";
 
-// URL da API - como o backend está integrado com Vite, usamos URL relativa
+// URL da API - usando proxy do Vite (vite.config.js)
 const API_URL = '';
 
 // ========== GERENCIADOR DE AUTENTICAÇÃO COM API ==========
