@@ -6,6 +6,7 @@ import { User, Project, Task, Submission, Attendance, Notification, sequelize } 
 import { seedDatabase } from './seeds-data.js';
 import seedBNCCData from './seeds/bncc-data.js';
 import seedReferences from './scripts/seed-references.js';
+import seedRubricas from './seeds/rubricas-data.js';
 import bnccRoutes from './routes/bncc.js';
 import bnccDashboardRoutes from './routes/bncc-dashboard.js';
 import bnccPdfRoutes from './routes/bncc-pdf.js';
@@ -15,6 +16,8 @@ import bnccAdvancedRoutes from './routes/bncc-advanced.js';
 import theoreticalReferencesRoutes from './routes/theoretical-references.js';
 import aiFeaturesRoutes from './routes/ai-features.js';
 import googleClassroomRoutes from './routes/google-classroom.js';
+import rubricasRoutes from './routes/rubricas.js';
+import rubricasV2Routes from './routes/rubricas-v2.js';
 
 dotenv.config();
 
@@ -356,6 +359,8 @@ app.use('/api/bncc-advanced', bnccAdvancedRoutes);
 app.use('/api', theoreticalReferencesRoutes);
 app.use('/api/ai', aiFeaturesRoutes);
 app.use('/api/google-classroom', googleClassroomRoutes);
+app.use('/api/rubricas', rubricasRoutes);
+app.use('/api/rubricas-v2', rubricasV2Routes);
 
 // ===== HEALTH CHECK =====
 
@@ -379,6 +384,7 @@ if (process.env.NODE_ENV !== 'test') {
             await seedDatabase();
             await seedBNCCData();
             await seedReferences();
+            await seedRubricas();
 
             app.listen(PORT, () => {
                 console.log(`🚀 Servidor rodando em porta ${PORT}`);

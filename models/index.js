@@ -23,6 +23,12 @@ import EvaluationBenchmarksModel from './EvaluationBenchmarks.js';
 import TutorInteractionModel from './TutorInteraction.js';
 import AssignmentModel from './Assignment.js';
 import ClassModel from './Class.js';
+import TeamModel from './Team.js';
+import RubricaModel from './Rubrica.js';
+import RubricaCriterioModel from './RubricaCriterio.js';
+import RubricaNivelModel from './RubricaNivel.js';
+import AvaliacaoEquipeModel from './AvaliacaoEquipe.js';
+import AvaliacaoCriterioModel from './AvaliacaoCriterio.js';
 
 // Inicializar models antigos
 const User = UserModel(sequelize);
@@ -37,6 +43,12 @@ const EvaluationBenchmarks = EvaluationBenchmarksModel(sequelize);
 const TutorInteraction = TutorInteractionModel(sequelize);
 const Assignment = AssignmentModel(sequelize);
 const Class = ClassModel(sequelize);
+const Team = TeamModel(sequelize);
+const Rubrica = RubricaModel(sequelize);
+const RubricaCriterio = RubricaCriterioModel(sequelize);
+const RubricaNivel = RubricaNivelModel(sequelize);
+const AvaliacaoEquipe = AvaliacaoEquipeModel(sequelize);
+const AvaliacaoCriterio = AvaliacaoCriterioModel(sequelize);
 
 // ==========================================
 // ASSOCIAÇÕES EXISTENTES
@@ -183,6 +195,12 @@ export {
     TutorInteraction,
     Assignment,
     Class,
+    Team,
+    Rubrica,
+    RubricaCriterio,
+    RubricaNivel,
+    AvaliacaoEquipe,
+    AvaliacaoCriterio,
 
     sequelize
 };
@@ -210,5 +228,11 @@ export default {
     TutorInteraction,
     Assignment,
     Class,
+    Team,
+    Rubrica,
+    RubricaCriterio,
+    RubricaNivel,
+    AvaliacaoEquipe,
+    AvaliacaoCriterio,
     sequelize
 };

@@ -1,297 +1,261 @@
-import React, { useState } from "react";
-import { Edit, Save, X, Plus, Trash2, AlertCircle, Check } from "lucide-react";
-
-const MOCK_RUBRIC_DATA = [
-    {
-        id: 1,
-        project: "Horta Sustentável",
-        criteria: [
-            { id: "c1", name: "Investigação Científica", maxPoints: 2, description: "Qualidade da pesquisa e análise", weight: 40 },
-            { id: "c2", name: "Trabalho em Equipe", maxPoints: 2, description: "Colaboração e comunicação", weight: 30 },
-            { id: "c3", name: "Comunicação Oral", maxPoints: 2, description: "Clareza e organização", weight: 30 }
-        ],
-        levels: [
-            { points: 0, description: "Não apresentou ou muito inadequado" },
-            { points: 0.5, description: "Inadequado" },
-            { points: 1, description: "Básico" },
-            { points: 1.5, description: "Proficiente" },
-            { points: 2, description: "Avançado" }
-        ]
-    }
-];
+import React, { useState, useEffect } from 'react';
+import { Edit, BarChart2, CheckSquare, ChevronRight, Users, AlertCircle } from 'lucide-react';
+import { RubricaEditor, RubricaEvaluator, RubricaResults } from './rubricas';
 
 const TeacherRubricEditablePoints = () => {
-    const [rubrics, setRubrics] = useState(MOCK_RUBRIC_DATA);
-    const [selectedRubric, setSelectedRubric] = useState(rubrics[0].id);
-    const [isEditing, setIsEditing] = useState(false);
-    const [editingCriteria, setEditingCriteria] = useState(null);
-    const [saveMessage, setSaveMessage] = useState("");
+    const [activeTab, setActiveTab] = useState('editor');
+    const [projects, setProjects] = useState([]);
+    const [selectedProjectId, setSelectedProjectId] = useState(null);
+    const [teams, setTeams] = useState([]);
+    const [selectedTeamId, setSelectedTeamId] = useState(null);
+    const [rubrica, setRubrica] = useState(null);
+    const [loadingProjects, setLoadingProjects] = useState(true);
+    const [error, setError] = useState(null);
 
-    const currentRubric = rubrics.find(r => r.id === selectedRubric);
+    // Carregar projetos ao iniciar
+    useEffect(() => {
+        fetchProjects();
+    }, []);
 
-    const updateCriteria = (criteriaId, field, value) => {
-        setRubrics(prev => prev.map(r => {
-            if (r.id === selectedRubric) {
-                return {
-                    ...r,
-                    criteria: r.criteria.map(c => c.id === criteriaId ? { ...c, [field]: value } : c)
-                };
+    // Carregar times e rubrica quando projeto muda
+    useEffect(() => {
+        if (selectedProjectId) {
+            setLoadingProjects(true); // Reutilizando estado de loading ou criar um novo para transição suave
+            Promise.all([
+                fetchTeams(selectedProjectId),
+                fetchRubrica(selectedProjectId)
+            ]).finally(() => {
+                setLoadingProjects(false);
+            });
+            setSelectedTeamId(null);
+        }
+    }, [selectedProjectId]);
+
+    const fetchProjects = async () => {
+        try {
+            setLoadingProjects(true);
+            const token = localStorage.getItem('token');
+            // Tenta buscar projetos reais
+            const response = await fetch('http://localhost:3000/api/projects', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    setProjects(data);
+                    setSelectedProjectId(data[0].id);
+                } else {
+                    throw new Error("Nenhum projeto encontrado");
+                }
+            } else {
+                throw new Error("Falha na API de projetos");
             }
-            return r;
-        }));
+        } catch (err) {
+            console.warn("Usando dados de fallback para projetos:", err);
+            // Fallback seguro para garantira UI não quebre
+            const mockProjects = [
+                { id: 1, title: 'Horta Sustentável (Demo)' },
+                { id: 2, title: 'Feira de Ciências 2024' }
+            ];
+            setProjects(mockProjects);
+            setSelectedProjectId(mockProjects[0].id);
+        } finally {
+            setLoadingProjects(false);
+        }
     };
 
-    const deleteCriteria = (criteriaId) => {
-        setRubrics(prev => prev.map(r => {
-            if (r.id === selectedRubric) {
-                return {
-                    ...r,
-                    criteria: r.criteria.filter(c => c.id !== criteriaId)
-                };
+    const fetchTeams = async (projectId) => {
+        // Simulação de busca de times
+        // Em produção, isso seria: await fetch(`/api/projects/${projectId}/teams`)
+        setTeams([
+            { id: 1, name: 'Equipe Alpha' },
+            { id: 2, name: 'Equipe Beta' },
+            { id: 3, name: 'Equipe Gamma' },
+            { id: 4, name: 'Equipe Delta' },
+        ]);
+    };
+
+    const fetchRubrica = async (projectId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:3000/api/rubricas-v2/projeto/${projectId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.sucesso && data.dados) {
+                    setRubrica(data.dados);
+                } else {
+                    setRubrica(null);
+                }
+            } else {
+                setRubrica(null);
             }
-            return r;
-        }));
+        } catch (error) {
+            console.error("Erro ao buscar rubrica", error);
+            setRubrica(null);
+        }
     };
 
-    const addCriteria = () => {
-        const newCriteria = {
-            id: `c${Date.now()}`,
-            name: "Novo Critério",
-            maxPoints: 2,
-            description: "Descrição",
-            weight: 10
-        };
-        setRubrics(prev => prev.map(r => {
-            if (r.id === selectedRubric) {
-                return {
-                    ...r,
-                    criteria: [...r.criteria, newCriteria]
-                };
-            }
-            return r;
-        }));
-    };
+    const renderTeamSelection = () => (
+        <div className="max-w-5xl mx-auto my-8 animate-fadeIn">
+            <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <Users className="w-6 h-6 text-purple-600" />
+                Selecione uma Equipe
+            </h3>
 
-    const handleSave = () => {
-        setSaveMessage("✅ Rubrica salva com sucesso!");
-        setTimeout(() => setSaveMessage(""), 3000);
-        setIsEditing(false);
-    };
+            {!rubrica ? (
+                <div className="bg-orange-50 text-orange-800 p-8 rounded-xl border border-orange-200 text-center">
+                    <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+                    <p className="text-lg font-bold mb-2">Rubrica não definida</p>
+                    <p className="mb-6">Você precisa criar uma rubrica para este projeto antes de avaliar as equipes.</p>
+                    <button
+                        onClick={() => setActiveTab('editor')}
+                        className="bg-orange-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-orange-700 transition"
+                    >
+                        Ir para o Editor
+                    </button>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {teams.map(team => (
+                        <button
+                            key={team.id}
+                            onClick={() => setSelectedTeamId(team.id)}
+                            className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-purple-400 hover:ring-1 hover:ring-purple-400 transition-all text-left group"
+                        >
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="font-bold text-lg text-gray-700 group-hover:text-purple-700">{team.name}</span>
+                                <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-purple-500 transition-transform group-hover:translate-x-1" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                <span className="text-sm text-gray-500">Pronto para avaliar</span>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
 
-    const calculateTotal = () => {
-        return currentRubric.criteria.reduce((sum, c) => sum + c.weight, 0);
-    };
-
-    const totalWeight = calculateTotal();
-    const isValidWeight = totalWeight === 100;
+    if (loadingProjects) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px]">
+                <div className="w-10 h-10 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="text-gray-500 font-medium">Carregando painel de rubricas...</p>
+            </div>
+        );
+    }
 
     return (
-        <div className="max-w-6xl mx-auto">
-            <div className="flex justify-between items-end mb-8">
-                <div>
-                    <h2 className="text-3xl font-bold text-slate-800">📋 Rubricas de Avaliação</h2>
-                    <p className="text-slate-500">Escala de 0 a 2 pontos por critério</p>
-                </div>
-                <button
-                    onClick={() => setIsEditing(!isEditing)}
-                    className={`px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition ${isEditing
-                            ? "bg-red-600 hover:bg-red-700 text-white"
-                            : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg"
-                        }`}
-                >
-                    {isEditing ? <X size={18} /> : <Edit size={18} />}
-                    {isEditing ? "Cancelar Edição" : "Editar Rubrica"}
-                </button>
-            </div>
-
-            {saveMessage && (
-                <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-2 text-green-700">
-                    <Check size={18} />
-                    {saveMessage}
-                </div>
-            )}
-
-            {/* Seletor de Projeto */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 mb-6">
-                <label className="block text-sm font-bold text-slate-700 mb-2">Projeto</label>
-                <select
-                    value={selectedRubric}
-                    onChange={(e) => setSelectedRubric(parseInt(e.target.value))}
-                    className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-                >
-                    {rubrics.map(r => (
-                        <option key={r.id} value={r.id}>{r.project}</option>
-                    ))}
-                </select>
-            </div>
-
-            {/* Tabela de Rubrica */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-slate-100 bg-gradient-to-r from-indigo-50 to-purple-50">
-                    <h3 className="font-bold text-lg text-slate-800">{currentRubric.project}</h3>
-                    <p className="text-sm text-slate-600 mt-1">Total de peso: <span className={`font-bold ${isValidWeight ? 'text-green-600' : 'text-red-600'}`}>{totalWeight}%</span></p>
-                </div>
-
-                {/* Explicação da Escala */}
-                <div className="p-6 border-b border-slate-100 bg-slate-50">
-                    <p className="text-sm font-bold text-slate-800 mb-3">📊 Escala de Pontos:</p>
-                    <div className="grid grid-cols-5 gap-2">
-                        {currentRubric.levels.map((level, idx) => (
-                            <div key={idx} className="p-2 bg-white rounded-lg border border-slate-200 text-center">
-                                <p className="font-bold text-indigo-600 text-sm">{level.points}</p>
-                                <p className="text-xs text-slate-600">{level.description}</p>
-                            </div>
-                        ))}
+        <div className="min-h-screen bg-gray-50/50 p-6">
+            <div className="max-w-7xl mx-auto">
+                {/* Header Section */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                            <CheckSquare className="w-8 h-8 text-purple-600" />
+                            Gestão de Rubricas
+                        </h1>
+                        <p className="text-gray-500 mt-1">Crie critérios e avalie o desempenho das equipes por projeto.</p>
                     </div>
-                </div>
 
-                {/* Critérios */}
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
-                        <thead className="bg-slate-50 border-b border-slate-100">
-                            <tr>
-                                <th className="px-6 py-4 font-bold text-slate-700">Critério</th>
-                                <th className="px-6 py-4 font-bold text-slate-700">Descrição</th>
-                                <th className="px-6 py-4 font-bold text-slate-700">Máx. Pontos</th>
-                                <th className="px-6 py-4 font-bold text-slate-700">Peso</th>
-                                {isEditing && <th className="px-6 py-4 font-bold text-slate-700">Ações</th>}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {currentRubric.criteria.map((criteria) => (
-                                <tr key={criteria.id} className="hover:bg-slate-50 transition group">
-                                    <td className="px-6 py-4">
-                                        {isEditing ? (
-                                            <input
-                                                type="text"
-                                                value={criteria.name}
-                                                onChange={(e) => updateCriteria(criteria.id, "name", e.target.value)}
-                                                className="w-full px-2 py-1 border border-slate-200 rounded font-bold text-slate-800"
-                                            />
-                                        ) : (
-                                            <p className="font-bold text-slate-800">{criteria.name}</p>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {isEditing ? (
-                                            <input
-                                                type="text"
-                                                value={criteria.description}
-                                                onChange={(e) => updateCriteria(criteria.id, "description", e.target.value)}
-                                                className="w-full px-2 py-1 border border-slate-200 rounded text-sm text-slate-600"
-                                            />
-                                        ) : (
-                                            <p className="text-slate-600">{criteria.description}</p>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {isEditing ? (
-                                            <select
-                                                value={criteria.maxPoints}
-                                                onChange={(e) => updateCriteria(criteria.id, "maxPoints", parseFloat(e.target.value))}
-                                                className="px-2 py-1 border border-slate-200 rounded font-bold text-slate-800"
-                                            >
-                                                <option value="1">1 ponto</option>
-                                                <option value="2">2 pontos</option>
-                                                <option value="3">3 pontos</option>
-                                            </select>
-                                        ) : (
-                                            <p className="font-bold text-indigo-600">{criteria.maxPoints} pontos</p>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {isEditing ? (
-                                            <div className="flex items-center gap-1">
-                                                <input
-                                                    type="number"
-                                                    min="0"
-                                                    max="100"
-                                                    value={criteria.weight}
-                                                    onChange={(e) => updateCriteria(criteria.id, "weight", parseInt(e.target.value))}
-                                                    className="w-16 px-2 py-1 border border-slate-200 rounded text-center font-bold"
-                                                />
-                                                <span className="text-slate-600">%</span>
-                                            </div>
-                                        ) : (
-                                            <p className="font-bold text-slate-800">{criteria.weight}%</p>
-                                        )}
-                                    </td>
-                                    {isEditing && (
-                                        <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => deleteCriteria(criteria.id)}
-                                                className="p-1 hover:bg-red-100 text-red-600 rounded opacity-0 group-hover:opacity-100 transition"
-                                                title="Remover"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </td>
-                                    )}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {isEditing && (
-                    <div className="p-6 border-t border-slate-100 bg-slate-50">
-                        <button
-                            onClick={addCriteria}
-                            className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg font-bold text-sm transition flex items-center gap-2"
+                    <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-xl border border-gray-200 min-w-[300px]">
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wide px-2">Projeto:</span>
+                        <select
+                            value={selectedProjectId || ''}
+                            onChange={(e) => setSelectedProjectId(Number(e.target.value))}
+                            className="flex-1 bg-transparent border-none font-bold text-gray-800 focus:ring-0 cursor-pointer text-sm"
                         >
-                            <Plus size={16} /> Adicionar Critério
-                        </button>
+                            {projects.map(p => (
+                                <option key={p.id} value={p.id}>{p.title}</option>
+                            ))}
+                        </select>
                     </div>
-                )}
-            </div>
-
-            {/* Avisos e Informações */}
-            <div className="mt-6 space-y-4">
-                {!isValidWeight && (
-                    <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-xl p-4 flex items-start gap-3">
-                        <AlertCircle size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                            <p className="font-bold text-yellow-900">⚠️ Peso Total Incorreto</p>
-                            <p className="text-sm text-yellow-800">O peso total dos critérios deve ser 100%, não {totalWeight}%</p>
-                        </div>
-                    </div>
-                )}
-
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                    <p className="text-sm text-blue-900 mb-2">
-                        <strong>ℹ️ Como a nota funciona:</strong>
-                    </p>
-                    <ul className="text-sm text-blue-900 space-y-1">
-                        <li>• Cada critério é avaliado de 0 a 2 pontos</li>
-                        <li>• A pontuação é multiplicada pelo peso (%) do critério</li>
-                        <li>• A soma ponderada é multiplicada por 2.5 para chegar à escala 0-10</li>
-                        <li>• Exemplo: (1.8 × 0.40 + 1.9 × 0.30 + 1.8 × 0.30) × 2.5 = 8.95</li>
-                    </ul>
                 </div>
-            </div>
 
-            {/* Botão Salvar */}
-            {isEditing && (
-                <div className="mt-6 flex justify-end gap-3">
+                {/* Navigation Tabs */}
+                <div className="flex gap-1 mb-8 bg-gray-200/50 p-1 rounded-xl w-fit">
                     <button
-                        onClick={() => setIsEditing(false)}
-                        className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition"
-                    >
-                        Cancelar
-                    </button>
-                    <button
-                        onClick={handleSave}
-                        disabled={!isValidWeight}
-                        className={`px-6 py-3 rounded-xl font-bold transition flex items-center gap-2 ${isValidWeight
-                                ? "bg-green-600 hover:bg-green-700 text-white shadow-lg"
-                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        onClick={() => { setActiveTab('editor'); setSelectedTeamId(null); }}
+                        className={`px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 transition-all ${activeTab === 'editor'
+                                ? 'bg-white text-purple-700 shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                             }`}
                     >
-                        <Save size={18} />
-                        Salvar Rubrica
+                        <Edit className="w-4 h-4" /> Editor
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('evaluator')}
+                        className={`px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 transition-all ${activeTab === 'evaluator'
+                                ? 'bg-white text-purple-700 shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                            }`}
+                    >
+                        <CheckSquare className="w-4 h-4" /> Avaliação
+                    </button>
+                    <button
+                        onClick={() => { setActiveTab('results'); setSelectedTeamId(null); }}
+                        className={`px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 transition-all ${activeTab === 'results'
+                                ? 'bg-white text-purple-700 shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                            }`}
+                    >
+                        <BarChart2 className="w-4 h-4" /> Resultados
                     </button>
                 </div>
-            )}
+
+                {/* Main Content Area */}
+                <div className="transition-all duration-300 min-h-[500px]">
+                    {activeTab === 'editor' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <RubricaEditor
+                                projectId={selectedProjectId}
+                                onSave={(novaRubrica) => setRubrica(novaRubrica)}
+                                initialData={rubrica}
+                            />
+                        </div>
+                    )}
+
+                    {activeTab === 'evaluator' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            {!selectedTeamId ? (
+                                renderTeamSelection()
+                            ) : (
+                                <div>
+                                    <button
+                                        onClick={() => setSelectedTeamId(null)}
+                                        className="mb-6 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:text-purple-600 hover:border-purple-300 flex items-center gap-2 transition-all shadow-sm"
+                                    >
+                                        <ChevronRight className="w-4 h-4 rotate-180" />
+                                        Voltar para seleção de equipe
+                                    </button>
+                                    <RubricaEvaluator
+                                        projectId={selectedProjectId}
+                                        equipeId={selectedTeamId}
+                                        rubrica={rubrica}
+                                        onSave={() => alert('Avaliação salva com sucesso!')}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'results' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            {!rubrica ? (
+                                <div className="text-center p-12 bg-white rounded-xl border border-gray-200">
+                                    <p className="text-gray-500">Nenhuma rubrica definida para este projeto. Crie uma rubrica e realize avaliações para ver os resultados.</p>
+                                </div>
+                            ) : (
+                                <RubricaResults projectId={selectedProjectId} />
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };
