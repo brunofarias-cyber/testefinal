@@ -1,6 +1,6 @@
 import express from 'express';
 import coteachingService from '../services/coteachingService.js';
-import { verifyToken } from '../server.js';
+import { verifyToken } from '../middleware/auth.js';
 import { verificarAcessoProjeto } from '../middleware/projectAccess.js';
 
 const router = express.Router();

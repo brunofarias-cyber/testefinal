@@ -29,19 +29,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Middleware de autenticação
-export const verifyToken = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'Token não fornecido' });
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        res.status(401).json({ error: 'Token inválido' });
-    }
-};
+import { verifyToken } from './middleware/auth.js';
 
 // ===== HEALTH CHECK =====
 app.get('/api/health', (req, res) => {
