@@ -5,7 +5,9 @@ echo "🔧 Starting Render Build..."
 
 # Clean install with legacy peer deps
 echo "📦 Installing dependencies..."
-npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+# Force clean install
+rm -rf node_modules
+npm install --legacy-peer-deps
 
 # Build frontend
 echo "🏗️ Building frontend..."
