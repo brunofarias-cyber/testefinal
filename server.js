@@ -19,6 +19,7 @@ import googleClassroomRoutes from './routes/google-classroom.js';
 import rubricasRoutes from './routes/rubricas.js';
 import rubricasV2Routes from './routes/rubricas-v2.js';
 import coteachingRoutes from './routes/coteaching.routes.js';
+import dashboardStatsRoutes from './routes/dashboard-stats.js';
 
 dotenv.config();
 
@@ -30,6 +31,10 @@ app.use(cors());
 app.use(express.json());
 
 import { verifyToken } from './middleware/auth.js';
+
+// ===== DASHBOARD API =====
+app.use('/api/dashboard', dashboardStatsRoutes);
+
 
 // ===== HEALTH CHECK =====
 app.get('/api/health', (req, res) => {

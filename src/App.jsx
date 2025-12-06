@@ -45,6 +45,7 @@ import MessagingSystem from "./components/MessagingSystem";
 import TeacherPerformance from "./components/TeacherPerformance";
 import { AuthManager, LoginScreen } from "./components/AuthSystemAPI";
 import StudentDashboard from "./components/StudentDashboard";
+import ProfessorDashboard from "./components/ProfessorDashboard";
 
 import { NotificationCenter, StudentProgress } from "./components/NotificationCenter";
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
@@ -2014,7 +2015,7 @@ function DashboardApp() {
         }
 
         if (role === 'teacher') {
-            if (activeTab === 'dashboard') return <TeacherDashboard projects={projects} onProjectClick={handleProjectClick} />;
+            if (activeTab === 'dashboard') return <ProfessorDashboard />;
             if (activeTab === 'classes') return <TeacherClasses />;
             if (activeTab === 'attendance') return <TeacherAttendance />;
             if (activeTab === 'calendar') return <TeacherCalendar events={calendarEvents} onAddEvent={handleAddCalendarEvent} />;
