@@ -18,6 +18,7 @@ import aiFeaturesRoutes from './routes/ai-features.js';
 import googleClassroomRoutes from './routes/google-classroom.js';
 import rubricasRoutes from './routes/rubricas.js';
 import rubricasV2Routes from './routes/rubricas-v2.js';
+import coteachingRoutes from './routes/coteaching.routes.js';
 
 dotenv.config();
 
@@ -361,6 +362,7 @@ app.use('/api/ai', aiFeaturesRoutes);
 app.use('/api/google-classroom', googleClassroomRoutes);
 app.use('/api/rubricas', rubricasRoutes);
 app.use('/api/rubricas-v2', rubricasV2Routes);
+app.use('/api/coteaching', verifyToken, coteachingRoutes);
 
 // ===== HEALTH CHECK =====
 

@@ -30,6 +30,11 @@ import RubricaNivelModel from './RubricaNivel.js';
 import AvaliacaoEquipeModel from './AvaliacaoEquipe.js';
 import AvaliacaoCriterioModel from './AvaliacaoCriterio.js';
 
+// Co-Teaching Models
+import { ProjectCollaboratorModel } from './ProjectCollaborator.js';
+import { ProjectInviteModel } from './ProjectInvite.js';
+import { CollaboratorPermissionModel } from './CollaboratorPermission.js';
+
 // Inicializar models antigos
 const User = UserModel(sequelize);
 const Project = ProjectModel(sequelize);
@@ -50,12 +55,18 @@ const RubricaNivel = RubricaNivelModel(sequelize);
 const AvaliacaoEquipe = AvaliacaoEquipeModel(sequelize);
 const AvaliacaoCriterio = AvaliacaoCriterioModel(sequelize);
 
+const ProjectCollaborator = ProjectCollaboratorModel(sequelize);
+const ProjectInvite = ProjectInviteModel(sequelize);
+const CollaboratorPermission = CollaboratorPermissionModel(sequelize);
+
 // ==========================================
 // ASSOCIAÇÕES EXISTENTES
 // ==========================================
 
 User.hasMany(Project, { foreignKey: 'teacherId', as: 'projects' });
 Project.belongsTo(User, { foreignKey: 'teacherId', as: 'teacher' });
+// Alias para compatibilidade com a semântica "criadoPor"
+Project.belongsTo(User, { foreignKey: 'teacherId', as: 'criadoPor' });
 
 User.hasMany(Task, { foreignKey: 'assignedToId', as: 'tasks' });
 Task.belongsTo(User, { foreignKey: 'assignedToId', as: 'assignee' });
@@ -80,6 +91,33 @@ Notification.belongsTo(User, { foreignKey: 'recipientId', as: 'recipient' });
 
 Project.hasMany(Notification, { foreignKey: 'relatedProjectId', as: 'notifications' });
 Notification.belongsTo(Project, { foreignKey: 'relatedProjectId', as: 'project' });
+
+// ==========================================
+// ASSOCIAÇÕES CO-TEACHING
+// ==========================================
+
+// Project <-> ProjectCollaborator
+Project.hasMany(ProjectCollaborator, { foreignKey: 'projectId', as: 'collaborators' });
+ProjectCollaborator.belongsTo(Project, { foreignKey: 'projectId', as: 'project' });
+
+// User <-> ProjectCollaborator (Professor)
+User.hasMany(ProjectCollaborator, { foreignKey: 'professorId', as: 'collaborations' });
+ProjectCollaborator.belongsTo(User, { foreignKey: 'professorId', as: 'professor' });
+
+// User <-> ProjectCollaborator (Added By)
+User.hasMany(ProjectCollaborator, { foreignKey: 'addedById', as: 'collaboratorsAdded' });
+ProjectCollaborator.belongsTo(User, { foreignKey: 'addedById', as: 'addedBy' });
+
+// ProjectInvite Relations
+Project.hasMany(ProjectInvite, { foreignKey: 'projectId', as: 'invites' });
+ProjectInvite.belongsTo(Project, { foreignKey: 'projectId', as: 'project' });
+
+User.hasMany(ProjectInvite, { foreignKey: 'invitedById', as: 'sentInvites' });
+ProjectInvite.belongsTo(User, { foreignKey: 'invitedById', as: 'invitedBy' });
+
+// CollaboratorPermission Relations
+ProjectCollaborator.hasMany(CollaboratorPermission, { foreignKey: 'collaboratorId', as: 'permissions' });
+CollaboratorPermission.belongsTo(ProjectCollaborator, { foreignKey: 'collaboratorId', as: 'collaborator' });
 
 // ==========================================
 // ASSOCIAÇÕES BNCC
@@ -201,6 +239,9 @@ export {
     RubricaNivel,
     AvaliacaoEquipe,
     AvaliacaoCriterio,
+    ProjectCollaborator,
+    ProjectInvite,
+    CollaboratorPermission,
 
     sequelize
 };
@@ -234,5 +275,8 @@ export default {
     RubricaNivel,
     AvaliacaoEquipe,
     AvaliacaoCriterio,
+    ProjectCollaborator,
+    ProjectInvite,
+    CollaboratorPermission,
     sequelize
 };

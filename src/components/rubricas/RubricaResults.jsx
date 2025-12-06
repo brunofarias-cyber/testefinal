@@ -18,11 +18,11 @@ const RubricaResults = ({ projectId }) => {
 
             // Buscar Stats
             // Note: RubricaId 1 is hardcoded for demo, normally would come from selected rubric
-            const statsRes = await fetch(`http://localhost:3000/api/rubricas-v2/${projectId}/1/estatisticas`, { headers });
+            const statsRes = await fetch(`/api/rubricas-v2/${projectId}/1/estatisticas`, { headers });
             const statsData = await statsRes.json();
 
             // Buscar Avaliações
-            const listRes = await fetch(`http://localhost:3000/api/rubricas-v2/${projectId}/avaliacoes`, { headers });
+            const listRes = await fetch(`/api/rubricas-v2/${projectId}/avaliacoes`, { headers });
             const listData = await listRes.json();
 
             if (statsData.sucesso) setStats(statsData.dados);
@@ -111,8 +111,8 @@ const RubricaResults = ({ projectId }) => {
                                 <td className="p-4 text-gray-500">{new Date(av.avaliadaEm).toLocaleDateString()}</td>
                                 <td className="p-4 text-right font-bold text-gray-800">
                                     <span className={`px-2 py-1 rounded ${av.notaFinal >= 7 ? 'bg-green-100 text-green-700' :
-                                            av.notaFinal >= 5 ? 'bg-yellow-100 text-yellow-700' :
-                                                'bg-red-100 text-red-700'
+                                        av.notaFinal >= 5 ? 'bg-yellow-100 text-yellow-700' :
+                                            'bg-red-100 text-red-700'
                                         }`}>
                                         {av.notaFinal}
                                     </span>

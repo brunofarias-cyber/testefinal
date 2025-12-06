@@ -36,7 +36,7 @@ const TeacherRubricEditablePoints = () => {
             setLoadingProjects(true);
             const token = localStorage.getItem('token');
             // Tenta buscar projetos reais
-            const response = await fetch('http://localhost:3000/api/projects', {
+            const response = await fetch('/api/projects', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -79,7 +79,7 @@ const TeacherRubricEditablePoints = () => {
     const fetchRubrica = async (projectId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3000/api/rubricas-v2/projeto/${projectId}`, {
+            const response = await fetch(`/api/rubricas-v2/projeto/${projectId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -181,8 +181,8 @@ const TeacherRubricEditablePoints = () => {
                     <button
                         onClick={() => { setActiveTab('editor'); setSelectedTeamId(null); }}
                         className={`px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 transition-all ${activeTab === 'editor'
-                                ? 'bg-white text-purple-700 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                            ? 'bg-white text-purple-700 shadow-sm'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                             }`}
                     >
                         <Edit className="w-4 h-4" /> Editor
@@ -190,8 +190,8 @@ const TeacherRubricEditablePoints = () => {
                     <button
                         onClick={() => setActiveTab('evaluator')}
                         className={`px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 transition-all ${activeTab === 'evaluator'
-                                ? 'bg-white text-purple-700 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                            ? 'bg-white text-purple-700 shadow-sm'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                             }`}
                     >
                         <CheckSquare className="w-4 h-4" /> Avaliação
@@ -199,8 +199,8 @@ const TeacherRubricEditablePoints = () => {
                     <button
                         onClick={() => { setActiveTab('results'); setSelectedTeamId(null); }}
                         className={`px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 transition-all ${activeTab === 'results'
-                                ? 'bg-white text-purple-700 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                            ? 'bg-white text-purple-700 shadow-sm'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                             }`}
                     >
                         <BarChart2 className="w-4 h-4" /> Resultados

@@ -95,7 +95,7 @@ const RubricaEvaluator = ({ projectId, equipeId, rubrica, onSave }) => {
             });
 
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3000/api/rubricas-v2/${pId}/${eId}/avaliar`, {
+            const response = await fetch(`/api/rubricas-v2/${pId}/${eId}/avaliar`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

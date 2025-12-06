@@ -25,7 +25,7 @@ const RubricaEditor = ({ projectId, onSave, initialData }) => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3000/api/rubricas-v2/projeto/${projectId}`, {
+            const response = await fetch(`/api/rubricas-v2/projeto/${projectId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -100,7 +100,7 @@ const RubricaEditor = ({ projectId, onSave, initialData }) => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:3000/api/rubricas-v2/projeto/${projectId}/criar`, {
+            const response = await fetch(`/api/rubricas-v2/projeto/${projectId}/criar`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -233,15 +233,15 @@ const RubricaEditor = ({ projectId, onSave, initialData }) => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
                             {criterio.niveis?.map((nivel, nIndex) => (
                                 <div key={nIndex} className={`p-3 rounded border ${nIndex === 0 ? 'bg-red-50 border-red-100' :
-                                        nIndex === 1 ? 'bg-orange-50 border-orange-100' :
-                                            nIndex === 2 ? 'bg-blue-50 border-blue-100' :
-                                                'bg-green-50 border-green-100'
+                                    nIndex === 1 ? 'bg-orange-50 border-orange-100' :
+                                        nIndex === 2 ? 'bg-blue-50 border-blue-100' :
+                                            'bg-green-50 border-green-100'
                                     }`}>
                                     <div className="flex justify-between items-center mb-2">
                                         <span className={`text-xs font-bold uppercase ${nIndex === 0 ? 'text-red-700' :
-                                                nIndex === 1 ? 'text-orange-700' :
-                                                    nIndex === 2 ? 'text-blue-700' :
-                                                        'text-green-700'
+                                            nIndex === 1 ? 'text-orange-700' :
+                                                nIndex === 2 ? 'text-blue-700' :
+                                                    'text-green-700'
                                             }`}>{nivel.nome}</span>
                                         <span className="text-xs font-bold bg-white px-2 py-0.5 rounded shadow-sm">
                                             {nivel.pontos} pts

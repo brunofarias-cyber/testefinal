@@ -41,13 +41,20 @@ import MessagingSystem from "./components/MessagingSystem";
 import TeacherPerformance from "./components/TeacherPerformance";
 import { AuthManager, LoginScreen } from "./components/AuthSystemAPI";
 import StudentDashboard from "./components/StudentDashboard";
-import StudentProgress from "./components/StudentProgress";
-import StudentNotifications from "./components/StudentNotifications";
+import StudentDashboard from "./components/StudentDashboard";
+import { NotificationCenter, StudentProgress } from "./components/NotificationCenter";
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
 import StudentGrades from "./components/StudentGrades";
 import TeacherRubricEditablePoints from "./components/TeacherRubricEditablePoints";
+import { TeacherReportsEditavel } from "./components/TeacherReportsEditavel";
 import TeacherBnccPage from "./pages/TeacherBnccPage";
 import StudentBnccPage from "./pages/StudentBnccPage";
+
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import GerenciadorColaboradores from "./components/coteaching/GerenciadorColaboradores";
+import AceitarConvite from "./components/coteaching/AceitarConvite";
+import ProjetoCardComRole from "./components/coteaching/ProjetoCardComRole";
+
 
 // --- DADOS MOCKADOS ---
 
@@ -929,63 +936,7 @@ const TeacherClasses = () => {
     );
 };
 
-// Relatórios BNCC
-const TeacherReports = () => (
-    <div className="space-y-8">
-        <div className="flex justify-between items-end">
-            <div>
-                <h2 className="text-3xl font-bold text-slate-800">Relatórios BNCC</h2>
-                <p className="text-slate-500">Acompanhamento das competências desenvolvidas.</p>
-            </div>
-            <button className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 flex items-center gap-2 transition">
-                <Download size={18} /> Exportar PDF
-            </button>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Cobertura Total</p>
-                <p className="text-4xl font-extrabold text-indigo-600 mt-2">85%</p>
-                <p className="text-xs text-slate-500 mt-1">das competências gerais trabalhadas.</p>
-            </div>
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Turma Destaque</p>
-                <p className="text-xl font-bold text-slate-800 mt-3">1º Ano A</p>
-                <p className="text-xs text-green-600 font-bold mt-1">92% de aderência</p>
-            </div>
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Área de Foco</p>
-                <p className="text-xl font-bold text-slate-800 mt-3">Ciências da Natureza</p>
-                <p className="text-xs text-slate-500 mt-1">3 Projetos ativos</p>
-            </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-slate-100">
-                <h3 className="font-bold text-lg text-slate-800">Matriz de Competências (Gerais)</h3>
-            </div>
-            <div className="divide-y divide-slate-100">
-                {[
-                    { name: "Pensamento Científico, Crítico e Criativo", progress: 90 },
-                    { name: "Repertório Cultural", progress: 65 },
-                    { name: "Comunicação", progress: 80 },
-                    { name: "Cultura Digital", progress: 100 },
-                    { name: "Trabalho e Projeto de Vida", progress: 45 }
-                ].map((comp, idx) => (
-                    <div key={idx} className="p-6 hover:bg-slate-50 transition">
-                        <div className="flex justify-between mb-2">
-                            <span className="font-medium text-slate-700 text-sm">{comp.name}</span>
-                            <span className="font-bold text-indigo-600 text-sm">{comp.progress}%</span>
-                        </div>
-                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                            <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${comp.progress}%` }}></div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    </div>
-);
 
 // Rubricas de Avaliação EDITÁVEL
 const TeacherRubrics = () => {
@@ -1317,6 +1268,16 @@ const ProjectDetails = ({ project, onBack }) => {
                     <Users size={16} className="inline mr-2" />
                     Alunos
                 </button>
+                <button
+                    onClick={() => setActiveSection('collaborators')}
+                    className={`flex-1 px-4 py-3 rounded-xl font-bold text-sm transition ${activeSection === 'collaborators'
+                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                        : 'text-slate-600 hover:bg-slate-100'
+                        }`}
+                >
+                    <Users size={16} className="inline mr-2" />
+                    Colaboradores
+                </button>
             </div>
 
             {/* Conteúdo das Tabs */}
@@ -1481,6 +1442,10 @@ const ProjectDetails = ({ project, onBack }) => {
                     </div>
                 </div>
             )}
+
+            {activeSection === 'collaborators' && (
+                <GerenciadorColaboradores projetoId={project.id} projetoTitulo={project.title} />
+            )}
         </div>
     );
 };
@@ -1523,37 +1488,12 @@ const TeacherDashboard = ({ projects, onProjectClick }) => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProjects.map((p) => (
-                    <div
+                    <ProjetoCardComRole
                         key={p.id}
-                        onClick={() => onProjectClick(p)}
-                        className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition cursor-pointer group"
-                    >
-                        <div className="flex justify-between mb-4">
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${p.theme === 'green' ? 'bg-green-100 text-green-700' :
-                                p.theme === 'blue' ? 'bg-blue-100 text-blue-700' :
-                                    p.theme === 'purple' ? 'bg-purple-100 text-purple-700' :
-                                        'bg-red-100 text-red-700'
-                                }`}>
-                                {p.subject}
-                            </span>
-                            {p.delayed && <AlertCircle size={18} className="text-red-500" />}
-                            {p.bnccCoverage && (
-                                <span className="ml-2 bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full text-[10px] font-bold border border-indigo-100 flex items-center gap-1">
-                                    <BookOpen size={10} /> {p.bnccCoverage}%
-                                </span>
-                            )}
-                        </div>
-                        <h3 className="font-bold text-lg text-slate-800 mb-1 group-hover:text-indigo-600 transition-colors">{p.title}</h3>
-                        <p className="text-sm text-slate-500 mb-4">{p.students} Alunos • {p.status}</p>
-                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                            <div className="bg-indigo-600 h-full" style={{ width: `${p.progress}%` }}></div>
-                        </div>
-                        <p className="text-xs text-slate-400 mt-2 text-right">{p.progress}%</p>
-                        <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="text-xs font-bold text-indigo-600">Ver detalhes</span>
-                            <ArrowRight size={16} className="text-indigo-600" />
-                        </div>
-                    </div>
+                        projeto={p}
+                        role={p.role || (p.teacher === 'Você' ? 'owner' : 'collaborator')} // Fallback logic if API doesn't return role yet
+                        onClick={onProjectClick}
+                    />
                 ))}
             </div>
         </div>
@@ -1957,13 +1897,65 @@ const CoordinatorKanban = ({ projects }) => (
 );
 
 function App() {
+    return (
+        <Routes>
+            <Route path="/convite/aceitar/:token" element={<AceitarConvite />} />
+            <Route path="*" element={<DashboardApp />} />
+        </Routes>
+    );
+}
+
+function DashboardApp() {
     const [viewState, setViewState] = useState('landing');
     const [activeTab, setActiveTab] = useState('dashboard');
     const [role, setRole] = useState('teacher');
     const [currentUser, setCurrentUser] = useState(null);
-    const [projects] = useState(MOCK_PROJECTS);
+    const [projects, setProjects] = useState(MOCK_PROJECTS);
     const [calendarEvents, setCalendarEvents] = useState(INITIAL_EVENTS);
     const [selectedProject, setSelectedProject] = useState(null);
+
+    // Fetch real projects from API
+    useEffect(() => {
+        const fetchProjects = async () => {
+            const token = localStorage.getItem('token');
+            if (token && role === 'teacher') {
+                try {
+                    const response = await fetch('/api/coteaching/meus-projetos', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await response.json();
+                    if (data.sucesso && data.dados.length > 0) {
+                        // Merge API data with mocks or replace.
+                        // For now we will append or replace if we have real data to show connectivity.
+                        // Mapping API structure to frontend structure might be needed.
+                        const apiProjects = data.dados.map(p => ({
+                            id: p.id,
+                            title: p.titulo,
+                            subject: "Geral", // Check if backend has subject
+                            status: p.status || "Em Andamento",
+                            progress: p.progresso || 0,
+                            students: p.totalAlunos || 0,
+                            nextDeadline: "Indefinido",
+                            deadlineLabel: "Próxima Entrega",
+                            theme: "indigo",
+                            teacher: "Você",
+                            delayed: false,
+                            tasks: [],
+                            bnccCoverage: 0,
+                            role: p.papel // owner or collaborator
+                        }));
+                        setProjects(apiProjects);
+                    }
+                } catch (error) {
+                    console.error("Erro ao buscar projetos:", error);
+                }
+            }
+        };
+
+        if (currentUser) {
+            fetchProjects();
+        }
+    }, [currentUser, role]);
 
     useEffect(() => {
         const user = AuthManager.getCurrentUser();
@@ -2025,7 +2017,7 @@ function App() {
             if (activeTab === 'planning') return <TeacherPlanning />;
             if (activeTab === 'performance') return <TeacherPerformance />;
             if (activeTab === 'messages') return <MessagingSystem userRole="teacher" />;
-            if (activeTab === 'reports') return <TeacherReports />;
+            if (activeTab === 'reports') return <TeacherReportsEditavel />;
             if (activeTab === 'rubrics') return <TeacherRubricEditablePoints />;
             if (activeTab === 'bncc') return <TeacherBnccPage projectId={1} classId={1} />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
@@ -2044,7 +2036,7 @@ function App() {
             if (activeTab === 'achievements') return <StudentAchievements />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
             if (activeTab === 'messages') return <MessagingSystem userRole="student" />;
-            if (activeTab === 'notifications') return <StudentNotifications />;
+            if (activeTab === 'notifications') return <NotificationCenter />;
             if (activeTab === 'skills') return <StudentBnccPage studentId={currentUser?.id || 101} />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
@@ -2074,5 +2066,6 @@ function App() {
         </div>
     );
 }
+
 
 export default App;
