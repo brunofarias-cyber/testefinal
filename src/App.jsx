@@ -41,7 +41,7 @@ import MessagingSystem from "./components/MessagingSystem";
 import TeacherPerformance from "./components/TeacherPerformance";
 import { AuthManager, LoginScreen } from "./components/AuthSystemAPI";
 import StudentDashboard from "./components/StudentDashboard";
-import StudentDashboard from "./components/StudentDashboard";
+
 import { NotificationCenter, StudentProgress } from "./components/NotificationCenter";
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
 import StudentGrades from "./components/StudentGrades";
