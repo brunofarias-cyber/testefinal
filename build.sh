@@ -1,12 +1,16 @@
 #!/bin/bash
-# Render Build Script
+set -e # Exit immediately if any command fails
 
 echo "🔧 Starting Render Build..."
 
-# Clean install with legacy peer deps
-echo "📦 Installing dependencies..."
-# Force clean install
+# Clean EVERYTHING to fix corrupted dependencies
+echo "🧹 Cleaning environment (Nuclear Option)..."
 rm -rf node_modules
+rm -f package-lock.json
+npm cache clean --force
+
+# Install dependencies
+echo "📦 Installing dependencies..."
 npm install --legacy-peer-deps
 
 # Build frontend

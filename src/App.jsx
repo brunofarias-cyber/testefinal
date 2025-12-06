@@ -34,7 +34,11 @@ import {
     Video,
     Target,
     BookOpen,
-    Filter
+    Filter,
+    Lock,
+    Search,
+    Send,
+    Bell
 } from "lucide-react";
 import TeacherPlanning from "./components/TeacherPlanning";
 import MessagingSystem from "./components/MessagingSystem";

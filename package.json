@@ -4,6 +4,9 @@
   "description": "Backend API para plataforma educacional BProjetos",
   "main": "server.js",
   "type": "module",
+  "overrides": {
+    "debug": "4.3.4"
+  },
   "scripts": {
     "start": "node server.js",
     "start:backend": "node server.js",
