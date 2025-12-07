@@ -55,6 +55,7 @@ import MissoesColaborativas from "./features/MissoesColaborativas";
 import PortfolioDigital from "./features/PortfolioDigital";
 import EcossistemaConectado from "./features/EcossistemaConectado";
 import StudentProgressDashboard from "./components/StudentProgressDashboard";
+import TeacherClassManager from "./components/TeacherClassManager";
 
 import { NotificationCenter, StudentProgress } from "./components/NotificationCenter";
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
@@ -320,6 +321,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                         {role === 'teacher' && (
                             <>
                                 <NavItem icon={<Users size={20} />} label="Turmas" active={activeTab === 'classes'} onClick={() => setActiveTab('classes')} />
+                                <NavItem icon={<Users size={20} />} label="Gerenciar Turmas" active={activeTab === 'manage-classes'} onClick={() => setActiveTab('manage-classes')} />
                                 <NavItem icon={<Calendar size={20} />} label="Calendário" active={activeTab === 'calendar'} onClick={() => setActiveTab('calendar')} />
                                 <NavItem icon={<FileText size={20} />} label="Planejamento" active={activeTab === 'planning'} onClick={() => setActiveTab('planning')} />
                                 <NavItem icon={<CheckSquare size={20} />} label="Chamada" active={activeTab === 'attendance'} onClick={() => setActiveTab('attendance')} />
@@ -2031,6 +2033,7 @@ function DashboardApp() {
         if (role === 'teacher') {
             if (activeTab === 'dashboard') return <ProfessorDashboard />;
             if (activeTab === 'classes') return <TeacherClasses />;
+            if (activeTab === 'manage-classes') return <TeacherClassManager />;
             if (activeTab === 'attendance') return <TeacherAttendance />;
             if (activeTab === 'calendar') return <TeacherCalendar events={calendarEvents} onAddEvent={handleAddCalendarEvent} />;
             if (activeTab === 'planning') return <ProjectWizardBNCC />;
