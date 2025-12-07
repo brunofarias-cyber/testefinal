@@ -1,10 +1,12 @@
 import fs from 'fs';
-import Anthropic from '@anthropic-ai/sdk';
+// import Anthropic from '@anthropic-ai/sdk';
 import db from '../models/index.js';
 
-const client = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY, // Ensure API key is picked up
-});
+// Comentado temporariamente - instale @anthropic-ai/sdk se necessário
+// const client = new Anthropic({
+//     apiKey: process.env.ANTHROPIC_API_KEY,
+// });
+const client = null;
 
 /**
  * Processa PDF e extrai:
