@@ -20,6 +20,7 @@ import teamChatRoutes from './routes/team-chat.js';
 import messagesRoutes from './routes/messages.js';
 import teamsRoutes from './routes/teams.js';
 import studentProjectsRoutes from './routes/student-projects.js';
+import rubricasRoutes from './routes/rubricas.js';
 
 dotenv.config();
 
@@ -52,6 +53,7 @@ app.use('/api/team-chat', teamChatRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/teams', teamsRoutes);
 app.use('/api/student-projects', studentProjectsRoutes);
+app.use('/api/rubricas', rubricasRoutes);
 
 // ===== AUTENTICAÇÃO =====
 app.post('/api/auth/register', async (req, res) => {

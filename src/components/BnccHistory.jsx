@@ -17,9 +17,11 @@ export const StudentTimeline = ({ studentId }) => {
         try {
             const res = await fetch(`/api/bncc-history/student-timeline/${studentId}`);
             const json = await res.json();
-            setTimeline(json.data);
+            const data = Array.isArray(json?.data) ? json.data : (Array.isArray(json) ? json : []);
+            setTimeline(data);
         } catch (error) {
             console.error(error);
+            setTimeline([]);
         } finally {
             setLoading(false);
         }
@@ -66,10 +68,12 @@ export const SkillEvolution = ({ studentId, skillCode }) => {
         try {
             const res = await fetch(`/api/bncc-history/skill-evolution/${studentId}/${skillCode}`);
             const json = await res.json();
-            setEvolution(json.data);
-            setImprovement(json.improvement);
+            setEvolution(Array.isArray(json?.data) ? json.data : []);
+            setImprovement(json?.improvement || 0);
         } catch (error) {
             console.error(error);
+            setEvolution([]);
+            setImprovement(0);
         } finally {
             setLoading(false);
         }
@@ -140,9 +144,10 @@ export const AnnualReport = ({ studentId, year }) => {
         try {
             const res = await fetch(`/api/bncc-history/annual-report/${studentId}/${year}`);
             const json = await res.json();
-            setReport(json.data);
+            setReport(json?.data || null);
         } catch (error) {
             console.error(error);
+            setReport(null);
         } finally {
             setLoading(false);
         }

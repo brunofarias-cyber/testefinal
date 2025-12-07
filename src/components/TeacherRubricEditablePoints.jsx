@@ -79,16 +79,13 @@ const TeacherRubricEditablePoints = () => {
     const fetchRubrica = async (projectId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`/api/rubricas-v2/projeto/${projectId}`, {
+            const response = await fetch(`/api/rubricas/projeto/${projectId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
                 const data = await response.json();
-                if (data.sucesso && data.dados) {
-                    setRubrica(data.dados);
-                } else {
-                    setRubrica(null);
-                }
+                // API pode responder rubrica direta ou { data }
+                setRubrica(data?.data || data || null);
             } else {
                 setRubrica(null);
             }
