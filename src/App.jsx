@@ -2038,8 +2038,7 @@ function DashboardApp() {
 
         if (role === 'teacher') {
             if (activeTab === 'dashboard') return <ProfessorDashboard />;
-            if (activeTab === 'classes') return <TeacherClasses />;
-            if (activeTab === 'manage-classes') return <TeacherClassManager />;
+            if (activeTab === 'classes' || activeTab === 'manage-classes') return <TeacherClassManager />;
             if (activeTab === 'attendance') return <TeacherAttendance />;
             if (activeTab === 'calendar') return <TeacherCalendar events={calendarEvents} onAddEvent={handleAddCalendarEvent} />;
             if (activeTab === 'planning') return <ProjectWizardBNCC />;
