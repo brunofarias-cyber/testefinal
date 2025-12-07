@@ -71,6 +71,10 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import GerenciadorColaboradores from "./components/coteaching/GerenciadorColaboradores";
 import AceitarConvite from "./components/coteaching/AceitarConvite";
 import ProjetoCardComRole from "./components/coteaching/ProjetoCardComRole";
+import ActivityBank from "./components/ActivityBank";
+import TeamManagement from "./components/TeamManagement";
+import LandingPage from "./components/LandingPage";
+import BrandLogo from "./components/BrandLogo";
 
 
 // --- DADOS MOCKADOS ---
@@ -2059,6 +2063,7 @@ function App() {
 
 function DashboardApp() {
     const [viewState, setViewState] = useState('landing');
+    const [showLoginScreen, setShowLoginScreen] = useState(false);
     const [activeTab, setActiveTab] = useState('dashboard');
     const [role, setRole] = useState('teacher');
     const [currentUser, setCurrentUser] = useState(null);
@@ -2134,6 +2139,7 @@ function DashboardApp() {
         AuthManager.logout();
         setCurrentUser(null);
         setViewState('landing');
+        setShowLoginScreen(false);
         setActiveTab('dashboard');
         setSelectedProject(null);
     };
@@ -2172,6 +2178,8 @@ function DashboardApp() {
             if (activeTab === 'reports') return <TeacherReportsEditavel />;
             if (activeTab === 'rubrics') return <TeacherRubricEditablePoints />;
             if (activeTab === 'bncc') return <TeacherBnccPage projectId={1} classId={1} />;
+            if (activeTab === 'activities') return <ActivityBank />;
+            if (activeTab === 'teams') return <TeamManagement />;
             // if (activeTab === 'copiloto-ia') return <CopilotoIA projectId={selectedProject?.id} role={role} />;
             // if (activeTab === 'early-warning') return <EarlyWarning />;
             // if (activeTab === 'missoes') return <MissoesColaborativas />;
@@ -2200,7 +2208,12 @@ function DashboardApp() {
         return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Sistema BProjetos</h3><p className="text-slate-500">Navegue pelo menu lateral para explorar as funcionalidades!</p></div>;
     };
 
-    if (viewState === 'landing') return <LoginScreen onLogin={handleLogin} />;
+    if (viewState === 'landing') return <LandingPage onEnter={(selectedRole) => {
+        setRole(selectedRole);
+        setShowLoginScreen(true);
+    }} />;
+
+    if (showLoginScreen && viewState === 'landing') return <LoginScreen onLogin={handleLogin} />;
 
     return (
         <div className="flex min-h-screen bg-slate-50">
