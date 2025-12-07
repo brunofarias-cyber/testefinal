@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     BarChart2,
     TrendingUp,
@@ -12,8 +12,53 @@ import {
     Target
 } from "lucide-react";
 
-const StudentDashboard = () => {
+const API_BASE = import.meta.env.VITE_API_URL || '';
+const api = (path) => (API_BASE ? `${API_BASE}${path}` : path);
+
+const StudentDashboard = ({ currentUserId = 101 }) => {
     const [selectedProject, setSelectedProject] = useState(null);
+    const [projects, setProjects] = useState([]);
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    // Carregar projetos da turma do aluno
+    useEffect(() => {
+        loadStudentProjects();
+        loadStudentStats();
+    }, [currentUserId]);
+
+    const loadStudentProjects = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(api(`/api/student-projects/${currentUserId}`));
+            if (response.ok) {
+                const data = await response.json();
+                setProjects(data.data.projects || []);
+                console.log(`✅ Projetos carregados (Turma ${data.data.classId}):`, data.data.projects.length);
+            } else {
+                // Fallback para mock
+                console.log('⚠️ Usando projetos mock');
+                setProjects(MOCK_PROJECTS_FALLBACK);
+            }
+        } catch (error) {
+            console.error('❌ Erro ao carregar projetos:', error);
+            setProjects(MOCK_PROJECTS_FALLBACK);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadStudentStats = async () => {
+        try {
+            const response = await fetch(api(`/api/student-projects/${currentUserId}/stats`));
+            if (response.ok) {
+                const data = await response.json();
+                setStats(data.data);
+            }
+        } catch (error) {
+            console.error('❌ Erro ao carregar estatísticas:', error);
+        }
+    };
 
     const studentData = {
         name: "João Silva",
@@ -22,12 +67,13 @@ const StudentDashboard = () => {
         xp: 1250,
         level: 5,
         xpProgress: 65,
-        average: 8.5,
+        average: stats?.average || 8.5,
         attendance: 95,
         engagement: 88
     };
 
-    const projects = [
+    // Fallback mock projects
+    const MOCK_PROJECTS_FALLBACK = [
         {
             id: 1,
             name: "Horta Sustentável",
@@ -46,17 +92,6 @@ const StudentDashboard = () => {
             dueDate: "2023-12-20",
             grade: null,
             teacher: "Prof. Roberto Lima",
-            status: "in-progress",
-            tasksDone: 2,
-            tasksTotal: 4
-        },
-        {
-            id: 3,
-            name: "Jornal Digital",
-            progress: 45,
-            dueDate: "2023-11-30",
-            grade: null,
-            teacher: "Prof. Carlos Souza",
             status: "in-progress",
             tasksDone: 2,
             tasksTotal: 4

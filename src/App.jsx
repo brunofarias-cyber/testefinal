@@ -45,6 +45,7 @@ import {
 import TeacherPlanning from "./components/TeacherPlanning";
 import ProjectWizardBNCC from "./components/ProjectWizardBNCC";
 import MessagingSystem from "./components/MessagingSystem";
+import MessagingSystemV2 from "./components/MessagingSystemV2";
 import TeacherPerformance from "./components/TeacherPerformance";
 import { AuthManager, LoginScreen } from "./components/AuthSystemAPI";
 import StudentDashboard from "./components/StudentDashboard";
@@ -2038,7 +2039,7 @@ function DashboardApp() {
             if (activeTab === 'calendar') return <TeacherCalendar events={calendarEvents} onAddEvent={handleAddCalendarEvent} />;
             if (activeTab === 'planning') return <ProjectWizardBNCC />;
             if (activeTab === 'performance') return <TeacherPerformance />;
-            if (activeTab === 'messages') return <MessagingSystem userRole="teacher" currentUserId={currentUser?.id || 1} />;
+            if (activeTab === 'messages') return <MessagingSystemV2 userRole="teacher" currentUserId={currentUser?.id || 1} currentUserName={currentUser?.name || 'Professor'} />;
             if (activeTab === 'reports') return <TeacherReportsEditavel />;
             if (activeTab === 'rubrics') return <TeacherRubricEditablePoints />;
             if (activeTab === 'bncc') return <TeacherBnccPage projectId={1} classId={1} />;
@@ -2057,12 +2058,12 @@ function DashboardApp() {
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'student') {
-            if (activeTab === 'student-home' || activeTab === 'projects') return <StudentDashboard />;
+            if (activeTab === 'student-home' || activeTab === 'projects') return <StudentDashboard currentUserId={currentUser?.id || 101} />;
             if (activeTab === 'progress') return <StudentProgressDashboard />;
             if (activeTab === 'grades') return <StudentGrades />;
             if (activeTab === 'achievements') return <StudentAchievements />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
-            if (activeTab === 'messages') return <MessagingSystem userRole="student" currentUserId={currentUser?.id || 101} />;
+            if (activeTab === 'messages') return <MessagingSystemV2 userRole="student" currentUserId={currentUser?.id || 101} currentUserName={currentUser?.name || 'Aluno'} />;
             if (activeTab === 'notifications') return <NotificationCenter />;
             if (activeTab === 'skills') return <StudentBnccPage studentId={currentUser?.id || 101} />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;

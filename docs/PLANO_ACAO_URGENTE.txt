@@ -1,0 +1,219 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                   🚨 PLANO DE AÇÃO URGENTE                          ║
+║              Correção Crítica: Integração Professor-Aluno           ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+📅 Data: 7 de dezembro de 2025
+⏱️ Tempo Total: ~2 horas (simplificado)
+🎯 Objetivo: Sistema funcional para testes internos
+
+═══════════════════════════════════════════════════════════════════════
+
+🔥 FASE 1: CHAT REAL-TIME (45 MINUTOS) - JÁ IMPLEMENTADO ✅
+═══════════════════════════════════════════════════════════════════════
+
+✅ [CONCLUÍDO] Instalar dependência
+   npm install socket.io-client
+
+✅ [CONCLUÍDO] Criar componente MessagingSystemV2.jsx
+   - Arquivo criado em: src/components/MessagingSystemV2.jsx
+   - Features: Socket.io, teams, real-time
+
+✅ [CONCLUÍDO] Criar rotas de teams
+   - Arquivo criado em: routes/teams.js
+   - 8 endpoints RESTful
+   - Suporte a mensagens por equipe
+
+✅ [CONCLUÍDO] Registrar rotas no server.js
+   - Import adicionado
+   - Rota registrada: app.use('/api/teams', teamsRoutes)
+
+⏳ [PENDENTE] Atualizar App.jsx para usar MessagingSystemV2
+   
+   AÇÃO NECESSÁRIA:
+   1. Abrir: src/App.jsx
+   2. Procurar linha ~2041:
+      if (activeTab === 'messages') return <MessagingSystem ... />
+   3. Substituir por:
+      if (activeTab === 'messages') return <MessagingSystemV2 ... />
+   4. Adicionar import:
+      import MessagingSystemV2 from './components/MessagingSystemV2';
+
+⏳ [PENDENTE] Reiniciar servidor
+   
+   COMANDOS:
+   pkill -f "node"
+   npm run dev
+
+⏳ [PENDENTE] Testar chat entre perfis
+   
+   TESTE:
+   1. Navegador 1: Login como professor
+   2. Navegador 2: Login como aluno (incognito)
+   3. Ambos abrem "Mensagens"
+   4. Professor envia mensagem → Aluno recebe instantaneamente ✓
+
+═══════════════════════════════════════════════════════════════════════
+
+🔧 FASE 2: TESTAR SISTEMA (30 MINUTOS)
+═══════════════════════════════════════════════════════════════════════
+
+□ Teste 1: Chat Professor → Aluno
+  - Abrir 2 navegadores
+  - Login em cada perfil
+  - Enviar mensagens
+  - Validar sincronização < 1 segundo
+
+□ Teste 2: Status de Conexão
+  - Verificar "🟢 Online" quando conectado
+  - Recarregar página
+  - Verificar reconnection automática
+
+□ Teste 3: Persistência
+  - Enviar 5 mensagens
+  - Fechar e reabrir chat
+  - Verificar histórico completo
+
+□ Teste 4: Isolamento de Equipes
+  - Criar 2 equipes diferentes
+  - Enviar mensagem em cada uma
+  - Validar que não há vazamento
+
+═══════════════════════════════════════════════════════════════════════
+
+📋 FASE 3: DOCUMENTAÇÃO (15 MINUTOS)
+═══════════════════════════════════════════════════════════════════════
+
+✅ [CONCLUÍDO] Auditoria técnica
+   - Arquivo: docs/AUDITORIA_CRITICA_INTEGRACAO.md
+   
+✅ [CONCLUÍDO] Guia de testes
+   - Arquivo: docs/GUIA_TESTE_CHAT.md
+
+□ Screenshots/Vídeo (Opcional)
+   - Gravar 2 min mostrando chat funcionando
+   - Compartilhar com equipe
+
+═══════════════════════════════════════════════════════════════════════
+
+🚀 PRÓXIMOS PASSOS (APÓS VALIDAÇÃO)
+═══════════════════════════════════════════════════════════════════════
+
+SEMANA 1 (Esta semana):
+□ Implementar edição de turmas (30 min)
+  - Já tem componente TeacherClassManager.jsx
+  - Implementar rotas backend
+  - Testar CRUD completo
+
+□ Filtro de projetos por turma (15 min)
+  - Adicionar class_id na query
+  - Aluno vê apenas projetos da sua turma
+
+SEMANA 2 (Próxima semana):
+□ StudentRubricView (45 min)
+  - Aluno visualiza critérios de avaliação
+  
+□ StudentFeedbackCenter (45 min)
+  - Aluno recebe feedback do professor
+
+═══════════════════════════════════════════════════════════════════════
+
+📊 MÉTRICAS DE SUCESSO
+═══════════════════════════════════════════════════════════════════════
+
+Chat Real-Time:
+✓ Latência < 1 segundo
+✓ Reconnection automática
+✓ Mensagens persistem
+✓ Isolamento por equipe
+
+Sistema Geral:
+✓ Professor consegue enviar mensagens
+✓ Aluno consegue receber mensagens
+✓ Ambos veem histórico completo
+✓ Sem crashes ou erros de console
+
+═══════════════════════════════════════════════════════════════════════
+
+🆘 TROUBLESHOOTING RÁPIDO
+═══════════════════════════════════════════════════════════════════════
+
+PROBLEMA: "Nenhuma equipe encontrada"
+SOLUÇÃO: Verificar dados mock em routes/teams.js (linha 24)
+
+PROBLEMA: "Socket.io erro"
+SOLUÇÃO: Verificar CORS em config/socket-io.js (linha 17)
+
+PROBLEMA: Mensagens não sincronizam
+SOLUÇÃO: Abrir Console (F12) e verificar:
+  - ✅ Socket.io conectado?
+  - ✅ Entrou na room?
+  - ❌ Se não: verificar backend logs
+
+PROBLEMA: "Cannot read property emit"
+SOLUÇÃO: Socket não inicializou, adicionar verificação:
+  if (socket && connected) { socket.emit(...) }
+
+═══════════════════════════════════════════════════════════════════════
+
+✅ CHECKLIST FINAL
+═══════════════════════════════════════════════════════════════════════
+
+Antes de considerar "pronto":
+□ Chat funciona entre 2 perfis diferentes
+□ Mensagens aparecem < 1 segundo
+□ Histórico persiste após reload
+□ Sem erros no console do navegador
+□ Sem erros no terminal do backend
+□ Status de conexão muda corretamente
+□ Reconnection automática funciona
+
+Após validação:
+□ Commit das mudanças
+□ Push para repositório
+□ Notificar equipe
+□ Agendar próxima fase (edição turmas)
+
+═══════════════════════════════════════════════════════════════════════
+
+📞 CONTATOS DE SUPORTE
+═══════════════════════════════════════════════════════════════════════
+
+Arquivos de Referência:
+- docs/AUDITORIA_CRITICA_INTEGRACAO.md (diagnóstico completo)
+- docs/GUIA_TESTE_CHAT.md (testes passo-a-passo)
+- src/components/MessagingSystemV2.jsx (código implementado)
+- routes/teams.js (backend implementado)
+
+Logs para Debug:
+- Backend: Verificar terminal onde rodou `npm run dev`
+- Frontend: Abrir Console do navegador (F12)
+- Network: Verificar aba Network (F12) para ver requisições
+
+═══════════════════════════════════════════════════════════════════════
+
+🎯 META FINAL
+═══════════════════════════════════════════════════════════════════════
+
+Hoje (2 horas):
+✅ Chat funcionando entre professor e aluno
+✅ Testes validados
+✅ Documentação pronta
+
+Esta Semana (4 horas):
+□ Edição de turmas completa
+□ Filtro de projetos por turma
+□ Sistema pronto para staging
+
+Este Mês (8 horas):
+□ StudentRubricView
+□ StudentFeedbackCenter
+□ Deploy em produção
+
+═══════════════════════════════════════════════════════════════════════
+
+Criado por: Engenheiro de Software Sênior
+Data: 7 de dezembro de 2025
+Status: 🔴 CRÍTICO - Ação Imediata
+
+BOA SORTE! 🚀
