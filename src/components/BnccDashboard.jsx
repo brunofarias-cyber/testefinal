@@ -259,6 +259,17 @@ export const TopStudents = ({ projectId }) => {
     };
 
     if (loading) return <p>Carregando...</p>;
+    if (!students || !Array.isArray(students) || students.length === 0) {
+        return (
+            <div className="bg-white rounded-2xl border border-slate-100 p-6">
+                <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <Award size={20} className="text-yellow-500" />
+                    Top Performers
+                </h3>
+                <p className="text-slate-500">Nenhum aluno com avaliações disponível</p>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white rounded-2xl border border-slate-100 p-6">
@@ -310,7 +321,7 @@ export const AtRiskStudents = ({ projectId }) => {
 
     if (loading) return <p>Carregando...</p>;
 
-    if (students.length === 0) {
+    if (!students || !Array.isArray(students) || students.length === 0) {
         return (
             <div className="bg-green-50 rounded-2xl border border-green-200 p-6">
                 <p className="text-green-700 font-bold flex items-center gap-2">✅ Nenhum aluno em risco!</p>
@@ -367,6 +378,14 @@ export const SkillsPerformance = ({ projectId }) => {
     };
 
     if (loading) return <p>Carregando...</p>;
+    if (!skills || !Array.isArray(skills) || skills.length === 0) {
+        return (
+            <div className="bg-white rounded-2xl border border-slate-100 p-6">
+                <h3 className="text-lg font-bold text-slate-800 mb-4">Performance por Habilidade (Top 10)</h3>
+                <p className="text-slate-500">Nenhuma habilidade disponível</p>
+            </div>
+        );
+    }
 
     const chartData = skills.map(s => ({
         code: s.skillCode,
