@@ -335,6 +335,8 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<ClipboardList size={20} />} label="Relatórios" active={activeTab === 'reports'} onClick={() => setActiveTab('reports')} />
                                 <NavItem icon={<FileText size={20} />} label="Rubricas" active={activeTab === 'rubrics'} onClick={() => setActiveTab('rubrics')} />
                                 <NavItem icon={<BookOpen size={20} />} label="BNCC" active={activeTab === 'bncc'} onClick={() => setActiveTab('bncc')} />
+                                <NavItem icon={<Bot size={20} />} label="Copiloto IA" active={activeTab === 'teacher-copilot'} onClick={() => setActiveTab('teacher-copilot')} />
+                                <NavItem icon={<GitBranch size={20} />} label="Ecossistema" active={activeTab === 'teacher-ecosystem'} onClick={() => setActiveTab('teacher-ecosystem')} />
                                 <NavItem icon={<Shield size={20} />} label="Early Warning" active={activeTab === 'new-early-warning'} onClick={() => setActiveTab('new-early-warning')} />
                             </>
                         )}
@@ -344,8 +346,6 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<BarChart2 size={20} />} label="Progresso" active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} />
                                 <NavItem icon={<Trophy size={20} />} label="Missões" active={activeTab === 'new-missions'} onClick={() => setActiveTab('new-missions')} />
                                 <NavItem icon={<Briefcase size={20} />} label="Portfólio" active={activeTab === 'new-portfolio'} onClick={() => setActiveTab('new-portfolio')} />
-                                <NavItem icon={<GitBranch size={20} />} label="Ecossistema" active={activeTab === 'new-ecosystem'} onClick={() => setActiveTab('new-ecosystem')} />
-                                <NavItem icon={<Bot size={20} />} label="Copiloto IA" active={activeTab === 'new-copilot'} onClick={() => setActiveTab('new-copilot')} />
                                 <NavItem icon={<Award size={20} />} label="Notas" active={activeTab === 'grades'} onClick={() => setActiveTab('grades')} />
                                 <NavItem icon={<Calendar size={20} />} label="Calendário" active={activeTab === 'calendar'} onClick={() => setActiveTab('calendar')} />
                                 <NavItem icon={<MessageSquare size={20} />} label="Mensagens" active={activeTab === 'messages'} onClick={() => setActiveTab('messages')} />
@@ -2102,6 +2102,8 @@ function DashboardApp() {
             if (activeTab === 'bncc') return <TeacherBnccPage projectId={1} classId={1} />;
             if (activeTab === 'activities') return <ActivityBank />;
             if (activeTab === 'teams') return <TeamManagement />;
+            if (activeTab === 'teacher-copilot') return <CopilotIA />;
+            if (activeTab === 'teacher-ecosystem') return <SchoolEcosystem />;
             if (activeTab === 'new-early-warning') return <EarlyWarningSystem />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
@@ -2117,8 +2119,6 @@ function DashboardApp() {
             if (activeTab === 'progress') return <StudentProgressDashboard />;
             if (activeTab === 'new-missions') return <MissionsSystem />;
             if (activeTab === 'new-portfolio') return <StudentPortfolio />;
-            if (activeTab === 'new-ecosystem') return <SchoolEcosystem />;
-            if (activeTab === 'new-copilot') return <CopilotIA />;
             if (activeTab === 'grades') return <StudentGrades />;
             if (activeTab === 'achievements') return <StudentAchievements />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
