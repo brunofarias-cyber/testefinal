@@ -41,7 +41,21 @@ import {
     Bell,
     FolderKanban,
     Network,
-    Trophy
+    Trophy,
+    Mail,
+    Eye,
+    EyeOff,
+    Bot,
+    Briefcase,
+    GitBranch,
+    Shield,
+    Activity,
+    TrendingDown,
+    UserX,
+    Heart,
+    Share2,
+    ExternalLink,
+    Flame
 } from "lucide-react";
 import TeacherPlanning from "./components/TeacherPlanning";
 import ProjectWizardBNCC from "./components/ProjectWizardBNCC";
@@ -75,6 +89,12 @@ import ActivityBank from "./components/ActivityBank";
 import TeamManagement from "./components/TeamManagement";
 import LandingPage from "./components/LandingPage";
 import BrandLogo from "./components/BrandLogo";
+import MissionsSystem from "./components/MissionsSystem";
+import StudentProgressTracker from "./components/StudentProgress";
+import StudentPortfolio from "./components/StudentPortfolio";
+import SchoolEcosystem from "./components/SchoolEcosystem";
+import CopilotIA from "./components/CopilotIA";
+import EarlyWarningSystem from "./components/EarlyWarningSystem";
 
 
 // --- DADOS MOCKADOS ---
@@ -266,31 +286,6 @@ const INITIAL_EVENTS = [
 
 // --- COMPONENTS ---
 
-const BrandLogo = ({ size = 40, className = "" }) => (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-        <defs>
-            <linearGradient id="bookGradient" x1="0" y1="100" x2="100" y2="0" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#4338ca" />
-                <stop offset="1" stopColor="#6366f1" />
-            </linearGradient>
-            <linearGradient id="plantGradient" x1="50" y1="100" x2="50" y2="0" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#15803d" />
-                <stop offset="1" stopColor="#4ade80" />
-            </linearGradient>
-        </defs>
-        <path d="M10 75 C10 75 30 85 50 75 C70 65 90 75 90 75 V 85 C90 85 70 75 50 85 C30 95 10 85 10 85 V 75 Z" fill="url(#bookGradient)" opacity="0.8" />
-        <path d="M10 70 C10 70 30 80 50 70 C70 60 90 70 90 70 V 80 C90 80 70 70 50 80 C30 90 10 80 10 80 V 70 Z" fill="white" opacity="0.3" />
-        <path d="M50 75 V 85" stroke="white" strokeWidth="2" strokeLinecap="round" />
-        <path d="M50 75 Q 50 50 50 30" stroke="url(#plantGradient)" strokeWidth="4" strokeLinecap="round" />
-        <path d="M50 50 Q 70 40 80 20 Q 60 20 50 50" fill="url(#plantGradient)" />
-        <path d="M50 40 Q 30 30 20 10 Q 40 10 50 40" fill="url(#plantGradient)" opacity="0.9" />
-        <circle cx="20" cy="10" r="4" fill="#8b5cf6" />
-        <circle cx="80" cy="20" r="4" fill="#8b5cf6" />
-        <circle cx="35" cy="25" r="3" fill="#8b5cf6" />
-        <circle cx="65" cy="30" r="3" fill="#8b5cf6" />
-    </svg>
-);
-
 const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
     const getRoleLabel = () => {
         if (role === 'teacher') return 'Professor';
@@ -340,17 +335,17 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<ClipboardList size={20} />} label="Relatórios" active={activeTab === 'reports'} onClick={() => setActiveTab('reports')} />
                                 <NavItem icon={<FileText size={20} />} label="Rubricas" active={activeTab === 'rubrics'} onClick={() => setActiveTab('rubrics')} />
                                 <NavItem icon={<BookOpen size={20} />} label="BNCC" active={activeTab === 'bncc'} onClick={() => setActiveTab('bncc')} />
-                                <NavItem icon={<Zap size={20} />} label="Copiloto IA" active={activeTab === 'copiloto-ia'} onClick={() => setActiveTab('copiloto-ia')} />
-                                <NavItem icon={<AlertCircle size={20} />} label="Early Warning" active={activeTab === 'early-warning'} onClick={() => setActiveTab('early-warning')} />
-                                <NavItem icon={<Trophy size={20} />} label="Missões" active={activeTab === 'missoes'} onClick={() => setActiveTab('missoes')} />
-                                <NavItem icon={<FolderKanban size={20} />} label="Portfólio" active={activeTab === 'portfolio'} onClick={() => setActiveTab('portfolio')} />
-                                <NavItem icon={<Network size={20} />} label="Ecossistema" active={activeTab === 'ecossistema'} onClick={() => setActiveTab('ecossistema')} />
+                                <NavItem icon={<Shield size={20} />} label="Early Warning" active={activeTab === 'new-early-warning'} onClick={() => setActiveTab('new-early-warning')} />
                             </>
                         )}
                         {role === 'student' && (
                             <>
                                 <NavItem icon={<Book size={20} />} label="Projetos" active={activeTab === 'projects'} onClick={() => setActiveTab('projects')} />
                                 <NavItem icon={<BarChart2 size={20} />} label="Progresso" active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} />
+                                <NavItem icon={<Trophy size={20} />} label="Missões" active={activeTab === 'new-missions'} onClick={() => setActiveTab('new-missions')} />
+                                <NavItem icon={<Briefcase size={20} />} label="Portfólio" active={activeTab === 'new-portfolio'} onClick={() => setActiveTab('new-portfolio')} />
+                                <NavItem icon={<GitBranch size={20} />} label="Ecossistema" active={activeTab === 'new-ecosystem'} onClick={() => setActiveTab('new-ecosystem')} />
+                                <NavItem icon={<Bot size={20} />} label="Copiloto IA" active={activeTab === 'new-copilot'} onClick={() => setActiveTab('new-copilot')} />
                                 <NavItem icon={<Award size={20} />} label="Notas" active={activeTab === 'grades'} onClick={() => setActiveTab('grades')} />
                                 <NavItem icon={<Calendar size={20} />} label="Calendário" active={activeTab === 'calendar'} onClick={() => setActiveTab('calendar')} />
                                 <NavItem icon={<MessageSquare size={20} />} label="Mensagens" active={activeTab === 'messages'} onClick={() => setActiveTab('messages')} />
@@ -403,79 +398,6 @@ const NavItem = ({ icon, label, active, onClick }) => (
         {icon}
         {label}
     </button>
-);
-
-const LandingPage = ({ onEnter }) => (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex flex-col relative overflow-hidden">
-        <nav className="px-8 py-6 flex justify-between items-center max-w-7xl mx-auto w-full">
-            <div className="flex items-center gap-3">
-                <BrandLogo size={40} />
-                <span className="text-2xl font-bold text-slate-800 tracking-tight">BProjetos</span>
-            </div>
-            <button className="px-6 py-2.5 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 text-sm">
-                Agendar Demo
-            </button>
-        </nav>
-
-        <div className="flex-1 flex flex-col md:flex-row items-center justify-center max-w-7xl mx-auto w-full px-6 md:px-12 gap-12 py-12">
-
-            <div className="md:w-1/2 space-y-8">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-bold">
-                    <span className="relative flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
-                    </span>
-                    Plataforma #1 para Escolas Inovadoras
-                </div>
-
-                <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 leading-tight">
-                    Projetos que <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Engajam Alunos</span>
-                </h1>
-
-                <p className="text-xl text-slate-600 leading-relaxed max-w-lg">
-                    Centralize a gestão pedagógica, automatize o acompanhamento da BNCC e transforme atividades escolares em experiências gamificadas.
-                </p>
-            </div>
-
-            <div className="md:w-1/2 w-full grid gap-4">
-                <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-2">Acesso Rápido (Ambiente Demo)</p>
-
-                <button onClick={() => onEnter('teacher')} className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl flex items-center gap-6 hover:scale-105 transition-all shadow-sm hover:shadow-xl group cursor-pointer text-left border border-slate-200">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white shadow-lg">
-                        <Book size={28} />
-                    </div>
-                    <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-800">Sou Professor</h3>
-                        <p className="text-sm text-slate-500">Gerenciar projetos, turmas e rubricas.</p>
-                    </div>
-                    <ArrowRight className="text-slate-400 group-hover:text-blue-500 transition-colors" size={20} />
-                </button>
-
-                <button onClick={() => onEnter('student')} className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl flex items-center gap-6 hover:scale-105 transition-all shadow-sm hover:shadow-xl group cursor-pointer text-left border border-slate-200">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
-                        <Rocket size={28} />
-                    </div>
-                    <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-800">Sou Aluno</h3>
-                        <p className="text-sm text-slate-500">Ver missões, XP e enviar atividades.</p>
-                    </div>
-                    <ArrowRight className="text-slate-400 group-hover:text-purple-500 transition-colors" size={20} />
-                </button>
-
-                <button onClick={() => onEnter('coordinator')} className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl flex items-center gap-6 hover:scale-105 transition-all shadow-sm hover:shadow-xl group cursor-pointer text-left border border-slate-200">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white shadow-lg">
-                        <Grid size={28} />
-                    </div>
-                    <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-800">Coordenação</h3>
-                        <p className="text-sm text-slate-500">Monitorar Kanban e desempenho docente.</p>
-                    </div>
-                    <ArrowRight className="text-slate-400 group-hover:text-orange-500 transition-colors" size={20} />
-                </button>
-            </div>
-        </div>
-    </div>
 );
 
 // Calendário do Professor (Gerenciamento)
@@ -2180,11 +2102,7 @@ function DashboardApp() {
             if (activeTab === 'bncc') return <TeacherBnccPage projectId={1} classId={1} />;
             if (activeTab === 'activities') return <ActivityBank />;
             if (activeTab === 'teams') return <TeamManagement />;
-            // if (activeTab === 'copiloto-ia') return <CopilotoIA projectId={selectedProject?.id} role={role} />;
-            // if (activeTab === 'early-warning') return <EarlyWarning />;
-            // if (activeTab === 'missoes') return <MissoesColaborativas />;
-            // if (activeTab === 'portfolio') return <PortfolioDigital />;
-            // if (activeTab === 'ecossistema') return <EcossistemaConectado />;
+            if (activeTab === 'new-early-warning') return <EarlyWarningSystem />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'coordinator') {
@@ -2197,6 +2115,10 @@ function DashboardApp() {
         if (role === 'student') {
             if (activeTab === 'student-home' || activeTab === 'projects') return <StudentDashboard currentUserId={currentUser?.id || 101} onProjectClick={handleProjectClick} />;
             if (activeTab === 'progress') return <StudentProgressDashboard />;
+            if (activeTab === 'new-missions') return <MissionsSystem />;
+            if (activeTab === 'new-portfolio') return <StudentPortfolio />;
+            if (activeTab === 'new-ecosystem') return <SchoolEcosystem />;
+            if (activeTab === 'new-copilot') return <CopilotIA />;
             if (activeTab === 'grades') return <StudentGrades />;
             if (activeTab === 'achievements') return <StudentAchievements />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
