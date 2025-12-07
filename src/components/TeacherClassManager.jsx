@@ -182,6 +182,11 @@ const TeacherClassManager = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [addStudentLoading, setAddStudentLoading] = useState(false);
 
+  // MODAL: CRIAR NOVA TURMA
+  const [createModal, setCreateModal] = useState(false);
+  const [createData, setCreateData] = useState({ name: '', year: '', description: '', capacity: 35 });
+  const [createLoading, setCreateLoading] = useState(false);
+
   // CARREGAR TURMAS AO INICIALIZAR
   useEffect(() => {
     loadClasses();
@@ -248,6 +253,46 @@ const TeacherClassManager = () => {
       showError('Erro ao atualizar turma');
     } finally {
       setEditLoading(false);
+    }
+  };
+
+  // ═════════════════════════════════════════════════════
+  // CRIAR NOVA TURMA
+  // ═════════════════════════════════════════════════════
+
+  const handleOpenCreateModal = () => {
+    setCreateData({ name: '', year: '', description: '', capacity: 35 });
+    setCreateModal(true);
+  };
+
+  const handleCreateClass = async () => {
+    // VALIDAÇÕES
+    if (!createData.name.trim()) {
+      showError('Nome da turma é obrigatório');
+      return;
+    }
+    if (!createData.year.trim()) {
+      showError('Ano/Série é obrigatório');
+      return;
+    }
+
+    setCreateLoading(true);
+    try {
+      const newClass = await classesAPI.createClass({
+        name: createData.name.trim(),
+        year: createData.year.trim(),
+        description: createData.description.trim(),
+        capacity: createData.capacity || 35
+      });
+
+      // Adicionar à lista local
+      setClasses(prev => [newClass, ...prev]);
+      setCreateModal(false);
+      showSuccess('✓ Turma criada com sucesso!');
+    } catch (error) {
+      showError('Erro ao criar turma');
+    } finally {
+      setCreateLoading(false);
     }
   };
 
@@ -533,6 +578,13 @@ const TeacherClassManager = () => {
           <h2 className="text-3xl font-bold text-slate-800">Gerenciar Turmas</h2>
           <p className="text-slate-500">Edite e configure suas turmas</p>
         </div>
+        <button
+          onClick={handleOpenCreateModal}
+          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-indigo-200 transition"
+        >
+          <Plus size={20} />
+          Nova Turma
+        </button>
       </div>
 
       {/* Notificações */}
@@ -796,6 +848,124 @@ const TeacherClassManager = () => {
             >
               Cancelar
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ═════════════════════════════════════════════════ */}
+      {/* MODAL: CRIAR NOVA TURMA */}
+      {/* ═════════════════════════════════════════════════ */}
+      {createModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-slate-800">Criar Nova Turma</h3>
+              <button
+                onClick={() => setCreateModal(false)}
+                className="p-2 hover:bg-slate-100 rounded-lg transition"
+              >
+                <X size={20} className="text-slate-400" />
+              </button>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              {/* Nome */}
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  Nome da Turma *
+                </label>
+                <input
+                  type="text"
+                  value={createData.name}
+                  onChange={(e) => setCreateData({ ...createData, name: e.target.value })}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                  placeholder="Ex: 1º Ano A"
+                  autoFocus
+                />
+              </div>
+
+              {/* Ano/Série */}
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  Ano/Série *
+                </label>
+                <select
+                  value={createData.year}
+                  onChange={(e) => setCreateData({ ...createData, year: e.target.value })}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition bg-white cursor-pointer"
+                >
+                  <option value="">Selecione...</option>
+                  <option value="1º Ano">1º Ano</option>
+                  <option value="2º Ano">2º Ano</option>
+                  <option value="3º Ano">3º Ano</option>
+                  <option value="4º Ano">4º Ano</option>
+                  <option value="5º Ano">5º Ano</option>
+                  <option value="6º Ano">6º Ano</option>
+                  <option value="7º Ano">7º Ano</option>
+                  <option value="8º Ano">8º Ano</option>
+                  <option value="9º Ano">9º Ano</option>
+                  <option value="1º Médio">1º Médio</option>
+                  <option value="2º Médio">2º Médio</option>
+                  <option value="3º Médio">3º Médio</option>
+                </select>
+              </div>
+
+              {/* Descrição */}
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  Descrição
+                </label>
+                <textarea
+                  value={createData.description}
+                  onChange={(e) => setCreateData({ ...createData, description: e.target.value })}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none h-20 resize-none transition"
+                  placeholder="Ex: Turma matutino, turno especial, etc"
+                />
+              </div>
+
+              {/* Capacidade */}
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  Capacidade de Alunos
+                </label>
+                <input
+                  type="number"
+                  value={createData.capacity}
+                  onChange={(e) => setCreateData({ ...createData, capacity: parseInt(e.target.value) || 35 })}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                  placeholder="35"
+                  min="1"
+                  max="50"
+                />
+              </div>
+            </div>
+
+            {/* Botões */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCreateModal(false)}
+                className="flex-1 px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-bold transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleCreateClass}
+                disabled={createLoading}
+                className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white rounded-lg font-bold transition flex items-center justify-center gap-2"
+              >
+                {createLoading ? (
+                  <>
+                    <Loader size={16} className="animate-spin" />
+                    Criando...
+                  </>
+                ) : (
+                  <>
+                    <Check size={16} />
+                    Criar Turma
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
