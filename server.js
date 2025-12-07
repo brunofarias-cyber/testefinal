@@ -376,30 +376,25 @@ app.get('/', (req, res) => {
 // ===== SINCRONIZAR E INICIAR =====
 
 if (process.env.NODE_ENV !== 'test') {
-    // Apenas autenticar, não sincronizar (sincronização desabilitada para performance)
+    const PORT = process.env.PORT || 3000;
+    
+    // Iniciar servidor IMEDIATAMENTE (não esperar por DB)
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`🚀 Servidor rodando em porta ${PORT}`);
+        console.log(`📍 Host: 0.0.0.0`);
+        console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
+        console.log(`🔗 URL: http://localhost:${PORT}`);
+    });
+    
+    // Tentar conectar ao banco em paralelo (não bloqueia servidor)
     sequelize.authenticate()
-        .then(async () => {
+        .then(() => {
             console.log('✅ PostgreSQL conectado');
-
-            // NÃO rodar seeders (tabelas já existem e é muito lento)
-            console.log('⏭️  Seeders desabilitados (tabelas já existem)');
-
-            startServer();
         })
         .catch(err => {
-            console.warn('⚠️  Erro ao conectar PostgreSQL:', err.message);
-            console.warn('📝 Servidor vai subir em modo OFFLINE (sem banco de dados)');
-            startServer();  // ← NÃO fazer process.exit(1), apenas subir sem DB
+            console.warn('⚠️  DATABASE_URL não respondeu:', err.message);
+            console.warn('📝 Servidor funcionando em modo OFFLINE');
         });
-    
-    function startServer() {
-        app.listen(PORT, '0.0.0.0', () => {
-            console.log(`🚀 Servidor rodando em porta ${PORT}`);
-            console.log(`📍 Host: 0.0.0.0`);
-            console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
-            console.log(`🔗 URL: http://localhost:${PORT}`);
-        });
-    }
 }
 
 export default app;
