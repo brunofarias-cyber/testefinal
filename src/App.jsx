@@ -41,6 +41,7 @@ import {
     Bell
 } from "lucide-react";
 import TeacherPlanning from "./components/TeacherPlanning";
+import ProjectWizardBNCC from "./components/ProjectWizardBNCC";
 import MessagingSystem from "./components/MessagingSystem";
 import TeacherPerformance from "./components/TeacherPerformance";
 import { AuthManager, LoginScreen } from "./components/AuthSystemAPI";
@@ -2019,7 +2020,7 @@ function DashboardApp() {
             if (activeTab === 'classes') return <TeacherClasses />;
             if (activeTab === 'attendance') return <TeacherAttendance />;
             if (activeTab === 'calendar') return <TeacherCalendar events={calendarEvents} onAddEvent={handleAddCalendarEvent} />;
-            if (activeTab === 'planning') return <TeacherPlanning />;
+            if (activeTab === 'planning') return <ProjectWizardBNCC />;
             if (activeTab === 'performance') return <TeacherPerformance />;
             if (activeTab === 'messages') return <MessagingSystem userRole="teacher" />;
             if (activeTab === 'reports') return <TeacherReportsEditavel />;

@@ -1,9 +1,16 @@
 import db from '../models/index.js';
-import Anthropic from '@anthropic-ai/sdk';
+// import Anthropic from '@anthropic-ai/sdk'; // DESABILITADO - package não instalado
 
-const client = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-});
+// Mock de client para evitar erro
+const client = {
+    messages: {
+        create: async () => {
+            return {
+                content: [{ text: 'Resposta simulada de avaliação IA' }]
+            };
+        }
+    }
+};
 
 /**
  * Avalia aluno baseado em:

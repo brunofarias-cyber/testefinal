@@ -20,6 +20,9 @@ import rubricasRoutes from './routes/rubricas.js';
 import rubricasV2Routes from './routes/rubricas-v2.js';
 import coteachingRoutes from './routes/coteaching.routes.js';
 import dashboardStatsRoutes from './routes/dashboard-stats.js';
+import wizardBnccRoutes from './routes/wizard-bncc.js';
+import classesRoutes from './routes/classes.js';
+import teamChatRoutes from './routes/team-chat.js';
 
 dotenv.config();
 
@@ -356,6 +359,9 @@ app.use('/api/google-classroom', googleClassroomRoutes);
 app.use('/api/rubricas', rubricasRoutes);
 app.use('/api/rubricas-v2', rubricasV2Routes);
 app.use('/api/coteaching', verifyToken, coteachingRoutes);
+app.use('/api/wizard-bncc', wizardBnccRoutes);
+app.use('/api/classes', classesRoutes);
+app.use('/api/teams', teamChatRoutes);
 
 // ===== HEALTH CHECK =====
 
@@ -370,16 +376,13 @@ app.get('/', (req, res) => {
 // ===== SINCRONIZAR E INICIAR =====
 
 if (process.env.NODE_ENV !== 'test') {
-    sequelize.sync({ alter: true })
+    // Apenas autenticar, não sincronizar (sincronização desabilitada para performance)
+    sequelize.authenticate()
         .then(async () => {
             console.log('✅ PostgreSQL conectado');
-            console.log('⚠️  Tabelas recriadas (force: true)');
 
-            // Rodar seed automaticamente apenas se não for teste
-            await seedDatabase();
-            await seedBNCCData();
-            await seedReferences();
-            await seedRubricas();
+            // NÃO rodar seeders (tabelas já existem e é muito lento)
+            console.log('⏭️  Seeders desabilitados (tabelas já existem)');
 
             app.listen(PORT, () => {
                 console.log(`🚀 Servidor rodando em porta ${PORT}`);
@@ -387,7 +390,7 @@ if (process.env.NODE_ENV !== 'test') {
             });
         })
         .catch(err => {
-            console.error('❌ Erro ao conectar PostgreSQL:', err);
+            console.error('❌ Erro ao conectar PostgreSQL:', err.message);
             process.exit(1);
         });
 }
