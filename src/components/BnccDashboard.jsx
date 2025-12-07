@@ -138,6 +138,7 @@ export const DisciplinePerformance = ({ projectId }) => {
     };
 
     if (loading) return <p>Carregando...</p>;
+    if (!data || Object.keys(data).length === 0) return <p>Sem dados disponíveis</p>;
 
     const chartData = Object.entries(data).map(([disc, levels]) => ({
         name: disc,
