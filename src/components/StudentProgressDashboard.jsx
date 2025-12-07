@@ -53,6 +53,13 @@ const StudentProgressDashboard = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [timeRange, setTimeRange] = useState('all'); // 'all', '3months', '6months'
 
+  // DEBUG: Verificar se os dados estão corretos
+  React.useEffect(() => {
+    console.log('📊 StudentProgressDashboard carregado');
+    console.log('Competências:', MOCK_STUDENT_COMPETENCIES);
+    console.log('Recharts disponível:', typeof RadarChart !== 'undefined');
+  }, []);
+
   // Calcular trend (crescente/decrescente)
   const calculateTrend = () => {
     if (MOCK_STUDENT_GRADES_TIMELINE.length < 2) return 0;

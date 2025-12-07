@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, Send, Search, Phone, Video, Info, X, ArrowLeft } from 'lucide-react';
+import { MessageSquare, Send, Search, Info, X, ArrowLeft, Loader } from 'lucide-react';
 
-// DADOS MOCK DE CONVERSAS
+const API_BASE = import.meta.env.VITE_API_URL || '';
+const api = (path) => (API_BASE ? `${API_BASE}${path}` : path);
+
+// DADOS MOCK DE CONVERSAS (Fallback)
 const MOCK_CONVERSATIONS = [
     {
         id: 1,
@@ -53,12 +56,43 @@ const MOCK_CONVERSATIONS = [
     }
 ];
 
-const MessagingSystem = ({ userRole = "teacher" }) => {
-    const [conversations, setConversations] = useState(MOCK_CONVERSATIONS);
+const MessagingSystem = ({ userRole = "teacher", currentUserId = 1 }) => {
+    const [conversations, setConversations] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(null);
     const [messageText, setMessageText] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [showInfo, setShowInfo] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [sending, setSending] = useState(false);
+
+    // Carregar conversas ao inicializar
+    useEffect(() => {
+        loadConversations();
+    }, [userRole, currentUserId]);
+
+    const loadConversations = async () => {
+        setLoading(true);
+        try {
+            const endpoint = userRole === 'teacher' 
+                ? `/api/messages/teacher/${currentUserId}/conversations`
+                : `/api/messages/student/${currentUserId}/conversations`;
+            
+            const response = await fetch(api(endpoint));
+            
+            if (response.ok) {
+                const data = await response.json();
+                setConversations(data.data || []);
+                console.log('✅ Conversas carregadas:', data.data?.length || 0);
+            } else {
+                throw new Error('Backend não disponível');
+            }
+        } catch (error) {
+            console.log('⚠️ Usando dados mock');
+            setConversations(MOCK_CONVERSATIONS);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Filtrar conversas por busca
     const filteredConversations = conversations.filter(conv =>
@@ -66,37 +100,80 @@ const MessagingSystem = ({ userRole = "teacher" }) => {
         conv.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Enviar mensagem
-    const handleSendMessage = () => {
-        if (!messageText.trim() || !selectedConversation) return;
+    // Enviar mensagem com persistência
+    const handleSendMessage = async () => {
+        if (!messageText.trim() || !selectedConversation || sending) return;
 
-        const newMessage = {
-            id: selectedConversation.messages.length + 1,
+        setSending(true);
+        const tempMessage = {
+            id: Date.now(),
             sender: userRole,
             text: messageText,
             timestamp: new Date().toISOString(),
             read: false
         };
 
-        const updatedConversations = conversations.map(conv => {
-            if (conv.id === selectedConversation.id) {
-                return {
-                    ...conv,
-                    messages: [...conv.messages, newMessage],
-                    lastMessage: messageText,
-                    timestamp: newMessage.timestamp,
-                    unread: 0
-                };
-            }
-            return conv;
-        });
-
-        setConversations(updatedConversations);
+        // Atualizar UI imediatamente (otimistic update)
+        const updatedMessages = [...selectedConversation.messages, tempMessage];
         setSelectedConversation({
             ...selectedConversation,
-            messages: [...selectedConversation.messages, newMessage]
+            messages: updatedMessages
         });
         setMessageText("");
+
+        try {
+            // Tentar salvar no backend
+            const response = await fetch(api('/api/messages/send'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversationId: selectedConversation.id,
+                    senderId: currentUserId,
+                    recipientId: selectedConversation.participant.id,
+                    message: messageText.trim(),
+                    senderRole: userRole
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ Mensagem salva no backend');
+                
+                // Atualizar com ID real do backend
+                if (data.message) {
+                    const updatedMessagesWithId = updatedMessages.map(msg => 
+                        msg.id === tempMessage.id ? { ...msg, id: data.message.id } : msg
+                    );
+                    setSelectedConversation({
+                        ...selectedConversation,
+                        messages: updatedMessagesWithId
+                    });
+                }
+            } else {
+                console.log('⚠️ Mensagem salva apenas localmente');
+            }
+
+            // Atualizar lista de conversas
+            const updatedConversations = conversations.map(conv => {
+                if (conv.id === selectedConversation.id) {
+                    return {
+                        ...conv,
+                        messages: updatedMessages,
+                        lastMessage: messageText.trim(),
+                        timestamp: tempMessage.timestamp,
+                        unread: 0
+                    };
+                }
+                return conv;
+            });
+            setConversations(updatedConversations);
+
+        } catch (error) {
+            console.error('❌ Erro ao enviar mensagem:', error);
+            // Mensagem já foi adicionada localmente (fallback offline)
+        } finally {
+            setSending(false);
+        }
     };
 
     // Marcar como lido
@@ -131,15 +208,10 @@ const MessagingSystem = ({ userRole = "teacher" }) => {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button className="hover:bg-white/20 p-2 rounded-lg transition">
-                            <Phone size={18} />
-                        </button>
-                        <button className="hover:bg-white/20 p-2 rounded-lg transition">
-                            <Video size={18} />
-                        </button>
                         <button
                             onClick={() => setShowInfo(!showInfo)}
                             className="hover:bg-white/20 p-2 rounded-lg transition"
+                            title="Informações do contato"
                         >
                             <Info size={18} />
                         </button>
@@ -185,11 +257,20 @@ const MessagingSystem = ({ userRole = "teacher" }) => {
                         />
                         <button
                             onClick={handleSendMessage}
-                            disabled={!messageText.trim()}
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-slate-300 transition flex items-center gap-2 font-bold"
+                            disabled={!messageText.trim() || sending}
+                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition flex items-center gap-2 font-bold"
                         >
-                            <Send size={18} />
-                            Enviar
+                            {sending ? (
+                                <>
+                                    <Loader size={18} className="animate-spin" />
+                                    Enviando...
+                                </>
+                            ) : (
+                                <>
+                                    <Send size={18} />
+                                    Enviar
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>
@@ -217,12 +298,22 @@ const MessagingSystem = ({ userRole = "teacher" }) => {
                     </div>
 
                     <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
-                        {filteredConversations.map((conv) => (
-                            <button
-                                key={conv.id}
-                                onClick={() => handleOpenConversation(conv)}
-                                className="w-full p-4 hover:bg-slate-50 transition text-left"
-                            >
+                        {loading ? (
+                            <div className="flex items-center justify-center p-8">
+                                <Loader size={32} className="animate-spin text-indigo-600" />
+                            </div>
+                        ) : filteredConversations.length === 0 ? (
+                            <div className="text-center p-8">
+                                <MessageSquare size={48} className="text-slate-300 mx-auto mb-4" />
+                                <p className="text-slate-500 font-bold">Nenhuma conversa encontrada</p>
+                            </div>
+                        ) : (
+                            filteredConversations.map((conv) => (
+                                <button
+                                    key={conv.id}
+                                    onClick={() => handleOpenConversation(conv)}
+                                    className="w-full p-4 hover:bg-slate-50 transition text-left"
+                                >
                                 <div className="flex gap-3">
                                     <div className="relative flex-shrink-0">
                                         <img
@@ -245,7 +336,7 @@ const MessagingSystem = ({ userRole = "teacher" }) => {
                                     </div>
                                 </div>
                             </button>
-                        ))}
+                        )))}
                     </div>
                 </div>
 

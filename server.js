@@ -17,6 +17,7 @@ import dashboardStatsRoutes from './routes/dashboard-stats.js';
 import wizardBnccRoutes from './routes/wizard-bncc.js';
 import classesRoutes from './routes/classes.js';
 import teamChatRoutes from './routes/team-chat.js';
+import messagesRoutes from './routes/messages.js';
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use('/api/dashboard', dashboardStatsRoutes);
 app.use('/api/wizard-bncc', wizardBnccRoutes);
 app.use('/api/classes', classesRoutes);
 app.use('/api/team-chat', teamChatRoutes);
+app.use('/api/messages', messagesRoutes);
 
 // ===== AUTENTICAÇÃO =====
 app.post('/api/auth/register', async (req, res) => {
