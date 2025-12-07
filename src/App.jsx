@@ -57,6 +57,7 @@ import PortfolioDigital from "./features/PortfolioDigital";
 import EcossistemaConectado from "./features/EcossistemaConectado";
 import StudentProgressDashboard from "./components/StudentProgressDashboard";
 import TeacherClassManager from "./components/TeacherClassManager";
+import TeacherClassManagerDebug from "./components/TeacherClassManagerDebug";
 
 import { NotificationCenter, StudentProgress } from "./components/NotificationCenter";
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";

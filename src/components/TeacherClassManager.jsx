@@ -571,19 +571,19 @@ const TeacherClassManager = () => {
   // ═════════════════════════════════════════════════════
 
   return (
-    <div className="max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex justify-between items-end mb-8">
-        <div>
-          <h2 className="text-3xl font-bold text-slate-800">Gerenciar Turmas</h2>
-          <p className="text-slate-500">Edite e configure suas turmas</p>
+    <div className="w-full">
+      {/* Header com Botão - VISÍVEL E DESTACADO */}
+      <div className="mb-10 flex flex-row justify-between items-start gap-8">
+        <div className="flex-1">
+          <h2 className="text-4xl font-bold text-slate-900">Gerenciar Turmas</h2>
+          <p className="text-slate-600 mt-2 text-lg">Crie e configure suas turmas escolares</p>
         </div>
         <button
           onClick={handleOpenCreateModal}
-          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-indigo-200 transition"
+          className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-bold flex items-center gap-3 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 whitespace-nowrap min-w-fit"
         >
-          <Plus size={20} />
-          Nova Turma
+          <Plus size={28} strokeWidth={3} />
+          <span className="text-lg">Nova Turma</span>
         </button>
       </div>
 
