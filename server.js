@@ -384,15 +384,22 @@ if (process.env.NODE_ENV !== 'test') {
             // NÃO rodar seeders (tabelas já existem e é muito lento)
             console.log('⏭️  Seeders desabilitados (tabelas já existem)');
 
-            app.listen(PORT, () => {
-                console.log(`🚀 Servidor rodando em porta ${PORT}`);
-                console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
-            });
+            startServer();
         })
         .catch(err => {
-            console.error('❌ Erro ao conectar PostgreSQL:', err.message);
-            process.exit(1);
+            console.warn('⚠️  Erro ao conectar PostgreSQL:', err.message);
+            console.warn('📝 Servidor vai subir em modo OFFLINE (sem banco de dados)');
+            startServer();  // ← NÃO fazer process.exit(1), apenas subir sem DB
         });
+    
+    function startServer() {
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`🚀 Servidor rodando em porta ${PORT}`);
+            console.log(`📍 Host: 0.0.0.0`);
+            console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
+            console.log(`🔗 URL: http://localhost:${PORT}`);
+        });
+    }
 }
 
 export default app;

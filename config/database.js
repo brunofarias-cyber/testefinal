@@ -3,32 +3,44 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Neon URL format: postgresql://user:password@host/database?sslmode=require
-if (!process.env.DATABASE_URL) {
-    console.error("❌ ERRO CRÍTICO: A variável de ambiente DATABASE_URL não está definida.");
-    console.error("👉 Verifique se você adicionou a 'DATABASE_URL' na aba 'Environment' do Render.");
-    process.exit(1);
-}
+// ✅ OPÇÃO 1: Se DATABASE_URL está definido, usar ele
+// ❌ OPÇÃO 2: Se não, usar mock (modo offline/desenvolvimento)
+let sequelize;
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: 'postgres',
-    protocol: 'postgres',
-    port: 5432,
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    typeValidation: false,
-    ssl: true,
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false
+if (process.env.DATABASE_URL) {
+    console.log('✅ DATABASE_URL detectado, conectando ao banco...');
+    
+    sequelize = new Sequelize(process.env.DATABASE_URL, {
+        dialect: 'postgres',
+        protocol: 'postgres',
+        port: 5432,
+        logging: process.env.NODE_ENV === 'development' ? console.log : false,
+        typeValidation: false,
+        ssl: true,
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            }
+        },
+        pool: {
+            max: 5,
+            min: 0,
+            acquire: 30000,
+            idle: 10000
         }
-    },
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-    }
-});
+    });
+} else {
+    console.warn('⚠️  DATABASE_URL não está definido!');
+    console.warn('📝 Criando instância Sequelize sem conexão (modo offline)');
+    
+    // Criar instância sem conexão real (apenas inicializa)
+    // Usar postgres sem URL real (não vai conectar mas não vai quebrar)
+    sequelize = new Sequelize({
+        dialect: 'postgres',
+        replication: false,
+        logging: false
+    });
+}
 
 export default sequelize;
