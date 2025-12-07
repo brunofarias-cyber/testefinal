@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
 import { User, Project, Task, Submission, Attendance, Notification, sequelize } from './models/index.js';
 import bnccRoutes from './routes/bncc.js';
@@ -22,6 +24,8 @@ console.log('✅ TODAS as rotas importadas com sucesso');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(cors());
@@ -120,6 +124,10 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// ===== STATIC FRONTEND (Vite build) =====
+const distPath = path.join(__dirname, 'dist');
+app.use(express.static(distPath));
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -144,6 +152,14 @@ app.get('/', (req, res) => {
       '/api/wizard-bncc'
     ]
   });
+});
+
+// SPA fallback para o frontend
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Not Found' });
+  }
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // Start server immediately

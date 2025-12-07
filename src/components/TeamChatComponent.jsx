@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, Send, Users, Lock } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+const api = (path) => (API_BASE ? `${API_BASE}${path}` : path);
+
 // ═══════════════════════════════════════════════════════════════════════
 // DADOS MOCK - Para testes e desenvolvimento
 // ═══════════════════════════════════════════════════════════════════════
@@ -101,7 +104,7 @@ const TeamChatComponent = ({
     
     try {
       // Tentar buscar do backend
-      const response = await fetch(`http://localhost:3000/api/teams/${teamId}/messages`, {
+        const response = await fetch(api(`/api/teams/${teamId}/messages`), {
         headers: {
           'user-id': currentUserId.toString(),
           'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
@@ -134,7 +137,7 @@ const TeamChatComponent = ({
     /*
     import io from 'socket.io-client';
     
-    socketRef.current = io('http://localhost:3000', {
+    socketRef.current = io(API_BASE || window.location.origin, {
       transports: ['websocket'],
       auth: {
         userId: currentUserId,
@@ -228,7 +231,7 @@ const TeamChatComponent = ({
 
     try {
       // Tentar enviar para o backend
-      const response = await fetch(`http://localhost:3000/api/teams/${teamId}/messages`, {
+      const response = await fetch(api(`/api/teams/${teamId}/messages`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -295,7 +298,7 @@ const TeamChatComponent = ({
 
     // Enviar para backend (opcional)
     try {
-      await fetch(`http://localhost:3000/api/teams/${teamId}/messages/${messageId}/read`, {
+      await fetch(api(`/api/teams/${teamId}/messages/${messageId}/read`), {
         method: 'PUT',
         headers: {
           'user-id': currentUserId.toString(),
