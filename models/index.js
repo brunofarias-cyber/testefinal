@@ -5,6 +5,7 @@ import { TaskModel } from './Task.js';
 import { SubmissionModel } from './Submission.js';
 import { AttendanceModel } from './Attendance.js';
 import { NotificationModel } from './Notification.js';
+import { OAuthTokenModel } from './OAuthToken.js';
 
 // BNCC Models
 import BnccGeneralCompetency from './BnccGeneralCompetency.js';
@@ -42,6 +43,7 @@ const Task = TaskModel(sequelize);
 const Submission = SubmissionModel(sequelize);
 const Attendance = AttendanceModel(sequelize);
 const Notification = NotificationModel(sequelize);
+const OAuthToken = OAuthTokenModel(sequelize);
 const TheoreticalReference = TheoreticalReferenceModel(sequelize);
 const StudentFeedback = StudentFeedbackModel(sequelize);
 const EvaluationBenchmarks = EvaluationBenchmarksModel(sequelize);
@@ -215,6 +217,7 @@ export {
     Submission,
     Attendance,
     Notification,
+    OAuthToken,
 
     // BNCC models
     BnccGeneralCompetency,
@@ -253,6 +256,7 @@ export default {
     Submission,
     Attendance,
     Notification,
+    OAuthToken,
     BnccGeneralCompetency,
     BnccDiscipline,
     BnccSkill,

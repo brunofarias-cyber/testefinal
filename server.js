@@ -21,6 +21,8 @@ import messagesRoutes from './routes/messages.js';
 import teamsRoutes from './routes/teams.js';
 import studentProjectsRoutes from './routes/student-projects.js';
 import rubricasRoutes from './routes/rubricas.js';
+import oauthRoutes from './routes/oauth.js';
+import syncRoutes from './routes/sync.js';
 
 dotenv.config();
 
@@ -54,6 +56,8 @@ app.use('/api/messages', messagesRoutes);
 app.use('/api/teams', teamsRoutes);
 app.use('/api/student-projects', studentProjectsRoutes);
 app.use('/api/rubricas', rubricasRoutes);
+app.use(oauthRoutes);
+app.use(syncRoutes);
 
 // ===== AUTENTICAÇÃO =====
 app.post('/api/auth/register', async (req, res) => {
