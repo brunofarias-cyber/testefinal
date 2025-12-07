@@ -1704,12 +1704,38 @@ const StudentHome = ({ projects, onProjectClick }) => {
 
 // Kanban de Equipe do Aluno
 const StudentTeamKanban = ({ project, onBack }) => {
+    const storageKey = `student-kanban-${project?.id || 'default'}`;
     const [tasks, setTasks] = useState(project.tasks && project.tasks.length > 0 ? project.tasks : [
-        { id: 't1', title: 'Pesquisar tema', status: 'done', assignee: 'Eu' },
-        { id: 't2', title: 'Criar slides', status: 'in-progress', assignee: 'Maria' },
-        { id: 't3', title: 'Gravar vídeo', status: 'todo', assignee: 'João' }
+        { id: 't1', title: 'Pesquisar tema', status: 'done', assignee: 'Eu', dueDate: '2025-01-05' },
+        { id: 't2', title: 'Criar slides', status: 'in-progress', assignee: 'Maria', dueDate: '2025-01-10' },
+        { id: 't3', title: 'Gravar vídeo', status: 'todo', assignee: 'João', dueDate: '2025-01-15' }
     ]);
     const [newTaskTitle, setNewTaskTitle] = useState("");
+    const [newTaskAssignee, setNewTaskAssignee] = useState("Eu");
+    const [newTaskDueDate, setNewTaskDueDate] = useState("");
+    const [editingTask, setEditingTask] = useState(null);
+
+    // Load from localStorage when project changes
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem(storageKey);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) setTasks(parsed);
+            }
+        } catch (err) {
+            console.error('Erro ao carregar tarefas salvas', err);
+        }
+    }, [storageKey]);
+
+    // Persist on change
+    useEffect(() => {
+        try {
+            localStorage.setItem(storageKey, JSON.stringify(tasks));
+        } catch (err) {
+            console.error('Erro ao salvar tarefas', err);
+        }
+    }, [storageKey, tasks]);
 
     const moveTask = (taskId, newStatus) => {
         setTasks((prev) => prev.map((t) => t.id === taskId ? { ...t, status: newStatus } : t));
@@ -1721,14 +1747,27 @@ const StudentTeamKanban = ({ project, onBack }) => {
             id: Math.random().toString(36).substr(2, 9),
             title: newTaskTitle,
             status,
-            assignee: 'Eu'
+            assignee: newTaskAssignee || 'Eu',
+            dueDate: newTaskDueDate || ''
         };
         setTasks([...tasks, newTask]);
         setNewTaskTitle("");
+        setNewTaskAssignee("Eu");
+        setNewTaskDueDate("");
     };
 
     const deleteTask = (taskId) => {
         setTasks(tasks.filter(t => t.id !== taskId));
+    };
+
+    const startEditTask = (task) => {
+        setEditingTask({ ...task });
+    };
+
+    const saveEditTask = () => {
+        if (!editingTask) return;
+        setTasks((prev) => prev.map((t) => t.id === editingTask.id ? editingTask : t));
+        setEditingTask(null);
     };
 
     const columns = [
@@ -1775,8 +1814,11 @@ const StudentTeamKanban = ({ project, onBack }) => {
                             {tasks.filter((t) => t.status === col.id).map((task) => (
                                 <div key={task.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition group relative">
                                     <p className="font-semibold text-slate-800 text-sm mb-2">{task.title}</p>
+                                    <div className="flex justify-between items-center text-xs text-slate-500 mb-2">
+                                        <span className="font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">{task.assignee || 'Responsável'}</span>
+                                        <span>{task.dueDate ? new Date(task.dueDate).toLocaleDateString('pt-BR') : 'Sem prazo'}</span>
+                                    </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded">{task.assignee}</span>
                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
                                             {col.id !== 'todo' && (
                                                 <button
@@ -1797,6 +1839,13 @@ const StudentTeamKanban = ({ project, onBack }) => {
                                                 </button>
                                             )}
                                             <button
+                                                onClick={() => startEditTask(task)}
+                                                className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600"
+                                                title="Editar"
+                                            >
+                                                <Edit size={14} />
+                                            </button>
+                                            <button
                                                 onClick={() => deleteTask(task.id)}
                                                 className="p-1 hover:bg-red-100 rounded text-slate-400 hover:text-red-600"
                                                 title="Excluir"
@@ -1810,7 +1859,7 @@ const StudentTeamKanban = ({ project, onBack }) => {
                         </div>
 
                         {col.id === 'todo' && (
-                            <div className="mt-4 pt-4 border-t border-slate-200/50">
+                            <div className="mt-4 pt-4 border-t border-slate-200/50 space-y-3">
                                 <input
                                     type="text"
                                     placeholder="+ Nova tarefa..."
@@ -1819,11 +1868,87 @@ const StudentTeamKanban = ({ project, onBack }) => {
                                     onChange={e => setNewTaskTitle(e.target.value)}
                                     onKeyDown={e => e.key === 'Enter' && addTask('todo')}
                                 />
+                                <div className="grid grid-cols-2 gap-3">
+                                    <input
+                                        type="text"
+                                        placeholder="Responsável"
+                                        className="w-full bg-white p-3 rounded-xl text-sm border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm"
+                                        value={newTaskAssignee}
+                                        onChange={e => setNewTaskAssignee(e.target.value)}
+                                    />
+                                    <input
+                                        type="date"
+                                        className="w-full bg-white p-3 rounded-xl text-sm border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm"
+                                        value={newTaskDueDate}
+                                        onChange={e => setNewTaskDueDate(e.target.value)}
+                                    />
+                                </div>
+                                <button
+                                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl py-2 transition shadow-sm"
+                                    onClick={() => addTask('todo')}
+                                >
+                                    Adicionar
+                                </button>
                             </div>
                         )}
                     </div>
                 ))}
             </div>
+            {editingTask && (
+                <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-[110] p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4 border border-slate-100">
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-bold text-lg text-slate-800">Editar tarefa</h3>
+                            <button onClick={() => setEditingTask(null)} className="text-slate-400 hover:text-slate-600">✕</button>
+                        </div>
+                        <div className="space-y-3">
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-600 mb-1">Título</label>
+                                <input
+                                    type="text"
+                                    className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    value={editingTask.title}
+                                    onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-600 mb-1">Responsável</label>
+                                    <input
+                                        type="text"
+                                        className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                        value={editingTask.assignee || ''}
+                                        onChange={(e) => setEditingTask({ ...editingTask, assignee: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-600 mb-1">Prazo</label>
+                                    <input
+                                        type="date"
+                                        className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                        value={editingTask.dueDate || ''}
+                                        onChange={(e) => setEditingTask({ ...editingTask, dueDate: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex justify-end gap-3 pt-2">
+                            <button
+                                onClick={() => setEditingTask(null)}
+                                className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={saveEditTask}
+                                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 shadow-sm"
+                            >
+                                Salvar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
@@ -2062,7 +2187,7 @@ function DashboardApp() {
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'student') {
-            if (activeTab === 'student-home' || activeTab === 'projects') return <StudentDashboard currentUserId={currentUser?.id || 101} />;
+            if (activeTab === 'student-home' || activeTab === 'projects') return <StudentDashboard currentUserId={currentUser?.id || 101} onProjectClick={handleProjectClick} />;
             if (activeTab === 'progress') return <StudentProgressDashboard />;
             if (activeTab === 'grades') return <StudentGrades />;
             if (activeTab === 'achievements') return <StudentAchievements />;

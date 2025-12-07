@@ -245,9 +245,11 @@ export const NotificationCenter = ({ studentId }) => {
         try {
             const res = await fetch(`/api/bncc-advanced/notifications/${studentId}`);
             const json = await res.json();
-            setNotifications(json.data);
+            const list = Array.isArray(json?.data) ? json.data : [];
+            setNotifications(list);
         } catch (error) {
             console.error(error);
+            setNotifications([]);
         } finally {
             setLoading(false);
         }
@@ -264,7 +266,7 @@ export const NotificationCenter = ({ studentId }) => {
 
     if (loading) return <p>Carregando...</p>;
 
-    const unread = notifications.filter(n => !n.read);
+    const unread = Array.isArray(notifications) ? notifications.filter(n => !n.read) : [];
 
     return (
         <div className="space-y-3">

@@ -15,8 +15,7 @@ import {
 const API_BASE = import.meta.env.VITE_API_URL || '';
 const api = (path) => (API_BASE ? `${API_BASE}${path}` : path);
 
-const StudentDashboard = ({ currentUserId = 101 }) => {
-    const [selectedProject, setSelectedProject] = useState(null);
+const StudentDashboard = ({ currentUserId = 101, onProjectClick }) => {
     const [projects, setProjects] = useState([]);
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -135,6 +134,10 @@ const StudentDashboard = ({ currentUserId = 101 }) => {
         { type: "achievement", message: "Você desbloqueou 'A Volta por Cima'!", color: "bg-yellow-50 border-yellow-200" }
     ];
 
+    const handleOpenProject = (project) => {
+        if (onProjectClick && project) onProjectClick(project);
+    };
+
     return (
         <div className="max-w-7xl mx-auto space-y-8">
             {/* Alertas */}
@@ -217,7 +220,7 @@ const StudentDashboard = ({ currentUserId = 101 }) => {
                             <div
                                 key={proj.id}
                                 className="bg-white rounded-xl border border-slate-100 p-5 hover:shadow-md transition cursor-pointer"
-                                onClick={() => setSelectedProject(proj)}
+                                onClick={() => handleOpenProject(proj)}
                             >
                                 <div className="flex justify-between items-start mb-3">
                                     <div className="flex-1">
@@ -252,13 +255,20 @@ const StudentDashboard = ({ currentUserId = 101 }) => {
                 <div>
                     <h2 className="text-2xl font-bold text-slate-800 mb-4">Próximas Tarefas</h2>
                     <div className="space-y-3 max-h-96 overflow-y-auto">
-                        {upcomingTasks.map(task => (
+                        {upcomingTasks.map(task => {
+                            const relatedProject = projects.find(p => p.id === task.projectId || p.name === task.project || p.title === task.project);
+                            const targetProject = relatedProject || projects[0];
+                            return (
                             <div
                                 key={task.id}
                                 className={`p-4 rounded-lg border-l-4 ${task.priority === "high"
                                         ? "bg-red-50 border-red-500"
                                         : "bg-blue-50 border-blue-500"
                                     }`}
+                                onClick={() => handleOpenProject(targetProject)}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleOpenProject(targetProject); }}
                             >
                                 <div className="flex items-start gap-2 mb-2">
                                     <Clock size={16} className={task.priority === "high" ? "text-red-500" : "text-blue-500"} />
@@ -272,7 +282,8 @@ const StudentDashboard = ({ currentUserId = 101 }) => {
                                     {task.days} dia{task.days !== 1 ? "s" : ""} restante{task.days !== 1 ? "s" : ""}
                                 </p>
                             </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>
