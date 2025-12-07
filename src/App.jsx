@@ -50,14 +50,13 @@ import TeacherPerformance from "./components/TeacherPerformance";
 import { AuthManager, LoginScreen } from "./components/AuthSystemAPI";
 import StudentDashboard from "./components/StudentDashboard";
 import ProfessorDashboard from "./components/ProfessorDashboard";
-import CopilotoIA from "./features/CopilotoIA";
-import EarlyWarning from "./features/EarlyWarning";
-import MissoesColaborativas from "./features/MissoesColaborativas";
-import PortfolioDigital from "./features/PortfolioDigital";
-import EcossistemaConectado from "./features/EcossistemaConectado";
+// import CopilotoIA from "./features/CopilotoIA";
+// import EarlyWarning from "./features/EarlyWarning";
+// import MissoesColaborativas from "./features/MissoesColaborativas";
+// import PortfolioDigital from "./features/PortfolioDigital";
+// import EcossistemaConectado from "./features/EcossistemaConectado";
 import StudentProgressDashboard from "./components/StudentProgressDashboard";
 import TeacherClassManager from "./components/TeacherClassManager";
-import TeacherClassManagerDebug from "./components/TeacherClassManagerDebug";
 
 import { NotificationCenter, StudentProgress } from "./components/NotificationCenter";
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
@@ -2044,11 +2043,11 @@ function DashboardApp() {
             if (activeTab === 'reports') return <TeacherReportsEditavel />;
             if (activeTab === 'rubrics') return <TeacherRubricEditablePoints />;
             if (activeTab === 'bncc') return <TeacherBnccPage projectId={1} classId={1} />;
-            if (activeTab === 'copiloto-ia') return <CopilotoIA projectId={selectedProject?.id} role={role} />;
-            if (activeTab === 'early-warning') return <EarlyWarning />;
-            if (activeTab === 'missoes') return <MissoesColaborativas />;
-            if (activeTab === 'portfolio') return <PortfolioDigital />;
-            if (activeTab === 'ecossistema') return <EcossistemaConectado />;
+            // if (activeTab === 'copiloto-ia') return <CopilotoIA projectId={selectedProject?.id} role={role} />;
+            // if (activeTab === 'early-warning') return <EarlyWarning />;
+            // if (activeTab === 'missoes') return <MissoesColaborativas />;
+            // if (activeTab === 'portfolio') return <PortfolioDigital />;
+            // if (activeTab === 'ecossistema') return <EcossistemaConectado />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'coordinator') {
