@@ -40,7 +40,20 @@ const MessagingSystemV2 = ({ userRole = "teacher", currentUserId = 1, currentUse
     // SOCKET.IO SETUP
     // ────────────────────────────────────────────────────────────────
     useEffect(() => {
-        const socketUrl = API_BASE || 'http://localhost:3000';
+        // Detecta a URL do socket baseado no ambiente
+        let socketUrl;
+        
+        if (API_BASE) {
+            // Se VITE_API_URL está definida, usa ela
+            socketUrl = API_BASE;
+        } else if (typeof window !== 'undefined' && window.location.origin) {
+            // Usa a origem atual (localhost:3000, render URL, etc)
+            socketUrl = window.location.origin;
+        } else {
+            // Fallback apenas para localhost em desenvolvimento
+            socketUrl = 'http://localhost:3000';
+        }
+        
         const newSocket = io(socketUrl, {
             transports: ['websocket', 'polling'],
             reconnection: true,
