@@ -151,7 +151,8 @@ app.get('/', (req, res) => {
       '/api/bncc',
       '/api/classes',
       '/api/team-chat',
-      '/api/wizard-bncc'
+      '/api/wizard-bncc',
+      '/api/messages'
     ]
   });
 });
