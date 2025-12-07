@@ -20,7 +20,6 @@ import rubricasRoutes from './routes/rubricas.js';
 import rubricasV2Routes from './routes/rubricas-v2.js';
 import coteachingRoutes from './routes/coteaching.routes.js';
 import dashboardStatsRoutes from './routes/dashboard-stats.js';
-import wizardBnccRoutes from './routes/wizard-bncc.js';
 
 dotenv.config();
 
@@ -357,7 +356,6 @@ app.use('/api/google-classroom', googleClassroomRoutes);
 app.use('/api/rubricas', rubricasRoutes);
 app.use('/api/rubricas-v2', rubricasV2Routes);
 app.use('/api/coteaching', verifyToken, coteachingRoutes);
-app.use('/api/wizard-bncc', wizardBnccRoutes);
 
 // ===== HEALTH CHECK =====
 
