@@ -370,20 +370,16 @@ app.get('/', (req, res) => {
 // ===== SINCRONIZAR E INICIAR =====
 
 if (process.env.NODE_ENV !== 'test') {
-    sequelize.sync({ alter: true })
+    // Verificar apenas a conexão, sem alterar tabelas
+    sequelize.authenticate()
         .then(async () => {
             console.log('✅ PostgreSQL conectado');
-            console.log('⚠️  Tabelas recriadas (force: true)');
-
-            // Rodar seed automaticamente apenas se não for teste
-            await seedDatabase();
-            await seedBNCCData();
-            await seedReferences();
-            await seedRubricas();
+            console.log('🗄️  Banco de dados pronto');
 
             app.listen(PORT, () => {
                 console.log(`🚀 Servidor rodando em porta ${PORT}`);
                 console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
+                console.log(`🌐 Frontend: http://localhost:5173`);
             });
         })
         .catch(err => {
