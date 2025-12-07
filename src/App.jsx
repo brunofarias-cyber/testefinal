@@ -2130,12 +2130,15 @@ function DashboardApp() {
         return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Sistema BProjetos</h3><p className="text-slate-500">Navegue pelo menu lateral para explorar as funcionalidades!</p></div>;
     };
 
-    if (viewState === 'landing') return <LandingPage onEnter={(selectedRole) => {
-        setRole(selectedRole);
-        setShowLoginScreen(true);
-    }} />;
-
-    if (showLoginScreen && viewState === 'landing') return <LoginScreen onLogin={handleLogin} />;
+    if (viewState === 'landing') {
+        if (showLoginScreen) {
+            return <LoginScreen onLogin={handleLogin} />;
+        }
+        return <LandingPage onEnter={(selectedRole) => {
+            setRole(selectedRole);
+            setShowLoginScreen(true);
+        }} />;
+    }
 
     return (
         <div className="flex min-h-screen bg-slate-50">
