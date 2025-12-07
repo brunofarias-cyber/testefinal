@@ -43,6 +43,83 @@ app.use('/api/wizard-bncc', wizardBnccRoutes);
 app.use('/api/classes', classesRoutes);
 app.use('/api/team-chat', teamChatRoutes);
 
+// ===== AUTENTICAÇÃO =====
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, name, role } = req.body;
+
+    // Verifica se usuário já existe
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ success: false, error: 'Email já cadastrado' });
+    }
+
+    const user = await User.create({
+      email,
+      password,
+      name,
+      role: role || 'student'
+    });
+
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET || 'seu-secret-key-aqui',
+      { expiresIn: '7d' }
+    );
+
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Erro no register:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ success: false, error: 'Email ou senha incorretos' });
+    }
+
+    // Verifica senha
+    const isValid = user.validPassword ? user.validPassword(password) : (user.password === password);
+    if (!isValid) {
+      return res.status(401).json({ success: false, error: 'Email ou senha incorretos' });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET || 'seu-secret-key-aqui',
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Erro no login:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.status(200).json({
