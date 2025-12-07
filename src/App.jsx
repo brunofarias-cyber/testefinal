@@ -40,7 +40,8 @@ import {
     Send,
     Bell,
     FolderKanban,
-    Network
+    Network,
+    Trophy
 } from "lucide-react";
 import TeacherPlanning from "./components/TeacherPlanning";
 import ProjectWizardBNCC from "./components/ProjectWizardBNCC";
@@ -321,8 +322,12 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                     <nav className="space-y-1">
                         {role === 'teacher' && (
                             <>
-                                <NavItem icon={<Users size={20} />} label="Turmas" active={activeTab === 'classes'} onClick={() => setActiveTab('classes')} />
-                                <NavItem icon={<Users size={20} />} label="Gerenciar Turmas" active={activeTab === 'manage-classes'} onClick={() => setActiveTab('manage-classes')} />
+                                <NavItem
+                                    icon={<Users size={20} />}
+                                    label="Turmas"
+                                    active={activeTab === 'classes' || activeTab === 'manage-classes'}
+                                    onClick={() => setActiveTab('classes')}
+                                />
                                 <NavItem icon={<Calendar size={20} />} label="Calendário" active={activeTab === 'calendar'} onClick={() => setActiveTab('calendar')} />
                                 <NavItem icon={<FileText size={20} />} label="Planejamento" active={activeTab === 'planning'} onClick={() => setActiveTab('planning')} />
                                 <NavItem icon={<CheckSquare size={20} />} label="Chamada" active={activeTab === 'attendance'} onClick={() => setActiveTab('attendance')} />

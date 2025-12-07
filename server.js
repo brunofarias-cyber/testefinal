@@ -130,10 +130,6 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// ===== STATIC FRONTEND (Vite build) =====
-const distPath = path.join(__dirname, 'dist');
-app.use(express.static(distPath));
-
 // Health check
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -145,10 +141,10 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Root endpoint
+// Root endpoint (deixa o backend claramente visível no :3000)
 app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Backend BProjetos API', 
+  res.json({
+    message: 'Backend BProjetos API',
     version: '1.0.0',
     endpoints: [
       '/api/health',
@@ -160,6 +156,10 @@ app.get('/', (req, res) => {
     ]
   });
 });
+
+// ===== STATIC FRONTEND (Vite build) =====
+const distPath = path.join(__dirname, 'dist');
+app.use(express.static(distPath));
 
 // SPA fallback para o frontend
 app.get('*', (req, res) => {

@@ -63,7 +63,11 @@ const classesAPI = {
     try {
       const response = await fetch('/api/classes', { method: 'GET' });
       if (!response.ok) throw new Error('Falha ao buscar turmas');
-      return await response.json();
+      const data = await response.json();
+      // Normaliza shape { success, data } ou array direto
+      if (Array.isArray(data)) return data;
+      if (Array.isArray(data?.data)) return data.data;
+      return [];
     } catch (error) {
       console.log('Usando MOCK: getAllClasses');
       return MOCK_CLASSES;
@@ -75,7 +79,8 @@ const classesAPI = {
     try {
       const response = await fetch(`/api/classes/${classId}`, { method: 'GET' });
       if (!response.ok) throw new Error('Turma não encontrada');
-      return await response.json();
+      const data = await response.json();
+      return data?.data || data;
     } catch (error) {
       console.log('Usando MOCK: getClassById');
       return MOCK_CLASSES.find(c => c.id === classId);
@@ -91,7 +96,8 @@ const classesAPI = {
         body: JSON.stringify(data)
       });
       if (!response.ok) throw new Error('Erro ao criar turma');
-      return await response.json();
+      const resp = await response.json();
+      return resp?.data || resp;
     } catch (error) {
       console.log('Usando MOCK: createClass');
       return { id: Math.random(), ...data, students: [], createdAt: new Date().toISOString() };
@@ -107,7 +113,8 @@ const classesAPI = {
         body: JSON.stringify(data)
       });
       if (!response.ok) throw new Error('Erro ao atualizar turma');
-      return await response.json();
+      const resp = await response.json();
+      return resp?.data || resp;
     } catch (error) {
       console.log('Usando MOCK: updateClass');
       return { ...MOCK_CLASSES.find(c => c.id === classId), ...data };
@@ -123,7 +130,8 @@ const classesAPI = {
         body: JSON.stringify({ studentId })
       });
       if (!response.ok) throw new Error('Erro ao adicionar aluno');
-      return await response.json();
+      const resp = await response.json();
+      return resp?.data || resp;
     } catch (error) {
       console.log('Usando MOCK: addStudentToClass');
       const student = MOCK_ALL_STUDENTS.find(s => s.id === studentId);
@@ -138,7 +146,8 @@ const classesAPI = {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Erro ao remover aluno');
-      return { success: true };
+      const resp = await response.json();
+      return resp?.data || resp || { success: true };
     } catch (error) {
       console.log('Usando MOCK: removeStudentFromClass');
       return { success: true };
@@ -152,7 +161,8 @@ const classesAPI = {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Erro ao deletar turma');
-      return { success: true };
+      const resp = await response.json();
+      return resp?.data || resp || { success: true };
     } catch (error) {
       console.log('Usando MOCK: deleteClass');
       return { success: true };
