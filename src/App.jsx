@@ -38,7 +38,9 @@ import {
     Lock,
     Search,
     Send,
-    Bell
+    Bell,
+    FolderKanban,
+    Network
 } from "lucide-react";
 import TeacherPlanning from "./components/TeacherPlanning";
 import ProjectWizardBNCC from "./components/ProjectWizardBNCC";
@@ -47,6 +49,11 @@ import TeacherPerformance from "./components/TeacherPerformance";
 import { AuthManager, LoginScreen } from "./components/AuthSystemAPI";
 import StudentDashboard from "./components/StudentDashboard";
 import ProfessorDashboard from "./components/ProfessorDashboard";
+import CopilotoIA from "./features/CopilotoIA";
+import EarlyWarning from "./features/EarlyWarning";
+import MissoesColaborativas from "./features/MissoesColaborativas";
+import PortfolioDigital from "./features/PortfolioDigital";
+import EcossistemaConectado from "./features/EcossistemaConectado";
 
 import { NotificationCenter, StudentProgress } from "./components/NotificationCenter";
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
@@ -320,6 +327,11 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<ClipboardList size={20} />} label="Relatórios" active={activeTab === 'reports'} onClick={() => setActiveTab('reports')} />
                                 <NavItem icon={<FileText size={20} />} label="Rubricas" active={activeTab === 'rubrics'} onClick={() => setActiveTab('rubrics')} />
                                 <NavItem icon={<BookOpen size={20} />} label="BNCC" active={activeTab === 'bncc'} onClick={() => setActiveTab('bncc')} />
+                                <NavItem icon={<Zap size={20} />} label="Copiloto IA" active={activeTab === 'copiloto-ia'} onClick={() => setActiveTab('copiloto-ia')} />
+                                <NavItem icon={<AlertCircle size={20} />} label="Early Warning" active={activeTab === 'early-warning'} onClick={() => setActiveTab('early-warning')} />
+                                <NavItem icon={<Trophy size={20} />} label="Missões" active={activeTab === 'missoes'} onClick={() => setActiveTab('missoes')} />
+                                <NavItem icon={<FolderKanban size={20} />} label="Portfólio" active={activeTab === 'portfolio'} onClick={() => setActiveTab('portfolio')} />
+                                <NavItem icon={<Network size={20} />} label="Ecossistema" active={activeTab === 'ecossistema'} onClick={() => setActiveTab('ecossistema')} />
                             </>
                         )}
                         {role === 'student' && (
@@ -2026,6 +2038,11 @@ function DashboardApp() {
             if (activeTab === 'reports') return <TeacherReportsEditavel />;
             if (activeTab === 'rubrics') return <TeacherRubricEditablePoints />;
             if (activeTab === 'bncc') return <TeacherBnccPage projectId={1} classId={1} />;
+            if (activeTab === 'copiloto-ia') return <CopilotoIA projectId={selectedProject?.id} role={role} />;
+            if (activeTab === 'early-warning') return <EarlyWarning />;
+            if (activeTab === 'missoes') return <MissoesColaborativas />;
+            if (activeTab === 'portfolio') return <PortfolioDigital />;
+            if (activeTab === 'ecossistema') return <EcossistemaConectado />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'coordinator') {
