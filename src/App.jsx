@@ -54,6 +54,7 @@ import EarlyWarning from "./features/EarlyWarning";
 import MissoesColaborativas from "./features/MissoesColaborativas";
 import PortfolioDigital from "./features/PortfolioDigital";
 import EcossistemaConectado from "./features/EcossistemaConectado";
+import StudentProgressDashboard from "./components/StudentProgressDashboard";
 
 import { NotificationCenter, StudentProgress } from "./components/NotificationCenter";
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
@@ -2054,7 +2055,7 @@ function DashboardApp() {
         }
         if (role === 'student') {
             if (activeTab === 'student-home' || activeTab === 'projects') return <StudentDashboard />;
-            if (activeTab === 'progress') return <StudentProgress />;
+            if (activeTab === 'progress') return <StudentProgressDashboard />;
             if (activeTab === 'grades') return <StudentGrades />;
             if (activeTab === 'achievements') return <StudentAchievements />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
