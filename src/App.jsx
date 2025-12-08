@@ -75,6 +75,8 @@ import TeacherClassManager from "./components/TeacherClassManager";
 
 import { NotificationCenter, StudentProgress } from "./components/NotificationCenter";
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
+import CoordinatorIntelligenceCenter from "./components/CoordinatorIntelligenceCenter";
+import TeacherIntelligenceCenter from "./components/TeacherIntelligenceCenter";
 import StudentGrades from "./components/StudentGrades";
 import TeacherRubricEditablePoints from "./components/TeacherRubricEditablePoints";
 import { TeacherReportsEditavel } from "./components/TeacherReportsEditavel";
@@ -322,6 +324,12 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                         {role === 'teacher' && (
                             <>
                                 <NavItem
+                                    icon={<AlertCircle size={20} />}
+                                    label="Central 360°"
+                                    active={activeTab === 'teacher-intelligence'}
+                                    onClick={() => setActiveTab('teacher-intelligence')}
+                                />
+                                <NavItem
                                     icon={<Users size={20} />}
                                     label="Turmas"
                                     active={activeTab === 'classes' || activeTab === 'manage-classes'}
@@ -356,6 +364,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                         )}
                         {role === 'coordinator' && (
                             <>
+                                <NavItem icon={<AlertCircle size={20} />} label="Central de Inteligência" active={activeTab === 'intelligence'} onClick={() => setActiveTab('intelligence')} />
                                 <NavItem icon={<Grid size={20} />} label="Kanban" active={activeTab === 'kanban'} onClick={() => setActiveTab('kanban')} />
                                 <NavItem icon={<Users size={20} />} label="Professores" active={activeTab === 'teachers'} onClick={() => setActiveTab('teachers')} />
                                 <NavItem icon={<BarChart2 size={20} />} label="Indicadores" active={activeTab === 'metrics'} onClick={() => setActiveTab('metrics')} />
@@ -1116,25 +1125,272 @@ const CoordinatorTeachersList = () => (
 );
 
 // Métricas (Coordenador)
-const CoordinatorMetrics = () => (
-    <div>
-        <h2 className="text-3xl font-bold text-slate-800 mb-8">Indicadores</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <p className="text-slate-400 text-sm font-bold uppercase">Conclusão</p>
-                <p className="text-4xl font-extrabold text-indigo-600 mt-2">92%</p>
+const CoordinatorMetrics = () => {
+    const [selectedPeriod, setSelectedPeriod] = useState('month');
+    const [expandedMetric, setExpandedMetric] = useState(null);
+
+    // Dados de métricas por período
+    const metricsData = {
+        month: {
+            conclusao: { value: 92, trend: '+5%', color: 'indigo' },
+            satisfacao: { value: 4.8, trend: '+0.3', color: 'green' },
+            engajamento: { value: 87, trend: '+8%', color: 'purple' },
+            frequencia: { value: 94, trend: '+2%', color: 'blue' },
+            deserccao: { value: 3, trend: '-1', color: 'red' },
+            bncc: { value: 78, trend: '+6%', color: 'orange' }
+        },
+        semester: {
+            conclusao: { value: 89, trend: '+12%', color: 'indigo' },
+            satisfacao: { value: 4.6, trend: '+0.5', color: 'green' },
+            engajamento: { value: 82, trend: '+15%', color: 'purple' },
+            frequencia: { value: 91, trend: '+5%', color: 'blue' },
+            deserccao: { value: 8, trend: '-2', color: 'red' },
+            bncc: { value: 72, trend: '+10%', color: 'orange' }
+        }
+    };
+
+    const current = metricsData[selectedPeriod];
+
+    // Histórico de desempenho por turma
+    const classPerformance = [
+        { name: '7º Ano A', conclusao: 95, satisfacao: 4.9, engajamento: 90, frequency: 96 },
+        { name: '7º Ano B', conclusao: 88, satisfacao: 4.7, engajamento: 85, frequency: 92 },
+        { name: '8º Ano A', conclusao: 91, satisfacao: 4.8, engajamento: 88, frequency: 94 },
+        { name: '8º Ano B', conclusao: 86, satisfacao: 4.5, engajamento: 82, frequency: 91 },
+        { name: '9º Ano A', conclusao: 93, satisfacao: 4.9, engajamento: 89, frequency: 95 }
+    ];
+
+    // Evolução temporal
+    const evolutionData = [
+        { month: 'Ago', conclusao: 85, engajamento: 78, frequencia: 89 },
+        { month: 'Set', conclusao: 87, engajamento: 80, frequencia: 90 },
+        { month: 'Out', conclusao: 89, engajamento: 83, frequencia: 91 },
+        { month: 'Nov', conclusao: 91, engajamento: 85, frequencia: 93 },
+        { month: 'Dez', conclusao: 92, engajamento: 87, frequencia: 94 }
+    ];
+
+    // Distribuição de desempenho
+    const performanceDistribution = [
+        { range: 'Excelente (9-10)', count: 45, pct: 18 },
+        { range: 'Muito Bom (7-8)', count: 95, pct: 39 },
+        { range: 'Bom (5-6)', count: 78, pct: 32 },
+        { range: 'Insuficiente (0-4)', count: 27, pct: 11 }
+    ];
+
+    return (
+        <div className="max-w-7xl mx-auto">
+            {/* Seletor de Período */}
+            <div className="flex justify-between items-center mb-8">
+                <div>
+                    <h2 className="text-3xl font-bold text-slate-800">📊 Indicadores Detalhados</h2>
+                    <p className="text-slate-500 mt-1">Análise completa de desempenho escolar</p>
+                </div>
+                <div className="flex gap-2 bg-white rounded-lg border border-slate-200 p-1">
+                    {['month', 'semester'].map(period => (
+                        <button
+                            key={period}
+                            onClick={() => setSelectedPeriod(period)}
+                            className={`px-4 py-2 rounded-lg font-bold text-sm transition ${
+                                selectedPeriod === period
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'text-slate-600 hover:bg-slate-100'
+                            }`}
+                        >
+                            {period === 'month' ? 'Mês' : 'Semestre'}
+                        </button>
+                    ))}
+                </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <p className="text-slate-400 text-sm font-bold uppercase">Satisfação</p>
-                <p className="text-4xl font-extrabold text-green-500 mt-2">4.8</p>
+
+            {/* Grid de Indicadores Principais */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {/* Conclusão */}
+                <div
+                    onClick={() => setExpandedMetric(expandedMetric === 'conclusao' ? null : 'conclusao')}
+                    className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-2xl border border-indigo-200 shadow-sm cursor-pointer hover:shadow-md transition"
+                >
+                    <div className="flex justify-between items-start mb-4">
+                        <div>
+                            <p className="text-indigo-600 text-sm font-bold uppercase">Taxa de Conclusão</p>
+                            <p className="text-4xl font-extrabold text-indigo-900 mt-2">{current.conclusao.value}%</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-indigo-600 font-bold">{current.conclusao.trend}</p>
+                            <p className="text-xs text-indigo-600">vs. período anterior</p>
+                        </div>
+                    </div>
+                    <div className="w-full bg-indigo-200 h-2 rounded-full">
+                        <div className="bg-indigo-600 h-full rounded-full" style={{ width: `${current.conclusao.value}%` }}></div>
+                    </div>
+                </div>
+
+                {/* Satisfação */}
+                <div
+                    onClick={() => setExpandedMetric(expandedMetric === 'satisfacao' ? null : 'satisfacao')}
+                    className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl border border-green-200 shadow-sm cursor-pointer hover:shadow-md transition"
+                >
+                    <div className="flex justify-between items-start mb-4">
+                        <div>
+                            <p className="text-green-700 text-sm font-bold uppercase">Satisfação</p>
+                            <p className="text-4xl font-extrabold text-green-900 mt-2">{current.satisfacao.value}</p>
+                            <p className="text-xs text-green-700 mt-1">de 5.0 ⭐</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-green-700 font-bold">{current.satisfacao.trend}</p>
+                            <p className="text-xs text-green-700">vs. período anterior</p>
+                        </div>
+                    </div>
+                    <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map(star => (
+                            <Star key={star} size={16} className={star <= current.satisfacao.value ? 'fill-green-500 text-green-500' : 'text-slate-300'} />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Engajamento */}
+                <div
+                    onClick={() => setExpandedMetric(expandedMetric === 'engajamento' ? null : 'engajamento')}
+                    className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-2xl border border-purple-200 shadow-sm cursor-pointer hover:shadow-md transition"
+                >
+                    <div className="flex justify-between items-start mb-4">
+                        <div>
+                            <p className="text-purple-700 text-sm font-bold uppercase">Engajamento</p>
+                            <p className="text-4xl font-extrabold text-purple-900 mt-2">{current.engajamento.value}%</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-purple-700 font-bold">{current.engajamento.trend}</p>
+                            <p className="text-xs text-purple-700">vs. período anterior</p>
+                        </div>
+                    </div>
+                    <div className="w-full bg-purple-200 h-2 rounded-full">
+                        <div className="bg-purple-600 h-full rounded-full" style={{ width: `${current.engajamento.value}%` }}></div>
+                    </div>
+                </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <p className="text-slate-400 text-sm font-bold uppercase">Engajamento</p>
-                <p className="text-4xl font-extrabold text-purple-500 mt-2">87%</p>
+
+            {/* Secundários */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {/* Frequência */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition">
+                    <div className="flex items-center justify-between mb-4">
+                        <p className="text-slate-600 text-sm font-bold uppercase">Frequência</p>
+                        <Calendar size={20} className="text-blue-500" />
+                    </div>
+                    <p className="text-3xl font-extrabold text-blue-600">{current.frequencia.value}%</p>
+                    <p className="text-xs text-slate-500 mt-2">{current.frequencia.trend} este período</p>
+                </div>
+
+                {/* Evasão */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition">
+                    <div className="flex items-center justify-between mb-4">
+                        <p className="text-slate-600 text-sm font-bold uppercase">Taxa de Evasão</p>
+                        <UserX size={20} className="text-red-500" />
+                    </div>
+                    <p className="text-3xl font-extrabold text-red-600">{current.deserccao.value}%</p>
+                    <p className="text-xs text-slate-500 mt-2">{current.deserccao.trend} alunos</p>
+                </div>
+
+                {/* BNCC */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition">
+                    <div className="flex items-center justify-between mb-4">
+                        <p className="text-slate-600 text-sm font-bold uppercase">Cobertura BNCC</p>
+                        <Target size={20} className="text-orange-500" />
+                    </div>
+                    <p className="text-3xl font-extrabold text-orange-600">{current.bncc.value}%</p>
+                    <p className="text-xs text-slate-500 mt-2">{current.bncc.trend} vs. semestre anterior</p>
+                </div>
+            </div>
+
+            {/* Desempenho por Turma */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-8">
+                <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <Users size={24} className="text-indigo-600" />
+                    Desempenho por Turma
+                </h3>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead className="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th className="px-4 py-3 text-left font-bold text-slate-700">Turma</th>
+                                <th className="px-4 py-3 text-center font-bold text-slate-700">Conclusão</th>
+                                <th className="px-4 py-3 text-center font-bold text-slate-700">Satisfação</th>
+                                <th className="px-4 py-3 text-center font-bold text-slate-700">Engajamento</th>
+                                <th className="px-4 py-3 text-center font-bold text-slate-700">Frequência</th>
+                                <th className="px-4 py-3 text-center font-bold text-slate-700">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {classPerformance.map((cls, idx) => (
+                                <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50 transition">
+                                    <td className="px-4 py-3 font-bold text-slate-800">{cls.name}</td>
+                                    <td className="px-4 py-3 text-center">
+                                        <span className="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold">{cls.conclusao}%</span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">{cls.satisfacao.toFixed(1)} ⭐</span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">{cls.engajamento}%</span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">{cls.frequency}%</span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                                            cls.conclusao >= 92 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                        }`}>
+                                            {cls.conclusao >= 92 ? '✅ Excelente' : '⚠️ Atenção'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Distribuição de Notas */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-8">
+                <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <BarChart2 size={24} className="text-indigo-600" />
+                    Distribuição de Notas
+                </h3>
+                <div className="space-y-4">
+                    {performanceDistribution.map((item, idx) => (
+                        <div key={idx}>
+                            <div className="flex justify-between items-center mb-2">
+                                <p className="font-bold text-slate-800">{item.range}</p>
+                                <p className="text-sm font-bold text-slate-600">{item.count} alunos ({item.pct}%)</p>
+                            </div>
+                            <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                <div
+                                    className={`h-full rounded-full transition-all ${
+                                        idx === 0 ? 'bg-green-500' : idx === 1 ? 'bg-blue-500' : idx === 2 ? 'bg-yellow-500' : 'bg-red-500'
+                                    }`}
+                                    style={{ width: `${item.pct}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Recomendações */}
+            <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-6">
+                <h3 className="font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                    <AlertCircle size={20} /> 💡 Recomendações Baseadas em Dados
+                </h3>
+                <ul className="space-y-2 text-sm text-indigo-900">
+                    <li>✅ <strong>Continuar:</strong> Frequência escolar em alta (94%) - manter estratégias atuais</li>
+                    <li>⚠️ <strong>Melhorar:</strong> Taxa de evasão em {current.deserccao.value}% - implementar programa de retenção</li>
+                    <li>🎯 <strong>Focar:</strong> 7º Ano B com engajamento menor (85%) - oferecer atividades mais dinâmicas</li>
+                    <li>📊 <strong>Acompanhar:</strong> BNCC em {current.bncc.value}% - revisar integração curricular</li>
+                    <li>🏆 <strong>Replicar:</strong> Sucesso da 7º Ano A (95% conclusão) - compartilhar boas práticas</li>
+                </ul>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 // Detalhes do Projeto
 const ProjectDetails = ({ project, onBack }) => {
@@ -1928,53 +2184,101 @@ const StudentAchievements = () => (
 );
 
 // Kanban do Coordenador
-const CoordinatorKanban = ({ projects }) => (
-    <div className="h-full flex flex-col">
-        <div className="mb-6">
-            <h2 className="text-3xl font-bold text-slate-800">Kanban Geral</h2>
-            <p className="text-slate-500">Acompanhamento macro da escola.</p>
-        </div>
-        <div className="flex gap-6 overflow-x-auto pb-6 flex-1">
-            {["Planejamento", "Em Andamento", "Para Avaliação", "Atrasado"].map(status => (
-                <div key={status} className="min-w-[300px] bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col">
-                    <div className="flex justify-between items-center mb-4 px-1">
-                        <h3 className="font-bold text-xs uppercase text-slate-500 tracking-wider">{status}</h3>
-                        <span className="bg-white px-2 py-0.5 rounded text-xs font-bold text-slate-400 shadow-sm">
-                            {projects.filter((p) =>
-                                (status === "Atrasado" && (p.status === "Atrasado" || p.delayed)) ||
-                                (p.status === status && status !== "Atrasado")
-                            ).length}
-                        </span>
-                    </div>
-                    <div className="space-y-3 overflow-y-auto flex-1">
-                        {projects
-                            .filter((p) =>
-                                (status === "Atrasado" && (p.status === "Atrasado" || p.delayed)) ||
-                                (p.status === status && status !== "Atrasado")
-                            )
-                            .map((p) => (
-                                <div key={p.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition">
-                                    <div className="flex items-start justify-between mb-2">
-                                        <h4 className="font-bold text-sm text-slate-800 leading-tight">{p.title}</h4>
-                                        {status === "Atrasado" && <AlertCircle size={14} className="text-red-500" />}
-                                    </div>
-                                    <p className="text-xs text-slate-500 mb-3">{p.teacher}</p>
-                                    <div className={`h-1.5 rounded-full w-full ${status === 'Atrasado' ? 'bg-red-100' : 'bg-indigo-100'}`}>
-                                        <div
-                                            className={`h-full rounded-full ${status === 'Atrasado' ? 'bg-red-500' : 'bg-indigo-500'}`}
-                                            style={{ width: `${p.progress}%` }}
-                                        ></div>
-                                    </div>
-                                </div>
-                            ))}
-                    </div>
-                </div>
-            ))}
-        </div>
-    </div>
-);
+const CoordinatorKanban = ({ projects, setProjects }) => {
+    const [draggedProject, setDraggedProject] = useState(null);
 
-function App() {
+    if (!projects || !Array.isArray(projects)) {
+        return (
+            <div className="h-full flex flex-col">
+                <div className="mb-6">
+                    <h2 className="text-3xl font-bold text-slate-800">Kanban Geral</h2>
+                    <p className="text-slate-500">Acompanhamento macro da escola.</p>
+                </div>
+                <div className="flex items-center justify-center flex-1 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                    <p className="text-slate-500">Nenhum projeto disponível</p>
+                </div>
+            </div>
+        );
+    }
+
+    const handleDragStart = (e, project) => {
+        setDraggedProject(project);
+        e.dataTransfer.effectAllowed = "move";
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+    };
+
+    const handleDrop = (e, status) => {
+        e.preventDefault();
+        if (draggedProject) {
+            const updatedProjects = projects.map(p =>
+                p.id === draggedProject.id ? { ...p, status } : p
+            );
+            setProjects(updatedProjects);
+            setDraggedProject(null);
+        }
+    };
+
+    return (
+        <div className="h-full flex flex-col">
+            <div className="mb-6">
+                <h2 className="text-3xl font-bold text-slate-800">Kanban Geral</h2>
+                <p className="text-slate-500">Arraste os projetos entre colunas para atualizar o status.</p>
+            </div>
+            <div className="flex gap-6 overflow-x-auto pb-6 flex-1">
+                {["Planejamento", "Em Andamento", "Para Avaliação", "Atrasado"].map(status => (
+                    <div
+                        key={status}
+                        className="min-w-[300px] bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col"
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, status)}
+                    >
+                        <div className="flex justify-between items-center mb-4 px-1">
+                            <h3 className="font-bold text-xs uppercase text-slate-500 tracking-wider">{status}</h3>
+                            <span className="bg-white px-2 py-0.5 rounded text-xs font-bold text-slate-400 shadow-sm">
+                                {projects.filter((p) =>
+                                    (status === "Atrasado" && (p.status === "Atrasado" || p.delayed)) ||
+                                    (p.status === status && status !== "Atrasado")
+                                ).length}
+                            </span>
+                        </div>
+                        <div className="space-y-3 overflow-y-auto flex-1">
+                            {projects
+                                .filter((p) =>
+                                    (status === "Atrasado" && (p.status === "Atrasado" || p.delayed)) ||
+                                    (p.status === status && status !== "Atrasado")
+                                )
+                                .map((p) => (
+                                    <div
+                                        key={p.id}
+                                        draggable
+                                        onDragStart={(e) => handleDragStart(e, p)}
+                                        className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition cursor-move active:opacity-50"
+                                    >
+                                        <div className="flex items-start justify-between mb-2">
+                                            <h4 className="font-bold text-sm text-slate-800 leading-tight flex-1">{p.title}</h4>
+                                            {status === "Atrasado" && <AlertCircle size={14} className="text-red-500 flex-shrink-0" />}
+                                        </div>
+                                        <p className="text-xs text-slate-500 mb-3">{p.teacher}</p>
+                                        <div className={`h-1.5 rounded-full w-full ${status === 'Atrasado' ? 'bg-red-100' : 'bg-indigo-100'}`}>
+                                            <div
+                                                className={`h-full rounded-full ${status === 'Atrasado' ? 'bg-red-500' : 'bg-indigo-500'}`}
+                                                style={{ width: `${p.progress}%` }}
+                                            ></div>
+                                        </div>
+                                        <p className="text-xs text-slate-400 mt-2">{p.students} alunos • {p.progress}%</p>
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};function App() {
     return (
         <Routes>
             <Route path="/convite/aceitar/:token" element={<AceitarConvite />} />
@@ -2090,6 +2394,7 @@ function DashboardApp() {
         }
 
         if (role === 'teacher') {
+            if (activeTab === 'teacher-intelligence') return <TeacherIntelligenceCenter onNavigateTo={setActiveTab} />;
             if (activeTab === 'dashboard') return <ProfessorDashboard />;
             if (activeTab === 'classes' || activeTab === 'manage-classes') return <TeacherClassManager />;
             if (activeTab === 'attendance') return <TeacherAttendance />;
@@ -2108,7 +2413,8 @@ function DashboardApp() {
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'coordinator') {
-            if (activeTab === 'kanban') return <CoordinatorKanban projects={projects} />;
+            if (activeTab === 'intelligence') return <CoordinatorIntelligenceCenter onNavigateTo={setActiveTab} />;
+            if (activeTab === 'kanban') return <CoordinatorKanban projects={projects} setProjects={setProjects} />;
             if (activeTab === 'teachers') return <CoordinatorTeachersList />;
             if (activeTab === 'metrics') return <CoordinatorMetrics />;
             if (activeTab === 'coordinator-advanced') return <CoordinatorAdvanced />;
