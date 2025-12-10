@@ -178,8 +178,18 @@ app.get('*', (req, res) => {
 // Start server immediately
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Servidor rodando em http://localhost:${PORT}`);
-    console.log(`   Health check: http://localhost:${PORT}/api/health`);
+    const isProduction = process.env.NODE_ENV === 'production';
+    const host = isProduction ? '0.0.0.0' : 'localhost';
+    
+    console.log(`✅ Servidor NEXO rodando!`);
+    console.log(`   🌐 URL: http://${host}:${PORT}`);
+    console.log(`   🏥 Health: http://${host}:${PORT}/api/health`);
+    console.log(`   📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`   💾 Banco: ${sequelize ? '✅ Conectado' : '⚠️  Offline (usando mock data)'}`);
+    
+    if (isProduction && !process.env.DATABASE_URL) {
+      console.warn(`⚠️  AVISO: DATABASE_URL não configurado - aplicação funcionará com dados mock`);
+    }
   });
 }
 
