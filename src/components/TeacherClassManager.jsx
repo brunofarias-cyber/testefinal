@@ -9,8 +9,12 @@ import {
   Check,
   AlertCircle,
   Loader,
-  ChevronLeft
+  ChevronLeft,
+  BarChart2,
+  MessageSquare
 } from 'lucide-react';
+import TeacherPerformance from './TeacherPerformance';
+import Messages from './Messages';
 
 // MOCK DATA (fallback se backend não disponível)
 const MOCK_CLASSES = [
@@ -176,6 +180,7 @@ const classesAPI = {
 
 const TeacherClassManager = () => {
   // STATES
+  const [activeTab, setActiveTab] = useState('turmas'); // 'turmas' ou 'performance'
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -583,21 +588,67 @@ const TeacherClassManager = () => {
   return (
     <div className="w-full">
       {/* Header com Botão - VISÍVEL E DESTACADO */}
-      <div className="mb-10 flex flex-row justify-between items-start gap-8">
+      <div className="mb-6 flex flex-row justify-between items-start gap-8">
         <div className="flex-1">
-          <h2 className="text-4xl font-bold text-slate-900">Gerenciar Turmas</h2>
-          <p className="text-slate-600 mt-2 text-lg">Crie e configure suas turmas escolares</p>
+          <h2 className="text-4xl font-bold text-slate-900">Turmas, Performance & Mensagens</h2>
+          <p className="text-slate-600 mt-2 text-lg">Gerencie turmas, acompanhe desempenho e se comunique com alunos</p>
         </div>
+        {activeTab === 'turmas' && (
+          <button
+            onClick={handleOpenCreateModal}
+            className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-bold flex items-center gap-3 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 whitespace-nowrap min-w-fit"
+          >
+            <Plus size={28} strokeWidth={3} />
+            <span className="text-lg">Nova Turma</span>
+          </button>
+        )}
+      </div>
+
+      {/* Tabs de Navegação */}
+      <div className="mb-8 bg-white rounded-xl border-2 border-slate-200 p-2 flex gap-2">
         <button
-          onClick={handleOpenCreateModal}
-          className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-bold flex items-center gap-3 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 whitespace-nowrap min-w-fit"
+          onClick={() => setActiveTab('turmas')}
+          className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 ${
+            activeTab === 'turmas'
+              ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
         >
-          <Plus size={28} strokeWidth={3} />
-          <span className="text-lg">Nova Turma</span>
+          <Users size={20} />
+          👥 Turmas
+        </button>
+        <button
+          onClick={() => setActiveTab('performance')}
+          className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 ${
+            activeTab === 'performance'
+              ? 'bg-gradient-to-r from-green-600 to-teal-600 text-white shadow-lg'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <BarChart2 size={20} />
+          📊 Performance
+        </button>
+        <button
+          onClick={() => setActiveTab('mensagens')}
+          className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 ${
+            activeTab === 'mensagens'
+              ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <MessageSquare size={20} />
+          💬 Mensagens
         </button>
       </div>
 
-      {/* Notificações */}
+      {/* Conteúdo baseado na tab ativa */}
+      {activeTab === 'performance' ? (
+        <TeacherPerformance />
+      ) : activeTab === 'mensagens' ? (
+        <Messages />
+      ) : (
+        <>
+          {/* Notificações */}
       {successMessage && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2 text-green-700 font-bold">
           <Check size={20} />
@@ -684,6 +735,8 @@ const TeacherClassManager = () => {
             )}
           </div>
         </>
+      )}
+      </>
       )}
 
       {/* ═════════════════════════════════════════════════ */}

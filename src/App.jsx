@@ -326,7 +326,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                             <>
                                 <NavItem
                                     icon={<Zap size={20} />}
-                                    label="⚡ Central Master"
+                                    label="⚡ Central do Professor"
                                     active={activeTab === 'master-control'}
                                     onClick={() => setActiveTab('master-control')}
                                 />
@@ -342,12 +342,9 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                     active={activeTab === 'classes' || activeTab === 'manage-classes'}
                                     onClick={() => setActiveTab('classes')}
                                 />
-                                <NavItem icon={<BarChart2 size={20} />} label="Performance" active={activeTab === 'performance'} onClick={() => setActiveTab('performance')} />
-                                <NavItem icon={<MessageSquare size={20} />} label="Mensagens" active={activeTab === 'messages'} onClick={() => setActiveTab('messages')} />
-                                <NavItem icon={<ClipboardList size={20} />} label="Relatórios" active={activeTab === 'reports'} onClick={() => setActiveTab('reports')} />
                                 <NavItem icon={<Bot size={20} />} label="Copiloto IA" active={activeTab === 'teacher-copilot'} onClick={() => setActiveTab('teacher-copilot')} />
-                                <NavItem icon={<GitBranch size={20} />} label="Ecossistema" active={activeTab === 'teacher-ecosystem'} onClick={() => setActiveTab('teacher-ecosystem')} />
-                                <NavItem icon={<Shield size={20} />} label="Early Warning" active={activeTab === 'new-early-warning'} onClick={() => setActiveTab('new-early-warning')} />
+                                <NavItem icon={<GitBranch size={20} />} label="Conhecendo os Projetos" active={activeTab === 'teacher-ecosystem'} onClick={() => setActiveTab('teacher-ecosystem')} />
+                                <NavItem icon={<Shield size={20} />} label="Situação para Análise" active={activeTab === 'new-early-warning'} onClick={() => setActiveTab('new-early-warning')} />
                             </>
                         )}
                         {role === 'student' && (

@@ -1134,7 +1134,7 @@ const TeacherMasterControl = () => {
                         ⚡
                     </div>
                     <div>
-                        <h1 className="text-4xl font-extrabold text-slate-900">Central Master</h1>
+                        <h1 className="text-4xl font-extrabold text-slate-900">Central do Professor</h1>
                         <p className="text-slate-600">Planejamento, Calendário, Chamada, Avaliação (com Rubricas) e BNCC em um só lugar</p>
                     </div>
                 </div>
