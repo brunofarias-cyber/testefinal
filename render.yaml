@@ -1,14 +1,14 @@
 # Render Deployment Configuration
 
 services:
-  # Backend Service
+  # Full Stack Service (Backend + Frontend)
   - type: web
-    name: bprojetos-backend
+    name: nexo-fullstack
     env: node
     region: oregon
     plan: free
     branch: main
-    buildCommand: npm install && npm run build
+    buildCommand: npm install && npm run build:render
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
