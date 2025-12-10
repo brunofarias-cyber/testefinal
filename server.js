@@ -150,7 +150,7 @@ app.get('/api/health', (req, res) => {
 // Root endpoint (deixa o backend claramente visível no :3000)
 app.get('/', (req, res) => {
   res.json({
-    message: 'Backend BProjetos API',
+    message: 'Backend NEXO API',
     version: '1.0.0',
     endpoints: [
       '/api/health',

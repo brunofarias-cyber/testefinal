@@ -205,35 +205,15 @@ const TeacherMasterControl = () => {
                 </div>
             </div>
 
-            {/* Sub-abas: Aulas e Rubricas */}
-            <div className="flex gap-2 mb-6 border-b-2 border-slate-200">
-                <button
-                    onClick={() => setPlanningSubTab('lessons')}
-                    className={`px-6 py-3 font-bold transition ${
-                        planningSubTab === 'lessons'
-                            ? 'text-blue-600 border-b-4 border-blue-600'
-                            : 'text-slate-500 hover:text-slate-700'
-                    }`}
-                >
-                    📚 Aulas
-                </button>
-                <button
-                    onClick={() => setPlanningSubTab('rubrics')}
-                    className={`px-6 py-3 font-bold transition ${
-                        planningSubTab === 'rubrics'
-                            ? 'text-purple-600 border-b-4 border-purple-600'
-                            : 'text-slate-500 hover:text-slate-700'
-                    }`}
-                >
-                    📋 Rubricas
-                </button>
+            {/* Seção de Aulas */}
+            <div className="mb-6">
+                <h3 className="text-xl font-bold text-slate-900">📚 Minhas Aulas</h3>
+                <p className="text-slate-600 text-sm">Planeje e organize suas aulas com objetivos e materiais</p>
             </div>
 
-            {/* Conteúdo das Sub-abas */}
-            {planningSubTab === 'lessons' && (
-                <div>
+            <div>
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-xl font-bold text-slate-900">Minhas Aulas</h3>
+                        <h3 className="text-xl font-bold text-slate-900">Aulas Planejadas</h3>
                         <button
                             onClick={() => setShowNewLessonForm(!showNewLessonForm)}
                             className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 transition flex items-center gap-2"
@@ -392,14 +372,6 @@ const TeacherMasterControl = () => {
                 ))}
             </div>
             </div>
-            )}
-
-            {/* Sub-aba Rubricas */}
-            {planningSubTab === 'rubrics' && (
-                <div>
-                    <TeacherRubricEditablePoints />
-                </div>
-            )}
         </div>
     );
 
@@ -1045,11 +1017,34 @@ const TeacherMasterControl = () => {
                     <div>
                         <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-300 rounded-xl p-6 mb-6">
                             <h3 className="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
-                                👤 Avaliação Individual Interativa
+                                👤 Avaliação Individual - Criar e Avaliar com Rubricas
                             </h3>
-                            <p className="text-sm text-slate-600">
-                                Clique em cada aluno para expandir e avaliar individualmente. 
-                                Clique nos níveis de desempenho (Insuficiente, Básico, Proficiente, Avançado) para atribuir a pontuação.
+                            <p className="text-sm text-slate-600 mb-3">
+                                Primeiro, crie ou selecione uma rubrica para avaliar seus alunos. Depois, clique em cada aluno para avaliar individualmente.
+                            </p>
+                        </div>
+
+                        {/* Criação de Rubrica para Individual */}
+                        <div className="mb-8 bg-white rounded-xl border-2 border-blue-300 p-6">
+                            <h4 className="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+                                <FileText size={24} />
+                                📋 Criar Rubrica para Avaliação Individual
+                            </h4>
+                            <TeacherRubricEditablePoints />
+                        </div>
+
+                        {/* Divisor Visual */}
+                        <div className="border-t-4 border-dashed border-slate-300 my-8"></div>
+
+                        {/* Avaliação Individual */}
+                        <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-300 rounded-xl p-6 mb-6">
+                            <h4 className="text-xl font-bold text-purple-900 mb-2 flex items-center gap-2">
+                                <Users size={24} />
+                                Avaliar Alunos Individualmente
+                            </h4>
+                            <p className="text-sm text-purple-800">
+                                Clique em cada aluno para expandir e avaliar usando a rubrica criada acima. 
+                                Clique nos níveis de desempenho para atribuir pontos.
                             </p>
                         </div>
                         <InteractiveEvaluation 
@@ -1058,30 +1053,39 @@ const TeacherMasterControl = () => {
                         />
                     </div>
                 ) : (
-                    <div className="bg-white rounded-xl border-2 border-slate-200 p-6">
-                        <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                            👥 Avaliação por Grupo
-                        </h3>
-                        <p className="text-sm text-slate-600 mb-4">
-                            Avalie grupos de trabalho usando os mesmos critérios das rubricas. 
-                            A nota do grupo é aplicada a todos os membros, mas você pode fazer ajustes individuais depois.
-                        </p>
-                        
-                        {/* Integração com TeacherRubricEditablePoints para avaliação de grupos */}
-                        <div className="mb-6 bg-gradient-to-r from-green-50 to-teal-50 border-2 border-green-300 rounded-xl p-6">
-                            <div className="flex items-start gap-3 mb-4">
-                                <Users size={24} className="text-green-600 flex-shrink-0 mt-1" />
-                                <div>
-                                    <h4 className="font-bold text-lg text-green-900 mb-2">Avaliação de Equipes</h4>
-                                    <p className="text-green-800 text-sm mb-4">
-                                        Use o avaliador de rubricas abaixo para atribuir notas às equipes. 
-                                        Todos os membros da equipe receberão a mesma nota baseada nos critérios avaliados.
-                                    </p>
-                                </div>
-                            </div>
+                    <div>
+                        <div className="bg-gradient-to-r from-green-50 to-teal-50 border-2 border-green-300 rounded-xl p-6 mb-6">
+                            <h3 className="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+                                👥 Avaliação por Grupo - Criar e Avaliar com Rubricas
+                            </h3>
+                            <p className="text-sm text-slate-600">
+                                Primeiro, crie ou selecione uma rubrica para avaliar suas equipes. A nota do grupo será aplicada a todos os membros.
+                            </p>
                         </div>
 
-                        <TeacherRubricEditablePoints />
+                        {/* Criação de Rubrica para Grupos */}
+                        <div className="bg-white rounded-xl border-2 border-green-300 p-6">
+                            <h4 className="text-xl font-bold text-green-900 mb-4 flex items-center gap-2">
+                                <FileText size={24} />
+                                📋 Criar Rubrica para Avaliação de Equipes
+                            </h4>
+                            <div className="mb-6 bg-gradient-to-r from-green-50 to-teal-50 border-2 border-green-200 rounded-xl p-6">
+                                <div className="flex items-start gap-3">
+                                    <Users size={24} className="text-green-600 flex-shrink-0 mt-1" />
+                                    <div>
+                                        <h5 className="font-bold text-lg text-green-900 mb-2">Como Funciona</h5>
+                                        <p className="text-green-800 text-sm mb-2">
+                                            Use o avaliador de rubricas abaixo para criar critérios e atribuir notas às equipes. 
+                                            Todos os membros da equipe receberão a mesma nota baseada nos critérios avaliados.
+                                        </p>
+                                        <p className="text-green-800 text-xs font-bold">
+                                            💡 Dica: Use critérios como "Trabalho em Equipe", "Colaboração" e "Divisão de Tarefas" para avaliar a dinâmica do grupo.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <TeacherRubricEditablePoints />
+                        </div>
                     </div>
                 )}
 
@@ -1095,12 +1099,12 @@ const TeacherMasterControl = () => {
                             <p className="text-blue-800 text-sm mb-2">
                                 {evaluationType === 'individual' ? (
                                     <>
-                                        As avaliações individuais usam as <strong>mesmas rubricas</strong> criadas em <strong>Planejamento → Rubricas</strong>. 
+                                        As avaliações individuais usam as <strong>rubricas criadas acima</strong> nesta seção. 
                                         Cada aluno é avaliado separadamente nos mesmos critérios, permitindo análise individual detalhada.
                                     </>
                                 ) : (
                                     <>
-                                        A avaliação por grupo usa as <strong>mesmas rubricas</strong> da avaliação individual. 
+                                        A avaliação por grupo usa as <strong>rubricas criadas acima</strong> nesta seção. 
                                         A nota atribuída ao grupo é aplicada a todos os membros, mas você pode fazer ajustes individuais posteriormente 
                                         através da aba de Avaliação Individual.
                                     </>
@@ -1131,7 +1135,7 @@ const TeacherMasterControl = () => {
                     </div>
                     <div>
                         <h1 className="text-4xl font-extrabold text-slate-900">Central Master</h1>
-                        <p className="text-slate-600">Planejamento, Rubricas, Calendário, Chamada, Avaliação e BNCC em um só lugar</p>
+                        <p className="text-slate-600">Planejamento, Calendário, Chamada, Avaliação (com Rubricas) e BNCC em um só lugar</p>
                     </div>
                 </div>
 

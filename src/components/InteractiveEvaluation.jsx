@@ -1,211 +1,162 @@
-import React, { useState } from 'react';
-import { Users, Award, Check, Save, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, Award, Check, Save, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { RubricaEvaluator } from './rubricas';
 
 const InteractiveEvaluation = ({ selectedClass, attendanceData }) => {
-    const [evaluations, setEvaluations] = useState({});
     const [selectedStudent, setSelectedStudent] = useState(null);
-
-    // Rubrica exemplo (mesma estrutura da rubrica criada)
-    const rubricaCriteria = [
-        {
-            id: 1,
-            name: 'Investigação Científica',
-            weight: 40,
-            levels: [
-                { value: 1, label: 'Insuficiente', points: 1, description: 'Não demonstra compreensão' },
-                { value: 2, label: 'Básico', points: 2, description: 'Compreensão parcial' },
-                { value: 3, label: 'Proficiente', points: 3, description: 'Boa compreensão' },
-                { value: 4, label: 'Avançado', points: 4, description: 'Excelente compreensão' }
-            ]
-        },
-        {
-            id: 2,
-            name: 'Trabalho em Equipe',
-            weight: 30,
-            levels: [
-                { value: 1, label: 'Insuficiente', points: 1, description: 'Pouca colaboração' },
-                { value: 2, label: 'Básico', points: 2, description: 'Colaboração adequada' },
-                { value: 3, label: 'Proficiente', points: 3, description: 'Boa colaboração' },
-                { value: 4, label: 'Avançado', points: 4, description: 'Liderança e colaboração' }
-            ]
-        },
-        {
-            id: 3,
-            name: 'Comunicação Oral',
-            weight: 30,
-            levels: [
-                { value: 1, label: 'Insuficiente', points: 1, description: 'Comunicação confusa' },
-                { value: 2, label: 'Básico', points: 2, description: 'Comunicação clara' },
-                { value: 3, label: 'Proficiente', points: 3, description: 'Comunicação eficaz' },
-                { value: 4, label: 'Avançado', points: 4, description: 'Comunicação excelente' }
-            ]
-        }
-    ];
+    const [projects, setProjects] = useState([]);
+    const [selectedProjectId, setSelectedProjectId] = useState(null);
+    const [rubrica, setRubrica] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     const students = attendanceData[selectedClass] || [];
 
-    const handleLevelSelect = (studentId, criterionId, levelValue) => {
-        setEvaluations(prev => ({
-            ...prev,
-            [studentId]: {
-                ...prev[studentId],
-                [criterionId]: levelValue
+    // Carregar projetos
+    useEffect(() => {
+        fetchProjects();
+    }, []);
+
+    // Carregar rubrica quando projeto muda
+    useEffect(() => {
+        if (selectedProjectId) {
+            fetchRubrica(selectedProjectId);
+        }
+    }, [selectedProjectId]);
+
+    const fetchProjects = async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/projects', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    setProjects(data);
+                    setSelectedProjectId(data[0].id);
+                } else {
+                    // Mock projects se não houver dados
+                    const mockProjects = [
+                        { id: 1, name: 'Projeto Horta Sustentável' },
+                        { id: 2, name: 'Projeto Robótica' }
+                    ];
+                    setProjects(mockProjects);
+                    setSelectedProjectId(1);
+                }
             }
-        }));
+        } catch (error) {
+            console.error('Erro ao carregar projetos:', error);
+            const mockProjects = [
+                { id: 1, name: 'Projeto Horta Sustentável' },
+                { id: 2, name: 'Projeto Robótica' }
+            ];
+            setProjects(mockProjects);
+            setSelectedProjectId(1);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const calculateFinalGrade = (studentId) => {
-        const studentEval = evaluations[studentId] || {};
-        let totalPoints = 0;
-        let totalWeight = 0;
+    const fetchRubrica = async (projectId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`/api/rubricas/projeto/${projectId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
 
-        rubricaCriteria.forEach(criterion => {
-            const selectedLevel = studentEval[criterion.id];
-            if (selectedLevel) {
-                const weight = criterion.weight / 100;
-                totalPoints += selectedLevel * weight * 2.5; // Converte para escala 0-10
-                totalWeight += weight;
+            if (response.ok) {
+                const data = await response.json();
+                setRubrica(data.data || data);
             }
-        });
-
-        return totalWeight > 0 ? (totalPoints / totalWeight).toFixed(1) : '-';
+        } catch (error) {
+            console.error('Erro ao carregar rubrica:', error);
+        }
     };
 
-    const saveEvaluations = () => {
-        console.log('Salvando avaliações:', evaluations);
-        alert('Avaliações salvas com sucesso!');
-    };
+    if (loading) {
+        return (
+            <div className="text-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-4 text-slate-600">Carregando rubricas...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
-            {/* Lista de Alunos */}
-            <div className="grid grid-cols-1 gap-4">
-                {students.map(student => {
-                    const studentEval = evaluations[student.id] || {};
-                    const isComplete = rubricaCriteria.every(c => studentEval[c.id]);
-                    const finalGrade = calculateFinalGrade(student.id);
-
-                    return (
-                        <div key={student.id} className="bg-white rounded-xl border-2 border-slate-200 overflow-hidden">
-                            {/* Header do Aluno */}
-                            <div 
-                                onClick={() => setSelectedStudent(selectedStudent === student.id ? null : student.id)}
-                                className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 cursor-pointer hover:from-blue-100 hover:to-purple-100 transition"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
-                                            {student.name.charAt(0)}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-lg text-slate-900">{student.name}</h3>
-                                            <p className="text-sm text-slate-600">
-                                                {isComplete ? (
-                                                    <span className="text-green-600 flex items-center gap-1">
-                                                        <Check size={14} />
-                                                        Avaliação completa
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-orange-600">
-                                                        {Object.keys(studentEval).length}/{rubricaCriteria.length} critérios avaliados
-                                                    </span>
-                                                )}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-xs font-bold text-slate-500 uppercase">Nota Final</p>
-                                        <p className={`text-3xl font-extrabold ${
-                                            finalGrade === '-' ? 'text-slate-400' : 
-                                            parseFloat(finalGrade) >= 7 ? 'text-green-600' : 
-                                            parseFloat(finalGrade) >= 5 ? 'text-yellow-600' : 'text-red-600'
-                                        }`}>
-                                            {finalGrade}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Critérios de Avaliação (expandível) */}
-                            {selectedStudent === student.id && (
-                                <div className="p-6 space-y-6 bg-slate-50">
-                                    {rubricaCriteria.map(criterion => (
-                                        <div key={criterion.id} className="bg-white rounded-xl p-5 border-2 border-slate-200">
-                                            <div className="mb-4">
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <h4 className="font-bold text-slate-900">{criterion.name}</h4>
-                                                    <span className="text-xs font-bold px-3 py-1 bg-purple-100 text-purple-800 rounded-full">
-                                                        Peso: {criterion.weight}%
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            {/* Níveis clicáveis */}
-                                            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                                                {criterion.levels.map(level => {
-                                                    const isSelected = studentEval[criterion.id] === level.value;
-                                                    const colors = {
-                                                        1: 'from-red-500 to-red-600',
-                                                        2: 'from-yellow-500 to-yellow-600',
-                                                        3: 'from-blue-500 to-blue-600',
-                                                        4: 'from-green-500 to-green-600'
-                                                    };
-
-                                                    return (
-                                                        <button
-                                                            key={level.value}
-                                                            onClick={() => handleLevelSelect(student.id, criterion.id, level.value)}
-                                                            className={`relative p-4 rounded-xl border-3 transition-all transform ${
-                                                                isSelected
-                                                                    ? `bg-gradient-to-br ${colors[level.value]} text-white border-transparent shadow-lg scale-105`
-                                                                    : 'bg-white border-slate-300 hover:border-slate-400 hover:shadow-md'
-                                                            }`}
-                                                        >
-                                                            {isSelected && (
-                                                                <div className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
-                                                                    <Check size={14} className="text-green-600" />
-                                                                </div>
-                                                            )}
-                                                            <div className="text-center">
-                                                                <p className={`font-bold text-lg mb-1 ${isSelected ? 'text-white' : 'text-purple-700'}`}>
-                                                                    {level.label}
-                                                                </p>
-                                                                <p className={`text-2xl font-extrabold mb-2 ${isSelected ? 'text-white' : 'text-slate-900'}`}>
-                                                                    {level.points} pts
-                                                                </p>
-                                                                <p className={`text-xs ${isSelected ? 'text-white/90' : 'text-slate-600'}`}>
-                                                                    {level.description}
-                                                                </p>
-                                                            </div>
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
+            {/* Seletor de Projeto */}
+            <div className="bg-white rounded-xl border-2 border-slate-200 p-4">
+                <label className="block text-sm font-bold text-slate-700 mb-2">Projeto para Avaliação</label>
+                <select
+                    value={selectedProjectId || ''}
+                    onChange={(e) => setSelectedProjectId(parseInt(e.target.value))}
+                    className="w-full px-4 py-2 border-2 border-slate-300 rounded-lg font-bold"
+                >
+                    {projects.map(project => (
+                        <option key={project.id} value={project.id}>
+                            {project.name}
+                        </option>
+                    ))}
+                </select>
             </div>
 
-            {/* Botão de Salvar */}
-            <div className="flex justify-end gap-3">
-                <button
-                    onClick={() => setEvaluations({})}
-                    className="px-6 py-3 bg-slate-200 text-slate-700 rounded-lg font-bold hover:bg-slate-300 transition flex items-center gap-2"
-                >
-                    <X size={20} />
-                    Limpar Avaliações
-                </button>
-                <button
-                    onClick={saveEvaluations}
-                    className="px-6 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-lg font-bold hover:from-green-700 hover:to-teal-700 transition flex items-center gap-2 shadow-lg"
-                >
-                    <Save size={20} />
-                    Salvar Todas as Avaliações
-                </button>
+            {/* Aviso */}
+            <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-4">
+                <p className="text-sm text-blue-800">
+                    <strong>Avaliação Individual:</strong> Use a rubrica criada para avaliar cada aluno. 
+                    Clique no aluno abaixo para expandir e avaliar usando a mesma rubrica da avaliação de equipe.
+                </p>
+            </div>
+
+            {/* Lista de Alunos com RubricaEvaluator */}
+            <div className="space-y-4">
+                {students.map(student => (
+                    <div key={student.id} className="bg-white rounded-xl border-2 border-slate-200 overflow-hidden">
+                        {/* Header do Aluno */}
+                        <div 
+                            onClick={() => setSelectedStudent(selectedStudent === student.id ? null : student.id)}
+                            className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 cursor-pointer hover:from-blue-100 hover:to-purple-100 transition flex items-center justify-between"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                                    {student.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-lg text-slate-900">{student.name}</h3>
+                                    <p className="text-sm text-slate-600">Clique para avaliar</p>
+                                </div>
+                            </div>
+                            <div>
+                                {selectedStudent === student.id ? (
+                                    <ChevronDown size={24} className="text-slate-600" />
+                                ) : (
+                                    <ChevronRight size={24} className="text-slate-600" />
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Avaliador de Rubrica (expandível) */}
+                        {selectedStudent === student.id && selectedProjectId && (
+                            <div className="p-6 bg-slate-50">
+                                <div className="mb-4 bg-gradient-to-r from-blue-100 to-purple-100 border-2 border-blue-300 rounded-lg p-4">
+                                    <p className="text-sm font-bold text-blue-900 mb-1">
+                                        Avaliando: {student.name}
+                                    </p>
+                                    <p className="text-xs text-blue-800">
+                                        Use a rubrica abaixo para atribuir pontos clicando nos níveis de desempenho.
+                                    </p>
+                                </div>
+                                <RubricaEvaluator 
+                                    projectId={selectedProjectId}
+                                    teamId={student.id} // Usando ID do aluno como "equipe individual"
+                                    teamName={student.name}
+                                />
+                            </div>
+                        )}
+                    </div>
+                ))}
             </div>
         </div>
     );
