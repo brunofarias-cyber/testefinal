@@ -31,11 +31,11 @@ const BrandLogo = ({ size = 40 }) => (
 const AuthManager = {
     // Obter usuários do localStorage
     getUsers: () => {
-        const users = localStorage.getItem("bprojetos_users");
+        const users = localStorage.getItem("nexo_users");
         return users ? JSON.parse(users) : [
             {
                 id: 1,
-                email: "professor@bprojetos.com",
+                email: "professor@nexo.com",
                 password: "prof123",
                 name: "Ana Silva",
                 role: "teacher",
@@ -43,7 +43,7 @@ const AuthManager = {
             },
             {
                 id: 2,
-                email: "aluno@bprojetos.com",
+                email: "aluno@nexo.com",
                 password: "aluno123",
                 name: "João Silva",
                 role: "student",
@@ -51,7 +51,7 @@ const AuthManager = {
             },
             {
                 id: 3,
-                email: "coordenador@bprojetos.com",
+                email: "coordenador@nexo.com",
                 password: "coord123",
                 name: "Roberto Lima",
                 role: "coordinator",
@@ -62,7 +62,7 @@ const AuthManager = {
 
     // Salvar usuários no localStorage
     saveUsers: (users) => {
-        localStorage.setItem("bprojetos_users", JSON.stringify(users));
+        localStorage.setItem("nexo_users", JSON.stringify(users));
     },
 
     // Validar email
@@ -113,18 +113,18 @@ const AuthManager = {
 
     // Salvar session do usuário logado
     setCurrentUser: (user) => {
-        localStorage.setItem("bprojetos_current_user", JSON.stringify(user));
+        localStorage.setItem("nexo_current_user", JSON.stringify(user));
     },
 
     // Obter usuário logado
     getCurrentUser: () => {
-        const user = localStorage.getItem("bprojetos_current_user");
+        const user = localStorage.getItem("nexo_current_user");
         return user ? JSON.parse(user) : null;
     },
 
     // Logout
     logout: () => {
-        localStorage.removeItem("bprojetos_current_user");
+        localStorage.removeItem("nexo_current_user");
     }
 };
 

@@ -181,6 +181,20 @@ const StudentGrades = () => {
                 </button>
             </div>
 
+            {/* Aviso de Integração com Rubricas */}
+            <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 mb-6">
+                <div className="flex items-start gap-3">
+                    <AlertCircle size={20} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="text-sm font-bold text-blue-900 mb-1">📋 Avaliação Transparente</p>
+                        <p className="text-sm text-blue-800">
+                            Suas notas são calculadas automaticamente com base nas <strong>rubricas de avaliação</strong> criadas pelos professores. 
+                            Cada critério avaliado está claramente definido e você pode ver exatamente como chegou à sua nota final.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             {/* Resumo Geral */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">

@@ -7,7 +7,7 @@ const LandingPage = ({ onEnter }) => (
         <nav className="px-8 py-6 flex justify-between items-center max-w-7xl mx-auto w-full">
             <div className="flex items-center gap-3">
                 <BrandLogo size={40} />
-                <span className="text-2xl font-bold text-slate-800 tracking-tight">BProjetos</span>
+                <span className="text-2xl font-bold text-slate-800 tracking-tight">NEXO</span>
             </div>
             <button className="px-6 py-2.5 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 text-sm">
                 Agendar Demo

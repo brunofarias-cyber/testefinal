@@ -5,7 +5,7 @@
 export const MOCK_USERS = [
   { 
     id: 1, 
-    email: "professor@bprojetos.com", 
+    email: "professor@nexo.com", 
     password: "prof123", 
     role: "teacher", 
     name: "Ana Silva",
@@ -13,7 +13,7 @@ export const MOCK_USERS = [
   },
   { 
     id: 2, 
-    email: "aluno@bprojetos.com", 
+    email: "aluno@nexo.com", 
     password: "aluno123", 
     role: "student", 
     name: "João Silva",
@@ -21,7 +21,7 @@ export const MOCK_USERS = [
   },
   { 
     id: 3, 
-    email: "coordenador@bprojetos.com", 
+    email: "coordenador@nexo.com", 
     password: "coord123", 
     role: "coordinator", 
     name: "Roberto Lima",

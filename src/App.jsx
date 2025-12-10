@@ -77,6 +77,7 @@ import { NotificationCenter, StudentProgress } from "./components/NotificationCe
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
 import CoordinatorIntelligenceCenter from "./components/CoordinatorIntelligenceCenter";
 import TeacherIntelligenceCenter from "./components/TeacherIntelligenceCenter";
+import TeacherMasterControl from "./components/TeacherMasterControl";
 import StudentGrades from "./components/StudentGrades";
 import TeacherRubricEditablePoints from "./components/TeacherRubricEditablePoints";
 import { TeacherReportsEditavel } from "./components/TeacherReportsEditavel";
@@ -299,7 +300,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
         <div className="w-72 bg-white h-screen fixed left-0 top-0 border-r border-slate-200 flex flex-col shadow-xl z-50">
             <div className="p-8 flex items-center gap-3">
                 <BrandLogo size={36} />
-                <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">BProjetos</h1>
+                <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">NEXO</h1>
             </div>
 
             <div className="px-4 flex-1 overflow-y-auto">
@@ -324,6 +325,12 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                         {role === 'teacher' && (
                             <>
                                 <NavItem
+                                    icon={<Zap size={20} />}
+                                    label="⚡ Central Master"
+                                    active={activeTab === 'master-control'}
+                                    onClick={() => setActiveTab('master-control')}
+                                />
+                                <NavItem
                                     icon={<AlertCircle size={20} />}
                                     label="Central 360°"
                                     active={activeTab === 'teacher-intelligence'}
@@ -335,14 +342,9 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                     active={activeTab === 'classes' || activeTab === 'manage-classes'}
                                     onClick={() => setActiveTab('classes')}
                                 />
-                                <NavItem icon={<Calendar size={20} />} label="Calendário" active={activeTab === 'calendar'} onClick={() => setActiveTab('calendar')} />
-                                <NavItem icon={<FileText size={20} />} label="Planejamento" active={activeTab === 'planning'} onClick={() => setActiveTab('planning')} />
-                                <NavItem icon={<CheckSquare size={20} />} label="Chamada" active={activeTab === 'attendance'} onClick={() => setActiveTab('attendance')} />
                                 <NavItem icon={<BarChart2 size={20} />} label="Performance" active={activeTab === 'performance'} onClick={() => setActiveTab('performance')} />
                                 <NavItem icon={<MessageSquare size={20} />} label="Mensagens" active={activeTab === 'messages'} onClick={() => setActiveTab('messages')} />
                                 <NavItem icon={<ClipboardList size={20} />} label="Relatórios" active={activeTab === 'reports'} onClick={() => setActiveTab('reports')} />
-                                <NavItem icon={<FileText size={20} />} label="Rubricas" active={activeTab === 'rubrics'} onClick={() => setActiveTab('rubrics')} />
-                                <NavItem icon={<BookOpen size={20} />} label="BNCC" active={activeTab === 'bncc'} onClick={() => setActiveTab('bncc')} />
                                 <NavItem icon={<Bot size={20} />} label="Copiloto IA" active={activeTab === 'teacher-copilot'} onClick={() => setActiveTab('teacher-copilot')} />
                                 <NavItem icon={<GitBranch size={20} />} label="Ecossistema" active={activeTab === 'teacher-ecosystem'} onClick={() => setActiveTab('teacher-ecosystem')} />
                                 <NavItem icon={<Shield size={20} />} label="Early Warning" active={activeTab === 'new-early-warning'} onClick={() => setActiveTab('new-early-warning')} />
@@ -2394,6 +2396,7 @@ function DashboardApp() {
         }
 
         if (role === 'teacher') {
+            if (activeTab === 'master-control') return <TeacherMasterControl />;
             if (activeTab === 'teacher-intelligence') return <TeacherIntelligenceCenter onNavigateTo={setActiveTab} />;
             if (activeTab === 'dashboard') return <ProfessorDashboard />;
             if (activeTab === 'classes' || activeTab === 'manage-classes') return <TeacherClassManager />;
@@ -2433,7 +2436,7 @@ function DashboardApp() {
             if (activeTab === 'skills') return <StudentBnccPage studentId={currentUser?.id || 101} />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
-        return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Sistema BProjetos</h3><p className="text-slate-500">Navegue pelo menu lateral para explorar as funcionalidades!</p></div>;
+        return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Sistema NEXO</h3><p className="text-slate-500">Navegue pelo menu lateral para explorar as funcionalidades!</p></div>;
     };
 
     if (viewState === 'landing') {
