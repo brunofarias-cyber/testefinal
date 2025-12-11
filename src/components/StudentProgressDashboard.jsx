@@ -20,12 +20,12 @@ const MOCK_STUDENT_COMPETENCIES = [
 
 // MOCK DATA - Evolução de Notas (Linha do Tempo)
 const MOCK_STUDENT_GRADES_TIMELINE = [
-  { date: '15/08/2024', project: 'Horta Sustentável', grade: 7.5, maxGrade: 10, projectId: 1 },
-  { date: '20/09/2024', project: 'Jornal Digital', grade: 8.0, maxGrade: 10, projectId: 2 },
-  { date: '25/10/2024', project: 'Robótica Sucata', grade: 8.5, maxGrade: 10, projectId: 3 },
-  { date: '10/11/2024', project: 'Teatro Shakespeare', grade: 8.2, maxGrade: 10, projectId: 4 },
-  { date: '20/11/2024', project: 'Documentário Comunidade', grade: 8.8, maxGrade: 10, projectId: 5 },
-  { date: '28/11/2024', project: 'Apresentação Final', grade: 9.0, maxGrade: 10, projectId: 6 }
+  { date: '15/08/2024', project: 'Horta Sustentável', grade: 7.5, maxGrade: 10, projectId: 1, xp: 150 },
+  { date: '20/09/2024', project: 'Jornal Digital', grade: 8.0, maxGrade: 10, projectId: 2, xp: 200 },
+  { date: '25/10/2024', project: 'Robótica Sucata', grade: 8.5, maxGrade: 10, projectId: 3, xp: 250 },
+  { date: '10/11/2024', project: 'Teatro Shakespeare', grade: 8.2, maxGrade: 10, projectId: 4, xp: 180 },
+  { date: '20/11/2024', project: 'Documentário Comunidade', grade: 8.8, maxGrade: 10, projectId: 5, xp: 280 },
+  { date: '28/11/2024', project: 'Apresentação Final', grade: 9.0, maxGrade: 10, projectId: 6, xp: 320 }
 ];
 
 // MOCK DATA - Estatísticas do Aluno
@@ -220,9 +220,13 @@ const StudentProgressDashboard = () => {
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
             <XAxis dataKey="date" />
             <YAxis domain={[0, 10]} />
+            <YAxis domain={[0, 400]} yAxisId="right" orientation="right" />
             <Tooltip 
               contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }}
-              formatter={(value) => `${value}/10`}
+              formatter={(value, name) => {
+                if (name === 'Sua Nota' || name === 'Nota Máxima') return `${value}/10`;
+                return `${value} XP`;
+              }}
               labelFormatter={(label) => `Data: ${label}`}
             />
             <Legend />
@@ -234,6 +238,16 @@ const StudentProgressDashboard = () => {
               dot={{ fill: '#3b82f6', r: 6 }}
               activeDot={{ r: 8 }}
               name="Sua Nota"
+            />
+            <Line
+              type="monotone"
+              dataKey="xp"
+              stroke="#f59e0b"
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              dot={false}
+              name="XP Ganho"
+              yAxisId="right"
             />
             <Line
               type="monotone"

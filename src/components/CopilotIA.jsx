@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Bot,
   Send,
@@ -25,6 +25,27 @@ const CopilotIA = () => {
         { id: 3, label: 'Explicar conceito difícil', icon: Book },
         { id: 4, label: 'Revisar meu texto', icon: Edit }
     ]);
+
+    // Carregar prompt do BNCC se disponível
+    useEffect(() => {
+        const bnccPrompt = sessionStorage.getItem('bncc_ia_prompt');
+        const bnccCompetencia = sessionStorage.getItem('bncc_competencia');
+        
+        if (bnccPrompt) {
+            // Enviar automaticamente o prompt do BNCC
+            const aiMessage = {
+                id: 2,
+                sender: 'ai',
+                text: `Ótimo! Você quer saber sobre a competência **${bnccCompetencia}**.\n\n${bnccPrompt}\n\nVou te ajudar a explorar essa competência. O que você gostaria de saber?`,
+                timestamp: new Date().toISOString()
+            };
+            setMessages(prev => [...prev, aiMessage]);
+            
+            // Limpar o sessionStorage
+            sessionStorage.removeItem('bncc_ia_prompt');
+            sessionStorage.removeItem('bncc_competencia');
+        }
+    }, []);
 
     const aiResponses = {
         'relatório': 'Para começar um relatório de qualidade:\n\n1. **Introdução** - Apresente o tema e objetivos\n2. **Desenvolvimento** - Explique o que você fez passo a passo\n3. **Resultados** - Mostre o que descobriu/criou\n4. **Conclusão** - O que aprendeu?\n\nQuer ajuda com alguma parte específica?',

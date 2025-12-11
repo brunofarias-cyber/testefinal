@@ -279,4 +279,4 @@ const TeacherReportsEditavel = () => {
     );
 };
 
-export { TeacherReportsEditavel };
+export default TeacherReportsEditavel;

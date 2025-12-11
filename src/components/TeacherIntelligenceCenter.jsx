@@ -462,8 +462,31 @@ const TeacherIntelligenceCenter = ({ onNavigateTo }) => {
                     {sortedAlerts.map((alert) => (
                         <div
                             key={alert.id}
-                            className={`rounded-2xl border-2 p-6 cursor-pointer transition-all hover:shadow-lg ${getPriorityColor(alert.priority)}`}
-                            onClick={() => setSelectedAlert(alert)}
+                            className={`rounded-2xl border-2 p-6 cursor-pointer transition-all hover:shadow-2xl hover:scale-105 ${getPriorityColor(alert.priority)}`}
+                            onClick={() => {
+                                // Redirecionar para a aba relacionada ao clicar no card
+                                if (alert.actions && alert.actions.length > 0) {
+                                    const primaryAction = alert.actions[0];
+                                    if (onNavigateTo && primaryAction.relatedTab) {
+                                        // Abas internas dentro da Master Control
+                                        const internalTabs = ['planning', 'calendar', 'attendance', 'evaluation', 'bncc', 'reports'];
+                                        
+                                        if (internalTabs.includes(primaryAction.relatedTab)) {
+                                            // Primeiro navega para Master Control
+                                            onNavigateTo('master-control');
+                                            // Depois armazena qual sub-aba ativar
+                                            sessionStorage.setItem('masterControlTab', primaryAction.relatedTab);
+                                        } else {
+                                            // Navega para abas externas diretamente
+                                            onNavigateTo(primaryAction.relatedTab);
+                                        }
+                                    } else {
+                                        setSelectedAlert(alert);
+                                    }
+                                } else {
+                                    setSelectedAlert(alert);
+                                }
+                            }}
                         >
                             {/* Header do Alerta */}
                             <div className="flex items-start justify-between mb-4">

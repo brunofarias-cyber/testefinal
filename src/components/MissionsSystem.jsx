@@ -7,7 +7,15 @@ import {
   Calendar, 
   Star, 
   Trophy,
-  Zap
+  Zap,
+  Award,
+  TrendingUp,
+  Video,
+  Rocket,
+  MessageSquare,
+  CheckSquare,
+  Book,
+  Users
 } from "lucide-react";
 
 const MOCK_MISSIONS = {
@@ -27,8 +35,18 @@ const MOCK_MISSIONS = {
     ]
 };
 
+const MOCK_ACHIEVEMENTS = [
+    { id: 1, title: "Madrugador", desc: "Entregar tarefa com 24h de antecedência.", xp: 500, progress: 1, total: 1, icon: "Zap", unlocked: true },
+    { id: 2, title: "A Volta por Cima", desc: "Melhorar a nota em relação ao último projeto.", xp: 800, progress: 1, total: 1, icon: "TrendingUp", unlocked: true },
+    { id: 3, title: "Líder Nato", desc: "Ser líder de equipe em 2 projetos.", xp: 1000, progress: 1, total: 2, icon: "Star", unlocked: false },
+    { id: 4, title: "Multimídia", desc: "Enviar entrega em formato de vídeo.", xp: 300, progress: 0, total: 1, icon: "Video", unlocked: false },
+    { id: 5, title: "Na Mosca", desc: "100% de pontuação em um critério da rubrica.", xp: 600, progress: 2, total: 5, icon: "Target", unlocked: false },
+    { id: 6, title: "Explorador", desc: "Participar de 5 projetos diferentes.", xp: 1200, progress: 2, total: 5, icon: "Rocket", unlocked: false },
+];
+
 const MissionsSystem = () => {
     const [missions] = useState(MOCK_MISSIONS);
+    const [achievements] = useState(MOCK_ACHIEVEMENTS);
     const [activeTab, setActiveTab] = useState('daily');
     const [showCelebration, setShowCelebration] = useState(false);
 
@@ -180,6 +198,17 @@ const MissionsSystem = () => {
                     <Star size={16} className="inline mr-2" />
                     Especiais ({missions.special.length})
                 </button>
+                <button
+                    onClick={() => setActiveTab('achievements')}
+                    className={`px-6 py-3 rounded-xl font-bold transition ${
+                        activeTab === 'achievements'
+                            ? 'bg-amber-500 text-white shadow-lg shadow-amber-200'
+                            : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                    }`}
+                >
+                    <Trophy size={16} className="inline mr-2" />
+                    Conquistas ({achievements.filter(a => a.unlocked).length})
+                </button>
             </div>
 
             {/* Missões Grid */}
@@ -211,6 +240,63 @@ const MissionsSystem = () => {
                         </div>
                     </div>
                 ))}
+                
+                {activeTab === 'achievements' && achievements.map((achievement) => {
+                    const IconComponent = {
+                        "Zap": Zap,
+                        "TrendingUp": TrendingUp,
+                        "Star": Star,
+                        "Video": Video,
+                        "Target": Target,
+                        "Rocket": Rocket,
+                        "MessageSquare": MessageSquare,
+                        "CheckSquare": CheckSquare,
+                        "Book": Book,
+                        "Users": Users,
+                    }[achievement.icon] || Award;
+
+                    return (
+                        <div 
+                            key={achievement.id} 
+                            className={`p-6 rounded-2xl border-2 transition-all relative overflow-hidden ${
+                                achievement.unlocked
+                                    ? 'bg-white border-amber-200 shadow-lg shadow-amber-100'
+                                    : 'bg-slate-50 border-slate-200 opacity-70'
+                            }`}
+                        >
+                            {achievement.unlocked && (
+                                <div className="absolute top-0 right-0 bg-amber-400 text-amber-900 text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-sm">
+                                    DESBLOQUEADO
+                                </div>
+                            )}
+                            
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 shadow-inner ${
+                                achievement.unlocked 
+                                    ? 'bg-amber-50 text-amber-600' 
+                                    : 'bg-slate-200 text-slate-400'
+                            }`}>
+                                <IconComponent size={24} strokeWidth={2} />
+                            </div>
+                            
+                            <h3 className="font-bold text-slate-800 text-lg">{achievement.title}</h3>
+                            <p className="text-sm text-slate-500 mt-2 mb-4">{achievement.desc}</p>
+                            
+                            <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                <div
+                                    className={`h-full rounded-full transition-all ${
+                                        achievement.unlocked 
+                                            ? 'bg-gradient-to-r from-amber-400 to-orange-500' 
+                                            : 'bg-slate-300'
+                                    }`}
+                                    style={{ width: `${(achievement.progress / achievement.total) * 100}%` }}
+                                ></div>
+                            </div>
+                            <p className="text-xs text-right mt-2 font-bold text-slate-500">
+                                {achievement.progress}/{achievement.total} • +{achievement.xp} XP
+                            </p>
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );

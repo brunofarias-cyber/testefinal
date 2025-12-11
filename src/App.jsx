@@ -64,6 +64,7 @@ import MessagingSystemV2 from "./components/MessagingSystemV2";
 import TeacherPerformance from "./components/TeacherPerformance";
 import { AuthManager, LoginScreen } from "./components/AuthSystemAPI";
 import StudentDashboard from "./components/StudentDashboard";
+import StudentOverview from "./components/StudentOverview";
 import ProfessorDashboard from "./components/ProfessorDashboard";
 // import CopilotoIA from "./features/CopilotoIA";
 // import EarlyWarning from "./features/EarlyWarning";
@@ -80,7 +81,7 @@ import TeacherIntelligenceCenter from "./components/TeacherIntelligenceCenter";
 import TeacherMasterControl from "./components/TeacherMasterControl";
 import StudentGrades from "./components/StudentGrades";
 import TeacherRubricEditablePoints from "./components/TeacherRubricEditablePoints";
-import { TeacherReportsEditavel } from "./components/TeacherReportsEditavel";
+import TeacherReportsEditavel from "./components/TeacherReportsEditavel";
 import TeacherBnccPage from "./pages/TeacherBnccPage";
 import StudentBnccPage from "./pages/StudentBnccPage";
 
@@ -98,6 +99,14 @@ import StudentPortfolio from "./components/StudentPortfolio";
 import SchoolEcosystem from "./components/SchoolEcosystem";
 import CopilotIA from "./components/CopilotIA";
 import EarlyWarningSystem from "./components/EarlyWarningSystem";
+import WorkSubmissionCorrection from "./components/WorkSubmissionCorrection";
+import GradeSubmissionModal from "./components/GradeSubmissionModal";
+import AttendanceMarkingModal from "./components/AttendanceMarkingModal";
+import StudentAttendanceView from "./components/StudentAttendanceView";
+import SubmissionUploadModal from "./components/SubmissionUploadModal";
+import StudentSubmissionsView from "./components/StudentSubmissionsView";
+import RubricDistributionModal from "./components/RubricDistributionModal";
+import StudentRubricsView from "./components/StudentRubricsView";
 
 
 // --- DADOS MOCKADOS ---
@@ -345,6 +354,11 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<Bot size={20} />} label="Copiloto IA" active={activeTab === 'teacher-copilot'} onClick={() => setActiveTab('teacher-copilot')} />
                                 <NavItem icon={<GitBranch size={20} />} label="Conhecendo os Projetos" active={activeTab === 'teacher-ecosystem'} onClick={() => setActiveTab('teacher-ecosystem')} />
                                 <NavItem icon={<Shield size={20} />} label="Situação para Análise" active={activeTab === 'new-early-warning'} onClick={() => setActiveTab('new-early-warning')} />
+                                <NavItem icon={<FileText size={20} />} label="Correção de Trabalhos" active={activeTab === 'work-correction'} onClick={() => setActiveTab('work-correction')} />
+                                <NavItem icon={<Award size={20} />} label="Distribuir Notas" active={activeTab === 'teacher-grades'} onClick={() => setActiveTab('teacher-grades')} />
+                                <NavItem icon={<CheckSquare size={20} />} label="Registrar Presença" active={activeTab === 'teacher-attendance'} onClick={() => setActiveTab('teacher-attendance')} />
+                                <NavItem icon={<Upload size={20} />} label="Avaliar Entregas" active={activeTab === 'teacher-submissions'} onClick={() => setActiveTab('teacher-submissions')} />
+                                <NavItem icon={<Star size={20} />} label="Criar Rúbricas" active={activeTab === 'teacher-rubrics'} onClick={() => setActiveTab('teacher-rubrics')} />
                             </>
                         )}
                         {role === 'student' && (
@@ -354,10 +368,12 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<Trophy size={20} />} label="Missões" active={activeTab === 'new-missions'} onClick={() => setActiveTab('new-missions')} />
                                 <NavItem icon={<Briefcase size={20} />} label="Portfólio" active={activeTab === 'new-portfolio'} onClick={() => setActiveTab('new-portfolio')} />
                                 <NavItem icon={<Award size={20} />} label="Notas" active={activeTab === 'grades'} onClick={() => setActiveTab('grades')} />
+                                <NavItem icon={<Upload size={20} />} label="Entregas" active={activeTab === 'submissions'} onClick={() => setActiveTab('submissions')} />
+                                <NavItem icon={<CheckSquare size={20} />} label="Presença" active={activeTab === 'attendance'} onClick={() => setActiveTab('attendance')} />
+                                <NavItem icon={<Star size={20} />} label="Avaliações" active={activeTab === 'rubrics'} onClick={() => setActiveTab('rubrics')} />
                                 <NavItem icon={<Calendar size={20} />} label="Calendário" active={activeTab === 'calendar'} onClick={() => setActiveTab('calendar')} />
                                 <NavItem icon={<MessageSquare size={20} />} label="Mensagens" active={activeTab === 'messages'} onClick={() => setActiveTab('messages')} />
                                 <NavItem icon={<AlertCircle size={20} />} label="Notificações" active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} />
-                                <NavItem icon={<Award size={20} />} label="Conquistas" active={activeTab === 'achievements'} onClick={() => setActiveTab('achievements')} />
                                 <NavItem icon={<Target size={20} />} label="Competências" active={activeTab === 'skills'} onClick={() => setActiveTab('skills')} />
                             </>
                         )}
@@ -2393,7 +2409,7 @@ function DashboardApp() {
         }
 
         if (role === 'teacher') {
-            if (activeTab === 'master-control') return <TeacherMasterControl />;
+            if (activeTab === 'master-control') return <TeacherMasterControl onNavigateTo={setActiveTab} />;
             if (activeTab === 'teacher-intelligence') return <TeacherIntelligenceCenter onNavigateTo={setActiveTab} />;
             if (activeTab === 'dashboard') return <ProfessorDashboard />;
             if (activeTab === 'classes' || activeTab === 'manage-classes') return <TeacherClassManager />;
@@ -2407,9 +2423,14 @@ function DashboardApp() {
             if (activeTab === 'bncc') return <TeacherBnccPage projectId={1} classId={1} />;
             if (activeTab === 'activities') return <ActivityBank />;
             if (activeTab === 'teams') return <TeamManagement />;
-            if (activeTab === 'teacher-copilot') return <CopilotIA />;
-            if (activeTab === 'teacher-ecosystem') return <SchoolEcosystem />;
-            if (activeTab === 'new-early-warning') return <EarlyWarningSystem />;
+            if (activeTab === 'teacher-copilot') return <CopilotIA onNavigateTo={setActiveTab} />;
+            if (activeTab === 'teacher-ecosystem') return <SchoolEcosystem onNavigateTo={setActiveTab} />;
+            if (activeTab === 'new-early-warning') return <EarlyWarningSystem onNavigateTo={setActiveTab} />;
+            if (activeTab === 'work-correction') return <WorkSubmissionCorrection onNavigateTo={setActiveTab} />;
+            if (activeTab === 'teacher-grades') return <div className="p-8"><h2 className="text-3xl font-bold mb-6">📊 Distribuir Notas</h2><p className="text-gray-600 mb-4">Selecione um aluno e um projeto para adicionar nota</p><GradeSubmissionModal projectTitle="Projeto Exemplo" projectId={1} teacherId={currentUser?.id || 1} onClose={() => setActiveTab('dashboard')} /></div>;
+            if (activeTab === 'teacher-attendance') return <div className="p-8"><h2 className="text-3xl font-bold mb-6">✅ Registrar Presença</h2><p className="text-gray-600 mb-4">Marque a presença dos alunos em sua turma</p></div>;
+            if (activeTab === 'teacher-submissions') return <div className="p-8"><h2 className="text-3xl font-bold mb-6">📤 Avaliar Entregas</h2><p className="text-gray-600 mb-4">Visualize e avalie os trabalhos entregues pelos alunos</p></div>;
+            if (activeTab === 'teacher-rubrics') return <div className="p-8"><h2 className="text-3xl font-bold mb-6">⭐ Criar Rúbricas</h2><p className="text-gray-600 mb-4">Distribua rúbricas de avaliação para seus projetos</p><RubricDistributionModal projectTitle="Projeto Exemplo" projectId={1} onClose={() => setActiveTab('dashboard')} /></div>;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'coordinator') {
@@ -2421,12 +2442,15 @@ function DashboardApp() {
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'student') {
-            if (activeTab === 'student-home' || activeTab === 'projects') return <StudentDashboard currentUserId={currentUser?.id || 101} onProjectClick={handleProjectClick} />;
+            if (activeTab === 'student-home') return <StudentOverview currentUserId={currentUser?.id || 101} onNavigateTo={setActiveTab} />;
+            if (activeTab === 'projects') return <StudentDashboard currentUserId={currentUser?.id || 101} onProjectClick={handleProjectClick} onNavigateTo={setActiveTab} />;
             if (activeTab === 'progress') return <StudentProgressDashboard />;
-            if (activeTab === 'new-missions') return <MissionsSystem />;
-            if (activeTab === 'new-portfolio') return <StudentPortfolio />;
+            if (activeTab === 'new-missions') return <MissionsSystem onNavigateTo={setActiveTab} />;
+            if (activeTab === 'new-portfolio') return <StudentPortfolio onNavigateTo={setActiveTab} />;
             if (activeTab === 'grades') return <StudentGrades />;
-            if (activeTab === 'achievements') return <StudentAchievements />;
+            if (activeTab === 'submissions') return <StudentSubmissionsView studentId={currentUser?.id || 101} />;
+            if (activeTab === 'attendance') return <StudentAttendanceView studentId={currentUser?.id || 101} />;
+            if (activeTab === 'rubrics') return <StudentRubricsView studentId={currentUser?.id || 101} />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
             if (activeTab === 'messages') return <MessagingSystemV2 userRole="student" currentUserId={currentUser?.id || 101} currentUserName={currentUser?.name || 'Aluno'} />;
             if (activeTab === 'notifications') return <NotificationCenter />;

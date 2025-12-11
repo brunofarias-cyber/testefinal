@@ -23,6 +23,12 @@ import studentProjectsRoutes from './routes/student-projects.js';
 import rubricasRoutes from './routes/rubricas.js';
 import oauthRoutes from './routes/oauth.js';
 import syncRoutes from './routes/sync.js';
+import gradesRoutes from './routes/grades.js';
+import attendanceRoutes from './routes/attendance.js';
+import submissionsRoutes from './routes/submissions.js';
+import rubricsRoutes from './routes/rubrics.js';
+import http from 'http';
+import { Server } from 'socket.io';
 
 dotenv.config();
 
@@ -56,6 +62,10 @@ app.use('/api/messages', messagesRoutes);
 app.use('/api/teams', teamsRoutes);
 app.use('/api/student-projects', studentProjectsRoutes);
 app.use('/api/rubricas', rubricasRoutes);
+app.use('/api/grades', gradesRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/submissions', submissionsRoutes);
+app.use('/api/rubrics', rubricsRoutes);
 app.use(oauthRoutes);
 app.use(syncRoutes);
 
@@ -177,7 +187,40 @@ app.get('*', (req, res) => {
 
 // Start server immediately
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, '0.0.0.0', () => {
+  // Criar servidor HTTP para Socket.io
+  const server = http.createServer(app);
+  const io = new Server(server, {
+    cors: {
+      origin: process.env.FRONTEND_URL || "http://localhost:5173",
+      methods: ["GET", "POST"]
+    }
+  });
+
+  // Disponibilizar io para as rotas
+  app.io = io;
+
+  // Configurar Socket.io
+  io.on('connection', (socket) => {
+    console.log(`✅ Cliente conectado: ${socket.id}`);
+
+    // Aluno entra em sua sala pessoal
+    socket.on('join-student', (studentId) => {
+      socket.join(`student-${studentId}`);
+      console.log(`👨‍🎓 Aluno ${studentId} entrou na sala`);
+    });
+
+    // Professor entra em sua sala
+    socket.on('join-teacher', (teacherId) => {
+      socket.join(`teacher-${teacherId}`);
+      console.log(`👨‍🏫 Professor ${teacherId} entrou na sala`);
+    });
+
+    socket.on('disconnect', () => {
+      console.log(`❌ Cliente desconectado: ${socket.id}`);
+    });
+  });
+
+  server.listen(PORT, '0.0.0.0', () => {
     const isProduction = process.env.NODE_ENV === 'production';
     const host = isProduction ? '0.0.0.0' : 'localhost';
     
@@ -186,6 +229,7 @@ if (process.env.NODE_ENV !== 'test') {
     console.log(`   🏥 Health: http://${host}:${PORT}/api/health`);
     console.log(`   📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
     console.log(`   💾 Banco: ${sequelize ? '✅ Conectado' : '⚠️  Offline (usando mock data)'}`);
+    console.log(`   🔌 Socket.io: ✅ Ativo`);
     
     if (isProduction && !process.env.DATABASE_URL) {
       console.warn(`⚠️  AVISO: DATABASE_URL não configurado - aplicação funcionará com dados mock`);

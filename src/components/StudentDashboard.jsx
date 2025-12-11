@@ -15,7 +15,7 @@ import {
 const API_BASE = import.meta.env.VITE_API_URL || '';
 const api = (path) => (API_BASE ? `${API_BASE}${path}` : path);
 
-const StudentDashboard = ({ currentUserId = 101, onProjectClick }) => {
+const StudentDashboard = ({ currentUserId = 101, onProjectClick, onNavigateTo }) => {
     const [projects, setProjects] = useState([]);
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -159,11 +159,19 @@ const StudentDashboard = ({ currentUserId = 101, onProjectClick }) => {
             {/* Cabeçalho Principal */}
             <div className="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-3xl p-8 text-white shadow-xl">
                 <div className="flex justify-between items-start">
-                    <div>
+                    <div className="flex-1">
                         <h1 className="text-4xl font-extrabold mb-1">Bem-vindo, {studentData.name}! 👋</h1>
                         <p className="text-indigo-100">{studentData.class} • {studentData.school}</p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right ml-4">
+                        {onNavigateTo && (
+                            <button
+                                onClick={() => onNavigateTo('student-home')}
+                                className="mb-3 px-3 py-1 bg-white/20 hover:bg-white/30 text-white rounded-lg text-xs font-bold transition"
+                            >
+                                📋 Visão Geral
+                            </button>
+                        )}
                         <p className="text-xs font-bold opacity-80 mb-2">SEU NÍVEL</p>
                         <div className="flex items-end gap-3 justify-end">
                             <div>

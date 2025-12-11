@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Calendar,
     CheckSquare,
@@ -19,13 +19,18 @@ import {
     Download,
     Upload,
     Award,
-    BarChart2
+    BarChart2,
+    ClipboardList,
+    Wand2,
+    Sparkles
 } from "lucide-react";
 import TeacherRubricEditablePoints from "./TeacherRubricEditablePoints";
 import StudentGrades from "./StudentGrades";
 import InteractiveEvaluation from "./InteractiveEvaluation";
+import TeacherReportsEditavel from "./TeacherReportsEditavel";
+import { allBnccCodes, getYearOptions, getAISuggestions } from "../constants/bnccCodes";
 
-const TeacherMasterControl = () => {
+const TeacherMasterControl = ({ onNavigateTo }) => {
     const [activeSection, setActiveSection] = useState('planning'); // planning, calendar, attendance, bncc, rubrics, evaluation
     const [selectedClass, setSelectedClass] = useState('9A');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -105,6 +110,47 @@ const TeacherMasterControl = () => {
         materials: ""
     });
 
+    // Ativar sub-aba quando redirecionado da Central de Inteligência
+    useEffect(() => {
+        const tabToActivate = sessionStorage.getItem('masterControlTab');
+        if (tabToActivate) {
+            setActiveSection(tabToActivate);
+            sessionStorage.removeItem('masterControlTab');
+        }
+    }, []);
+
+    // Estados para seleção de BNCC e sugestões de IA
+    const [selectedBnccYear, setSelectedBnccYear] = useState('9º Ano');
+    const [selectedBnccCodes, setSelectedBnccCodes] = useState([]);
+    const [showBnccSelector, setShowBnccSelector] = useState(false);
+    const [aiSuggestions, setAiSuggestions] = useState([]);
+    const [loadingAISuggestions, setLoadingAISuggestions] = useState(false);
+
+    // Funções para BNCC
+    const toggleBnccCode = (code) => {
+        setSelectedBnccCodes(prev =>
+            prev.includes(code)
+                ? prev.filter(c => c !== code)
+                : [...prev, code]
+        );
+    };
+
+    const suggestBnccCodes = async () => {
+        setLoadingAISuggestions(true);
+        // Simular chamada à IA
+        const suggestions = getAISuggestions(newLesson.title, newLesson.objectives);
+        setTimeout(() => {
+            setAiSuggestions(suggestions);
+            setLoadingAISuggestions(false);
+        }, 1000);
+    };
+
+    const addSuggestedCodes = () => {
+        const newCodes = aiSuggestions.map(s => s.code).filter(code => !selectedBnccCodes.includes(code));
+        setSelectedBnccCodes(prev => [...prev, ...newCodes]);
+        setAiSuggestions([]);
+    };
+
     // Funções de Chamada
     const toggleAttendance = (studentId, newStatus) => {
         setAttendanceData(prev => ({
@@ -168,11 +214,13 @@ const TeacherMasterControl = () => {
             class: selectedClass,
             status: "planned",
             objectives: newLesson.objectives.split(',').map(o => o.trim()),
-            bnccCodes: newLesson.bnccCodes.split(',').map(c => c.trim()),
+            bnccCodes: selectedBnccCodes.length > 0 ? selectedBnccCodes : newLesson.bnccCodes.split(',').map(c => c.trim()),
             materials: newLesson.materials.split(',').map(m => m.trim())
         };
         setLessons([...lessons, lesson]);
         setNewLesson({ title: "", date: selectedDate, duration: "1h", objectives: "", bnccCodes: "", materials: "" });
+        setSelectedBnccCodes([]);
+        setAiSuggestions([]);
         setShowNewLessonForm(false);
     };
 
@@ -271,16 +319,110 @@ const TeacherMasterControl = () => {
                                 placeholder="Compreender fotossíntese, Identificar clorofila"
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-bold text-slate-700 mb-2">Códigos BNCC (separados por vírgula)</label>
-                            <input
-                                type="text"
-                                value={newLesson.bnccCodes}
-                                onChange={(e) => setNewLesson({ ...newLesson, bnccCodes: e.target.value })}
-                                className="w-full px-4 py-2 border border-slate-300 rounded-lg"
-                                placeholder="EF09CI11, EF09CI13"
-                            />
+                        
+                        {/* Nova seção: Seletor de BNCC com IA */}
+                        <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-5">
+                            <div className="flex items-center justify-between mb-4">
+                                <label className="block text-sm font-bold text-slate-700">Competências BNCC (6º ao 2º ano)</label>
+                                <button
+                                    onClick={suggestBnccCodes}
+                                    disabled={loadingAISuggestions || !newLesson.title}
+                                    className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1 rounded-lg text-xs font-bold hover:shadow-lg transition disabled:opacity-50"
+                                >
+                                    <Sparkles size={14} />
+                                    {loadingAISuggestions ? 'Sugerindo...' : 'Sugerir com IA'}
+                                </button>
+                            </div>
+
+                            {/* Seletor de Ano */}
+                            <div className="mb-4">
+                                <select
+                                    value={selectedBnccYear}
+                                    onChange={(e) => {
+                                        setSelectedBnccYear(e.target.value);
+                                        setSelectedBnccCodes([]);
+                                    }}
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white font-bold text-slate-700"
+                                >
+                                    {getYearOptions().map(year => (
+                                        <option key={year} value={year}>{year}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Grid de Seleção de Códigos */}
+                            <div className="max-h-64 overflow-y-auto">
+                                <div className="grid grid-cols-2 gap-3">
+                                    {allBnccCodes[selectedBnccYear]?.map((comp) => (
+                                        <label
+                                            key={comp.code}
+                                            className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition ${
+                                                selectedBnccCodes.includes(comp.code)
+                                                    ? 'bg-blue-200 border-blue-600'
+                                                    : 'bg-white border-slate-200 hover:border-blue-400'
+                                            }`}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedBnccCodes.includes(comp.code)}
+                                                onChange={() => toggleBnccCode(comp.code)}
+                                                className="mt-1"
+                                            />
+                                            <div>
+                                                <p className="font-bold text-sm text-slate-900">{comp.code}</p>
+                                                <p className="text-xs text-slate-600">{comp.theme}</p>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Mostra Sugestões de IA */}
+                            {aiSuggestions.length > 0 && (
+                                <div className="mt-4 p-4 bg-purple-100 border-2 border-purple-400 rounded-lg">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <Wand2 size={18} className="text-purple-600" />
+                                            <p className="font-bold text-slate-800">Sugestões de IA ({aiSuggestions.length})</p>
+                                        </div>
+                                        <button
+                                            onClick={addSuggestedCodes}
+                                            className="bg-purple-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-purple-700"
+                                        >
+                                            Adicionar Sugeridas
+                                        </button>
+                                    </div>
+                                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                                        {aiSuggestions.map((suggestion) => (
+                                            <div key={suggestion.code} className="bg-white p-2 rounded border border-purple-300">
+                                                <p className="font-bold text-sm text-slate-900">{suggestion.code}</p>
+                                                <p className="text-xs text-slate-600 line-clamp-2">{suggestion.description}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Códigos Selecionados */}
+                            {selectedBnccCodes.length > 0 && (
+                                <div className="mt-4 p-3 bg-white rounded-lg border border-blue-300">
+                                    <p className="text-xs font-bold text-slate-600 mb-2">CÓDIGOS SELECIONADOS ({selectedBnccCodes.length})</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedBnccCodes.map(code => (
+                                            <span
+                                                key={code}
+                                                onClick={() => toggleBnccCode(code)}
+                                                className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold cursor-pointer hover:bg-blue-700 flex items-center gap-2"
+                                            >
+                                                {code}
+                                                <X size={12} />
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
+
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2">Materiais (separados por vírgula)</label>
                             <input
@@ -889,8 +1031,13 @@ const TeacherMasterControl = () => {
                                             <div className="mt-3">
                                                 <button 
                                                     onClick={() => {
-                                                        // Aqui você pode integrar com o Copilot IA
-                                                        alert(`IA Prompt: ${comp.iaPrompt}\n\nEm breve você será direcionado ao Copiloto IA com esta sugestão.`);
+                                                        // Armazenar o prompt na sessão
+                                                        sessionStorage.setItem('bncc_ia_prompt', comp.iaPrompt);
+                                                        sessionStorage.setItem('bncc_competencia', comp.code);
+                                                        // Redirecionar para Copiloto IA
+                                                        if (onNavigateTo) {
+                                                            onNavigateTo('teacher-copilot');
+                                                        }
                                                     }}
                                                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:from-purple-700 hover:to-blue-700 transition flex items-center justify-center gap-2 text-sm"
                                                 >
@@ -921,28 +1068,7 @@ const TeacherMasterControl = () => {
                 </div>
             </div>
 
-            {/* Dica de Priorização */}
-            <div className="mt-6 bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6">
-                <h4 className="font-bold text-lg text-yellow-900 mb-3 flex items-center gap-2">
-                    <Target size={24} />
-                    Dica: Priorize as Competências Pendentes
-                </h4>
-                <p className="text-yellow-800 text-sm mb-4">
-                    Você tem {totalCount - coveredCount} competências ainda não trabalhadas. Planeje suas próximas aulas focando nelas!
-                </p>
-                <div className="space-y-2">
-                    {bnccCompetences['Ciências - 9º Ano']
-                        .filter(c => !c.covered)
-                        .slice(0, 3)
-                        .map((comp) => (
-                            <div key={comp.code} className="flex items-center gap-2 text-sm">
-                                <ChevronRight size={16} className="text-yellow-700" />
-                                <span className="font-bold text-yellow-900">{comp.code}:</span>
-                                <span className="text-yellow-800">{comp.suggestion}</span>
-                            </div>
-                        ))}
-                </div>
-            </div>
+
         </div>
     );
 
@@ -1135,7 +1261,7 @@ const TeacherMasterControl = () => {
                     </div>
                     <div>
                         <h1 className="text-4xl font-extrabold text-slate-900">Central do Professor</h1>
-                        <p className="text-slate-600">Planejamento, Calendário, Chamada, Avaliação (com Rubricas) e BNCC em um só lugar</p>
+                        <p className="text-slate-600">Planejamento, Calendário, Chamada, Avaliação, BNCC e Relatórios em um só lugar</p>
                     </div>
                 </div>
 
@@ -1200,6 +1326,15 @@ const TeacherMasterControl = () => {
                     <Target size={20} />
                     BNCC
                 </button>
+                <button
+                    onClick={() => setActiveSection('reports')}
+                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
+                        activeSection === 'reports' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
+                    }`}
+                >
+                    <ClipboardList size={20} />
+                    Relatórios
+                </button>
             </div>
 
             {/* Conteúdo das Seções */}
@@ -1208,6 +1343,7 @@ const TeacherMasterControl = () => {
                 {activeSection === 'calendar' && renderCalendar()}
                 {activeSection === 'attendance' && renderAttendance()}
                 {activeSection === 'evaluation' && renderEvaluation()}
+                {activeSection === 'reports' && <TeacherReportsEditavel />}
                 {activeSection === 'bncc' && renderBNCC()}
             </div>
         </div>

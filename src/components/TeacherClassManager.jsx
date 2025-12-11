@@ -14,7 +14,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import TeacherPerformance from './TeacherPerformance';
-import Messages from './Messages';
+import MessagingSystemV2 from './MessagingSystemV2';
 
 // MOCK DATA (fallback se backend não disponível)
 const MOCK_CLASSES = [
@@ -645,7 +645,7 @@ const TeacherClassManager = () => {
       {activeTab === 'performance' ? (
         <TeacherPerformance />
       ) : activeTab === 'mensagens' ? (
-        <Messages />
+        <MessagingSystemV2 userRole="teacher" currentUserId={1} currentUserName="Professor" />
       ) : (
         <>
           {/* Notificações */}
