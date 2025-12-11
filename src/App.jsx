@@ -9,6 +9,7 @@ import {
     Award,
     Calendar,
     BarChart2,
+    BarChart3,
     Settings,
     Edit,
     X,
@@ -108,6 +109,8 @@ import StudentSubmissionsView from "./components/StudentSubmissionsView";
 import RubricDistributionModal from "./components/RubricDistributionModal";
 import StudentRubricsView from "./components/StudentRubricsView";
 import TeacherActivityManager from "./components/TeacherActivityManager";
+import TeacherCentralHub from "./components/TeacherCentralHub";
+import StudentCentralHub from "./components/StudentCentralHub";
 
 
 // --- DADOS MOCKADOS ---
@@ -356,11 +359,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<GitBranch size={20} />} label="Conhecendo os Projetos" active={activeTab === 'teacher-ecosystem'} onClick={() => setActiveTab('teacher-ecosystem')} />
                                 <NavItem icon={<Shield size={20} />} label="Situação para Análise" active={activeTab === 'new-early-warning'} onClick={() => setActiveTab('new-early-warning')} />
                                 <NavItem icon={<FileText size={20} />} label="Correção de Trabalhos" active={activeTab === 'work-correction'} onClick={() => setActiveTab('work-correction')} />
-                                <NavItem icon={<Award size={20} />} label="Distribuir Notas" active={activeTab === 'teacher-grades'} onClick={() => setActiveTab('teacher-grades')} />
-                                <NavItem icon={<CheckSquare size={20} />} label="Registrar Presença" active={activeTab === 'teacher-attendance'} onClick={() => setActiveTab('teacher-attendance')} />
-                                <NavItem icon={<Upload size={20} />} label="Avaliar Entregas" active={activeTab === 'teacher-submissions'} onClick={() => setActiveTab('teacher-submissions')} />
-                                <NavItem icon={<Star size={20} />} label="Criar Rúbricas" active={activeTab === 'teacher-rubrics'} onClick={() => setActiveTab('teacher-rubrics')} />
-                                <NavItem icon={<ClipboardList size={20} />} label="Criar Atividades" active={activeTab === 'teacher-activities'} onClick={() => setActiveTab('teacher-activities')} />
+                                <NavItem icon={<BarChart3 size={20} />} label="Central do Professor" active={activeTab === 'teacher-central'} onClick={() => setActiveTab('teacher-central')} />
                             </>
                         )}
                         {role === 'student' && (
@@ -369,10 +368,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<BarChart2 size={20} />} label="Progresso" active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} />
                                 <NavItem icon={<Trophy size={20} />} label="Missões" active={activeTab === 'new-missions'} onClick={() => setActiveTab('new-missions')} />
                                 <NavItem icon={<Briefcase size={20} />} label="Portfólio" active={activeTab === 'new-portfolio'} onClick={() => setActiveTab('new-portfolio')} />
-                                <NavItem icon={<Award size={20} />} label="Notas" active={activeTab === 'grades'} onClick={() => setActiveTab('grades')} />
-                                <NavItem icon={<Upload size={20} />} label="Entregas" active={activeTab === 'submissions'} onClick={() => setActiveTab('submissions')} />
-                                <NavItem icon={<CheckSquare size={20} />} label="Presença" active={activeTab === 'attendance'} onClick={() => setActiveTab('attendance')} />
-                                <NavItem icon={<Star size={20} />} label="Avaliações" active={activeTab === 'rubrics'} onClick={() => setActiveTab('rubrics')} />
+                                <NavItem icon={<BarChart3 size={20} />} label="Meu Desempenho" active={activeTab === 'student-central'} onClick={() => setActiveTab('student-central')} />
                                 <NavItem icon={<Calendar size={20} />} label="Calendário" active={activeTab === 'calendar'} onClick={() => setActiveTab('calendar')} />
                                 <NavItem icon={<MessageSquare size={20} />} label="Mensagens" active={activeTab === 'messages'} onClick={() => setActiveTab('messages')} />
                                 <NavItem icon={<AlertCircle size={20} />} label="Notificações" active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} />
@@ -2429,11 +2425,7 @@ function DashboardApp() {
             if (activeTab === 'teacher-ecosystem') return <SchoolEcosystem onNavigateTo={setActiveTab} />;
             if (activeTab === 'new-early-warning') return <EarlyWarningSystem onNavigateTo={setActiveTab} />;
             if (activeTab === 'work-correction') return <WorkSubmissionCorrection onNavigateTo={setActiveTab} />;
-            if (activeTab === 'teacher-grades') return <div className="p-8"><h2 className="text-3xl font-bold mb-6">📊 Distribuir Notas</h2><p className="text-gray-600 mb-4">Selecione um aluno e um projeto para adicionar nota</p><GradeSubmissionModal projectTitle="Projeto Exemplo" projectId={1} teacherId={currentUser?.id || 1} onClose={() => setActiveTab('dashboard')} /></div>;
-            if (activeTab === 'teacher-attendance') return <div className="p-8"><h2 className="text-3xl font-bold mb-6">✅ Registrar Presença</h2><p className="text-gray-600 mb-4">Marque a presença dos alunos em sua turma</p></div>;
-            if (activeTab === 'teacher-submissions') return <div className="p-8"><h2 className="text-3xl font-bold mb-6">📤 Avaliar Entregas</h2><p className="text-gray-600 mb-4">Visualize e avalie os trabalhos entregues pelos alunos</p></div>;
-            if (activeTab === 'teacher-rubrics') return <div className="p-8"><h2 className="text-3xl font-bold mb-6">⭐ Criar Rúbricas</h2><p className="text-gray-600 mb-4">Distribua rúbricas de avaliação para seus projetos</p><RubricDistributionModal projectTitle="Projeto Exemplo" projectId={1} onClose={() => setActiveTab('dashboard')} /></div>;
-            if (activeTab === 'teacher-activities') return <TeacherActivityManager />;
+            if (activeTab === 'teacher-central') return <TeacherCentralHub />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'coordinator') {
@@ -2450,10 +2442,7 @@ function DashboardApp() {
             if (activeTab === 'progress') return <StudentProgressDashboard />;
             if (activeTab === 'new-missions') return <MissionsSystem onNavigateTo={setActiveTab} />;
             if (activeTab === 'new-portfolio') return <StudentPortfolio onNavigateTo={setActiveTab} />;
-            if (activeTab === 'grades') return <StudentGrades />;
-            if (activeTab === 'submissions') return <StudentSubmissionsView studentId={currentUser?.id || 101} />;
-            if (activeTab === 'attendance') return <StudentAttendanceView studentId={currentUser?.id || 101} />;
-            if (activeTab === 'rubrics') return <StudentRubricsView studentId={currentUser?.id || 101} />;
+            if (activeTab === 'student-central') return <StudentCentralHub studentId={currentUser?.id || 101} />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
             if (activeTab === 'messages') return <MessagingSystemV2 userRole="student" currentUserId={currentUser?.id || 101} currentUserName={currentUser?.name || 'Aluno'} />;
             if (activeTab === 'notifications') return <NotificationCenter />;

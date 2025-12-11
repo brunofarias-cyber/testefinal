@@ -4,6 +4,7 @@ import {
     Filter, Search, Calendar, PieChart, Target, Award, Mail, MessageSquare,
     ChevronDown, ChevronUp, Eye, ArrowRight, Plus, Trash2
 } from "lucide-react";
+import CommunicationHub from "./CommunicationHub";
 
 const MOCK_COORDINATOR_DATA = {
     totalStudents: 245,
@@ -204,53 +205,6 @@ const CoordinatorAdvanced = () => {
                     <li>• Revisar metodologia de avaliação em Comunicação (78% abaixo da meta)</li>
                     <li>• Integrar mais componentes práticos nas aulas (Pensamento Científico excelente)</li>
                 </ul>
-            </div>
-        </div>
-    );
-
-    // ========== 4. COMUNICAÇÃO COORDENADOR ==========
-    const CommunicationHub = () => (
-        <div>
-            <h2 className="text-3xl font-bold text-slate-800 mb-8">💬 Hub de Comunicação</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Enviar Comunicado */}
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                    <h3 className="font-bold text-slate-800 mb-4">Enviar Comunicado</h3>
-                    <form className="space-y-3">
-                        <select className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none">
-                            <option>📢 Todos (Alunos + Professores)</option>
-                            <option>👨‍🎓 Todos os Alunos</option>
-                            <option>👨‍🏫 Todos os Professores</option>
-                            <option>7º Ano A</option>
-                            <option>7º Ano B</option>
-                        </select>
-                        <textarea
-                            placeholder="Escreva seu comunicado..."
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm h-24 outline-none resize-none"
-                        ></textarea>
-                        <button className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 text-sm">
-                            Enviar Comunicado
-                        </button>
-                    </form>
-                </div>
-
-                {/* Comunicados Recentes */}
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                    <h3 className="font-bold text-slate-800 mb-4">Histórico de Comunicados</h3>
-                    <div className="space-y-3">
-                        {[
-                            { title: "Novo feriado", date: "Hoje", recipients: "Todos" },
-                            { title: "Aula suspensa 7º Ano", date: "Ontem", recipients: "7º Ano A" },
-                            { title: "Reunião com pais", date: "2 dias atrás", recipients: "Todos" }
-                        ].map((item, idx) => (
-                            <div key={idx} className="p-2 bg-slate-50 rounded border-l-2 border-indigo-500">
-                                <p className="font-bold text-sm text-slate-800">{item.title}</p>
-                                <p className="text-xs text-slate-500">{item.recipients} • {item.date}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
             </div>
         </div>
     );
