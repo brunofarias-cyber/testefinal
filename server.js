@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
 import { User, Project, Task, Submission, Attendance, Notification, sequelize } from './models/index.js';
@@ -159,31 +160,43 @@ app.get('/api/health', (req, res) => {
 
 // ===== STATIC FRONTEND (Vite build) =====
 const distPath = path.join(__dirname, 'dist');
-app.use(express.static(distPath));
+console.log(`📁 Procurando dist em: ${distPath}`);
+
+// Verificar se dist existe
+const distExists = fs.existsSync(distPath);
+console.log(`📦 Pasta dist existe: ${distExists}`);
+
+if (distExists) {
+  app.use(express.static(distPath));
+  console.log(`✅ Servindo arquivos estáticos de: ${distPath}`);
+}
 
 // SPA fallback para o frontend - deve vir ANTES do root endpoint
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'Not Found' });
   }
-  const indexPath = path.join(distPath, 'index.html');
-  res.sendFile(indexPath, (err) => {
-    if (err) {
-      // Se dist não existir, retornar página de instrução
-      res.status(200).json({
-        message: 'Backend NEXO API',
-        version: '1.0.0',
-        info: 'Frontend não foi construído. Execute: npm run build',
-        endpoints: [
-          '/api/health',
-          '/api/bncc',
-          '/api/classes',
-          '/api/team-chat',
-          '/api/wizard-bncc',
-          '/api/messages'
-        ]
-      });
-    }
+  
+  if (distExists) {
+    const indexPath = path.join(distPath, 'index.html');
+    return res.sendFile(indexPath);
+  }
+  
+  // Se dist não existir, retornar página de instrução
+  res.status(200).json({
+    message: 'Backend NEXO API',
+    version: '1.0.0',
+    info: 'Frontend não foi construído. Execute: npm run build',
+    distPath: distPath,
+    distExists: distExists,
+    endpoints: [
+      '/api/health',
+      '/api/bncc',
+      '/api/classes',
+      '/api/team-chat',
+      '/api/wizard-bncc',
+      '/api/messages'
+    ]
   });
 });
 
