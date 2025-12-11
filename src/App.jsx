@@ -107,6 +107,7 @@ import SubmissionUploadModal from "./components/SubmissionUploadModal";
 import StudentSubmissionsView from "./components/StudentSubmissionsView";
 import RubricDistributionModal from "./components/RubricDistributionModal";
 import StudentRubricsView from "./components/StudentRubricsView";
+import TeacherActivityManager from "./components/TeacherActivityManager";
 
 
 // --- DADOS MOCKADOS ---
@@ -359,6 +360,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<CheckSquare size={20} />} label="Registrar Presença" active={activeTab === 'teacher-attendance'} onClick={() => setActiveTab('teacher-attendance')} />
                                 <NavItem icon={<Upload size={20} />} label="Avaliar Entregas" active={activeTab === 'teacher-submissions'} onClick={() => setActiveTab('teacher-submissions')} />
                                 <NavItem icon={<Star size={20} />} label="Criar Rúbricas" active={activeTab === 'teacher-rubrics'} onClick={() => setActiveTab('teacher-rubrics')} />
+                                <NavItem icon={<ClipboardList size={20} />} label="Criar Atividades" active={activeTab === 'teacher-activities'} onClick={() => setActiveTab('teacher-activities')} />
                             </>
                         )}
                         {role === 'student' && (
@@ -2431,6 +2433,7 @@ function DashboardApp() {
             if (activeTab === 'teacher-attendance') return <div className="p-8"><h2 className="text-3xl font-bold mb-6">✅ Registrar Presença</h2><p className="text-gray-600 mb-4">Marque a presença dos alunos em sua turma</p></div>;
             if (activeTab === 'teacher-submissions') return <div className="p-8"><h2 className="text-3xl font-bold mb-6">📤 Avaliar Entregas</h2><p className="text-gray-600 mb-4">Visualize e avalie os trabalhos entregues pelos alunos</p></div>;
             if (activeTab === 'teacher-rubrics') return <div className="p-8"><h2 className="text-3xl font-bold mb-6">⭐ Criar Rúbricas</h2><p className="text-gray-600 mb-4">Distribua rúbricas de avaliação para seus projetos</p><RubricDistributionModal projectTitle="Projeto Exemplo" projectId={1} onClose={() => setActiveTab('dashboard')} /></div>;
+            if (activeTab === 'teacher-activities') return <TeacherActivityManager />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'coordinator') {
