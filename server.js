@@ -157,32 +157,34 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Root endpoint (deixa o backend claramente visível no :3000)
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Backend NEXO API',
-    version: '1.0.0',
-    endpoints: [
-      '/api/health',
-      '/api/bncc',
-      '/api/classes',
-      '/api/team-chat',
-      '/api/wizard-bncc',
-      '/api/messages'
-    ]
-  });
-});
-
 // ===== STATIC FRONTEND (Vite build) =====
 const distPath = path.join(__dirname, 'dist');
 app.use(express.static(distPath));
 
-// SPA fallback para o frontend
+// SPA fallback para o frontend - deve vir ANTES do root endpoint
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'Not Found' });
   }
-  res.sendFile(path.join(distPath, 'index.html'));
+  const indexPath = path.join(distPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      // Se dist não existir, retornar página de instrução
+      res.status(200).json({
+        message: 'Backend NEXO API',
+        version: '1.0.0',
+        info: 'Frontend não foi construído. Execute: npm run build',
+        endpoints: [
+          '/api/health',
+          '/api/bncc',
+          '/api/classes',
+          '/api/team-chat',
+          '/api/wizard-bncc',
+          '/api/messages'
+        ]
+      });
+    }
+  });
 });
 
 // Start server immediately
