@@ -15,6 +15,7 @@
     "server:dev": "nodemon server.js",
     "client": "vite",
     "dev": "concurrently \"npm run server:dev\" \"npm run client\"",
+    "dev:simple": "concurrently \"node server-dev.js\" \"npm run client\"",
     "dev:server-only": "npm run server",
     "build": "vite build",
     "build:render": "vite build",
