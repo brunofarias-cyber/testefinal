@@ -6,6 +6,10 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
 import { User, Project, Task, Submission, Attendance, Notification, sequelize } from './models/index.js';
+import logger from './utils/logger.js';
+import { errorHandler, notFoundHandler, asyncHandler, sanitizeInputs } from './middleware/errorHandler.js';
+import { globalLimiter, authLimiter, apiLimiter, communicationLimiter } from './middleware/rateLimiter.js';
+import { handleValidationErrors } from './middleware/validators.js';
 import bnccRoutes from './routes/bncc.js';
 import bnccDashboardRoutes from './routes/bncc-dashboard.js';
 import bnccPdfRoutes from './routes/bncc-pdf.js';
@@ -43,6 +47,15 @@ const __dirname = path.dirname(__filename);
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(sanitizeInputs); // Sanitizar inputs
+app.use(globalLimiter); // Rate limit global
+app.use(handleValidationErrors); // Validação de erros
+
+// Log de requisições
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.path}`, { ip: req.ip });
+  next();
+});
 
 // ===== ROTAS BNCC =====
 app.use('/api/bncc', bnccRoutes);
@@ -235,21 +248,45 @@ if (process.env.NODE_ENV !== 'test') {
     });
   });
 
-  server.listen(PORT, '0.0.0.0', () => {
-    const isProduction = process.env.NODE_ENV === 'production';
-    const host = isProduction ? '0.0.0.0' : 'localhost';
-    
-    console.log(`✅ Servidor NEXO rodando!`);
-    console.log(`   🌐 URL: http://${host}:${PORT}`);
-    console.log(`   🏥 Health: http://${host}:${PORT}/api/health`);
-    console.log(`   📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`   💾 Banco: ${sequelize ? '✅ Conectado' : '⚠️  Offline (usando mock data)'}`);
-    console.log(`   🔌 Socket.io: ✅ Ativo`);
-    
-    if (isProduction && !process.env.DATABASE_URL) {
-      console.warn(`⚠️  AVISO: DATABASE_URL não configurado - aplicação funcionará com dados mock`);
-    }
-  });
+  // Conectar ao banco de dados antes de iniciar servidor
+  sequelize.authenticate()
+    .then(() => {
+      console.log('✅ Banco de dados conectado com sucesso!');
+      return sequelize.sync({ alter: true });
+    })
+    .then(() => {
+      server.listen(PORT, '0.0.0.0', () => {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const host = isProduction ? '0.0.0.0' : 'localhost';
+        
+        console.log(`✅ Servidor NEXO rodando!`);
+        console.log(`   🌐 URL: http://${host}:${PORT}`);
+        console.log(`   🏥 Health: http://${host}:${PORT}/api/health`);
+        console.log(`   📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`   💾 Banco: ✅ PostgreSQL Conectado`);
+        console.log(`   🔌 Socket.io: ✅ Ativo`);
+      });
+    })
+    .catch((err) => {
+      console.error('❌ Erro ao conectar banco de dados:', err.message);
+      console.warn('⚠️  Iniciando em modo offline (dados não persistirão)');
+      
+      server.listen(PORT, '0.0.0.0', () => {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const host = isProduction ? '0.0.0.0' : 'localhost';
+        
+        console.log(`✅ Servidor NEXO rodando (MODO OFFLINE)!`);
+        console.log(`   🌐 URL: http://${host}:${PORT}`);
+        console.log(`   🏥 Health: http://${host}:${PORT}/api/health`);
+        console.log(`   📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`   💾 Banco: ⚠️  Offline (usando mock data)`);
+        console.log(`   🔌 Socket.io: ✅ Ativo`);
+      });
+    });
 }
+
+// ===== MIDDLEWARE DE ERRO (DEVE ESTAR AO FINAL) =====
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export default app;
