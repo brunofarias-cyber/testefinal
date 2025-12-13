@@ -1,6 +1,13 @@
 import express from 'express';
+import { body, param, validationResult } from 'express-validator';
+import { handleValidationErrors, asyncHandler } from '../middleware/errorHandler.js';
+import logger from '../utils/logger.js';
+import { apiLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
+
+// Aplicar rate limiter
+router.use(apiLimiter);
 
 // Mock database para entregas
 let submissionsDatabase = [
@@ -40,11 +47,14 @@ let nextId = 3;
  * GET /api/submissions/student/:studentId
  * Recupera todas as entregas de um aluno
  */
-router.get('/student/:studentId', (req, res) => {
+router.get('/student/:studentId',
+  param('studentId').isInt({ min: 1 }).withMessage('ID do aluno deve ser um número positivo'),
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { studentId } = req.params;
     const studentSubmissions = submissionsDatabase.filter(s => s.student_id === parseInt(studentId));
 
-    console.log(`📤 GET /api/submissions/student/${studentId} - Recuperando entregas`);
+    logger.info(`Recuperando entregas do aluno ${studentId}`, { count: studentSubmissions.length });
 
     return res.json({
         success: true,
@@ -52,17 +62,21 @@ router.get('/student/:studentId', (req, res) => {
         count: studentSubmissions.length,
         message: `${studentSubmissions.length} entregas encontradas`
     });
-});
+  })
+);
 
 /**
  * GET /api/submissions/project/:projectId
  * Recupera todas as entregas de um projeto (para professor)
  */
-router.get('/project/:projectId', (req, res) => {
+router.get('/project/:projectId',
+  param('projectId').isInt({ min: 1 }).withMessage('ID do projeto deve ser um número positivo'),
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { projectId } = req.params;
     const projectSubmissions = submissionsDatabase.filter(s => s.project_id === parseInt(projectId));
 
-    console.log(`📤 GET /api/submissions/project/${projectId} - Recuperando entregas do projeto`);
+    logger.info(`Recuperando entregas do projeto ${projectId}`, { count: projectSubmissions.length });
 
     return res.json({
         success: true,
@@ -70,13 +84,17 @@ router.get('/project/:projectId', (req, res) => {
         count: projectSubmissions.length,
         message: `${projectSubmissions.length} entregas do projeto`
     });
-});
+  })
+);
 
 /**
  * GET /api/submissions/stats/:studentId
  * Calcula estatísticas de entregas do aluno
  */
-router.get('/stats/:studentId', (req, res) => {
+router.get('/stats/:studentId',
+  param('studentId').isInt({ min: 1 }).withMessage('ID do aluno deve ser um número positivo'),
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { studentId } = req.params;
     const studentSubmissions = submissionsDatabase.filter(s => s.student_id === parseInt(studentId));
 
@@ -91,7 +109,10 @@ router.get('/stats/:studentId', (req, res) => {
             .reduce((sum, s) => sum + s.grade, 0) / graded).toFixed(1)
         : 0;
 
-    console.log(`📊 GET /api/submissions/stats/${studentId} - Calculando estatísticas`);
+    logger.info(`Estatísticas de entregas calculadas para aluno ${studentId}`, { 
+      totalSubmissions, 
+      averageGrade: avgGrade 
+    });
 
     return res.json({
         success: true,
@@ -106,7 +127,8 @@ router.get('/stats/:studentId', (req, res) => {
         },
         message: 'Estatísticas calculadas com sucesso'
     });
-});
+  })
+);
 
 /**
  * POST /api/submissions/upload
@@ -123,25 +145,19 @@ router.get('/stats/:studentId', (req, res) => {
  *   comments?: string
  * }
  */
-router.post('/upload', (req, res) => {
+router.post('/upload',
+  [
+    body('studentId').isInt({ min: 1 }).withMessage('ID do aluno deve ser um número positivo'),
+    body('projectId').isInt({ min: 1 }).withMessage('ID do projeto deve ser um número positivo'),
+    body('projectTitle').trim().notEmpty().isLength({ min: 3, max: 200 }).withMessage('Título do projeto é obrigatório (3-200 caracteres)'),
+    body('fileName').trim().notEmpty().isLength({ min: 3 }).withMessage('Nome do arquivo é obrigatório'),
+    body('fileUrl').trim().notEmpty().isURL().withMessage('URL do arquivo é obrigatória e deve ser válida'),
+    body('fileSize').isInt({ min: 1, max: 52428800 }).withMessage('Tamanho do arquivo inválido (máximo 50MB)'),
+    body('comments').optional().isLength({ max: 500 }).withMessage('Comentários não podem exceder 500 caracteres')
+  ],
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { studentId, projectId, projectTitle, fileName, fileUrl, fileSize, comments } = req.body;
-
-    // Validação
-    if (!studentId || !projectId || !projectTitle || !fileName || !fileUrl || fileSize === undefined) {
-        return res.status(400).json({
-            success: false,
-            error: 'Campos obrigatórios: studentId, projectId, projectTitle, fileName, fileUrl, fileSize'
-        });
-    }
-
-    // Validar tamanho do arquivo (máximo 50MB)
-    const maxSize = 50 * 1024 * 1024; // 50MB em bytes
-    if (fileSize > maxSize) {
-        return res.status(400).json({
-            success: false,
-            error: `Arquivo muito grande. Máximo: 50MB. Seu arquivo: ${(fileSize / 1024 / 1024).toFixed(2)}MB`
-        });
-    }
 
     // Criar novo registro de entrega
     const submission = {
@@ -161,9 +177,7 @@ router.post('/upload', (req, res) => {
     };
 
     submissionsDatabase.push(submission);
-
-    console.log(`✅ POST /api/submissions/upload - Entrega enviada por aluno ${studentId}`);
-    console.log(`   Arquivo: ${fileName} | Tamanho: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
+    logger.info(`Entrega enviada por aluno ${studentId}`, { projectId, fileName, fileSize });
 
     // 🔔 Socket.io - Notificar o aluno
     if (req.app.io) {
@@ -183,7 +197,8 @@ router.post('/upload', (req, res) => {
         data: submission,
         message: `Entrega enviada com sucesso! ${fileName} foi salvo(a).`
     });
-});
+  })
+);
 
 /**
  * GET /api/submissions/:submissionId
@@ -233,24 +248,11 @@ router.put('/:submissionId/feedback', (req, res) => {
         });
     }
 
-    // Validações
     if (grade !== undefined) {
-        if (grade < 0 || grade > 10) {
-            return res.status(400).json({
-                success: false,
-                error: 'Nota deve estar entre 0 e 10'
-            });
-        }
         submission.grade = grade;
     }
 
     if (feedback) {
-        if (feedback.length > 1000) {
-            return res.status(400).json({
-                success: false,
-                error: 'Feedback muito longo (máximo 1000 caracteres)'
-            });
-        }
         submission.feedback = feedback;
     }
 
@@ -260,7 +262,7 @@ router.put('/:submissionId/feedback', (req, res) => {
 
     submission.updated_at = new Date();
 
-    console.log(`✏️ PUT /api/submissions/${submissionId}/feedback - Feedback adicionado`);
+    logger.info(`Feedback adicionado à entrega ${submissionId}`, { grade, statusUpdate: status });
 
     // 🔔 Socket.io - Notificar o aluno
     if (req.app.io) {
@@ -272,8 +274,6 @@ router.put('/:submissionId/feedback', (req, res) => {
             status: submission.status,
             timestamp: new Date()
         });
-
-        console.log(`📡 Socket.io enviado para student-${submission.student_id}`);
     }
 
     return res.json({
@@ -281,13 +281,17 @@ router.put('/:submissionId/feedback', (req, res) => {
         data: submission,
         message: 'Feedback adicionado com sucesso'
     });
-});
+  })
+);
 
 /**
  * DELETE /api/submissions/:submissionId
  * Deleta uma entrega
  */
-router.delete('/:submissionId', (req, res) => {
+router.delete('/:submissionId',
+  param('submissionId').isInt({ min: 1 }).withMessage('ID da entrega deve ser um número positivo'),
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { submissionId } = req.params;
     const index = submissionsDatabase.findIndex(s => s.id === parseInt(submissionId));
 
@@ -300,20 +304,24 @@ router.delete('/:submissionId', (req, res) => {
 
     const deleted = submissionsDatabase.splice(index, 1)[0];
 
-    console.log(`🗑️ DELETE /api/submissions/${submissionId} - Entrega deletada`);
+    logger.info(`Entrega deletada: ${submissionId}`);
 
     return res.json({
         success: true,
         data: deleted,
         message: 'Entrega deletada com sucesso'
     });
-});
+  })
+);
 
 /**
  * POST /api/submissions/:submissionId/download
  * Simula download da entrega (em produção, retornaria arquivo binário)
  */
-router.post('/:submissionId/download', (req, res) => {
+router.post('/:submissionId/download',
+  param('submissionId').isInt({ min: 1 }).withMessage('ID da entrega deve ser um número positivo'),
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { submissionId } = req.params;
     const submission = submissionsDatabase.find(s => s.id === parseInt(submissionId));
 
@@ -324,8 +332,7 @@ router.post('/:submissionId/download', (req, res) => {
         });
     }
 
-    console.log(`⬇️ POST /api/submissions/${submissionId}/download - Download iniciado`);
-    console.log(`   Arquivo: ${submission.file_name}`);
+    logger.info(`Download iniciado para entrega ${submissionId}`, { fileName: submission.file_name });
 
     return res.json({
         success: true,
@@ -337,6 +344,7 @@ router.post('/:submissionId/download', (req, res) => {
         },
         message: 'Download iniciado'
     });
-});
+  })
+);
 
 export default router;

@@ -1,5 +1,13 @@
 import express from 'express';
+import { body, param, validationResult } from 'express-validator';
+import { handleValidationErrors, asyncHandler } from '../middleware/errorHandler.js';
+import logger from '../utils/logger.js';
+import { apiLimiter, communicationLimiter } from '../middleware/rateLimiter.js';
+
 const router = express.Router();
+
+// Aplicar rate limiter
+router.use(communicationLimiter);
 
 /**
  * ═══════════════════════════════════════════════════════════════════════
@@ -324,35 +332,16 @@ router.get('/conversation/:conversationId', async (req, res) => {
 // Enviar nova mensagem
 // ═══════════════════════════════════════════════════════════════════════
 
-router.post('/send', async (req, res) => {
-  try {
+router.post('/send',
+  [
+    body('conversationId').isInt({ min: 1 }).withMessage('ID da conversa deve ser um número positivo'),
+    body('senderId').isInt({ min: 1 }).withMessage('ID do remetente deve ser um número positivo'),
+    body('message').trim().notEmpty().isLength({ min: 1, max: 500 }).withMessage('Mensagem é obrigatória (máximo 500 caracteres)'),
+    body('senderRole').optional().isIn(['student', 'teacher', 'admin']).withMessage('Role do remetente inválido')
+  ],
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { conversationId, senderId, recipientId, message, senderRole } = req.body;
-
-    // Validações
-    if (!conversationId || !senderId || !message) {
-      return res.status(400).json({
-        success: false,
-        error: 'conversationId, senderId e message são obrigatórios'
-      });
-    }
-
-    // TODO: Substituir por insert real no banco
-    /*
-    const newMessage = await Message.create({
-      conversationId,
-      senderId,
-      message: message.trim(),
-      senderRole,
-      timestamp: new Date(),
-      read: false
-    });
-
-    // Atualizar lastMessageAt da conversa
-    await Conversation.update(
-      { lastMessageAt: new Date() },
-      { where: { id: conversationId } }
-    );
-    */
 
     // Mock: Criar mensagem
     const newMessage = {
@@ -373,7 +362,7 @@ router.post('/send', async (req, res) => {
       conversation.lastMessageAt = newMessage.timestamp;
     }
 
-    console.log(`✅ POST /api/messages/send - Nova mensagem na conversa ${conversationId}`);
+    logger.info(`Mensagem enviada na conversa ${conversationId}`, { senderId, messageLength: message.length });
 
     // Emitir via Socket.io (se configurado)
     if (req.app.io) {
@@ -385,14 +374,8 @@ router.post('/send', async (req, res) => {
       message: newMessage,
       info: '✅ Mensagem enviada e salva'
     });
-  } catch (error) {
-    console.error('Erro ao enviar mensagem:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
+  })
+);
 
 // ═══════════════════════════════════════════════════════════════════════
 // PUT /api/messages/:messageId/read
@@ -437,16 +420,14 @@ router.put('/:messageId/read', async (req, res) => {
 // Criar nova conversa entre professor e aluno
 // ═══════════════════════════════════════════════════════════════════════
 
-router.post('/conversation/create', async (req, res) => {
-  try {
+router.post('/conversation/create',
+  [
+    body('teacherId').isInt({ min: 1 }).withMessage('ID do professor deve ser um número positivo'),
+    body('studentId').isInt({ min: 1 }).withMessage('ID do aluno deve ser um número positivo')
+  ],
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { teacherId, studentId } = req.body;
-
-    if (!teacherId || !studentId) {
-      return res.status(400).json({
-        success: false,
-        error: 'teacherId e studentId são obrigatórios'
-      });
-    }
 
     // Verificar se já existe conversa
     const existing = MOCK_CONVERSATIONS.find(
@@ -454,6 +435,7 @@ router.post('/conversation/create', async (req, res) => {
     );
 
     if (existing) {
+      logger.info(`Conversa já existe entre professor ${teacherId} e aluno ${studentId}`, { conversationId: existing.id });
       return res.json({
         success: true,
         conversation: existing,
@@ -472,19 +454,13 @@ router.post('/conversation/create', async (req, res) => {
 
     MOCK_CONVERSATIONS.push(newConversation);
 
-    console.log(`✅ POST /api/messages/conversation/create - Nova conversa ${newConversation.id}`);
+    logger.info(`Nova conversa criada entre professor ${teacherId} e aluno ${studentId}`, { conversationId: newConversation.id });
 
     res.status(201).json({
       success: true,
       conversation: newConversation
     });
-  } catch (error) {
-    console.error('Erro ao criar conversa:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
+  })
+);
 
 export default router;

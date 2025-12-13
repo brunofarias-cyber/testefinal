@@ -1,6 +1,13 @@
 import express from 'express';
+import { body, param, validationResult } from 'express-validator';
+import { handleValidationErrors, asyncHandler } from '../middleware/errorHandler.js';
+import logger from '../utils/logger.js';
+import { apiLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
+
+// Aplicar rate limiter
+router.use(apiLimiter);
 
 // Mock database para presença
 let attendanceDatabase = [
@@ -42,11 +49,14 @@ let nextId = 4;
  * GET /api/attendance/student/:studentId
  * Recupera o histórico de presença de um aluno
  */
-router.get('/student/:studentId', (req, res) => {
+router.get('/student/:studentId',
+  param('studentId').isInt({ min: 1 }).withMessage('ID do aluno deve ser um número positivo'),
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { studentId } = req.params;
     const studentAttendance = attendanceDatabase.filter(a => a.student_id === parseInt(studentId));
     
-    console.log(`📊 GET /api/attendance/student/${studentId} - Recuperando presença`);
+    logger.info(`Recuperando presença do aluno ${studentId}`, { count: studentAttendance.length });
 
     return res.json({
         success: true,
@@ -54,17 +64,21 @@ router.get('/student/:studentId', (req, res) => {
         count: studentAttendance.length,
         message: `${studentAttendance.length} registros de presença encontrados`
     });
-});
+  })
+);
 
 /**
  * GET /api/attendance/class/:classId
  * Recupera a presença de toda uma turma
  */
-router.get('/class/:classId', (req, res) => {
+router.get('/class/:classId',
+  param('classId').isInt({ min: 1 }).withMessage('ID da turma deve ser um número positivo'),
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { classId } = req.params;
     const classAttendance = attendanceDatabase.filter(a => a.class_id === parseInt(classId));
     
-    console.log(`📊 GET /api/attendance/class/${classId} - Recuperando presença da turma`);
+    logger.info(`Recuperando presença da turma ${classId}`, { count: classAttendance.length });
 
     return res.json({
         success: true,
@@ -72,13 +86,17 @@ router.get('/class/:classId', (req, res) => {
         count: classAttendance.length,
         message: `${classAttendance.length} registros encontrados para a turma`
     });
-});
+  })
+);
 
 /**
  * GET /api/attendance/stats/:studentId
  * Calcula estatísticas de presença do aluno
  */
-router.get('/stats/:studentId', (req, res) => {
+router.get('/stats/:studentId',
+  param('studentId').isInt({ min: 1 }).withMessage('ID do aluno deve ser um número positivo'),
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { studentId } = req.params;
     const studentAttendance = attendanceDatabase.filter(a => a.student_id === parseInt(studentId));
     
@@ -89,7 +107,10 @@ router.get('/stats/:studentId', (req, res) => {
     
     const attendancePercentage = totalClasses > 0 ? ((presences / totalClasses) * 100).toFixed(1) : 0;
 
-    console.log(`📊 GET /api/attendance/stats/${studentId} - Calculando estatísticas`);
+    logger.info(`Estatísticas de presença calculadas para aluno ${studentId}`, { 
+      totalClasses, 
+      attendancePercentage 
+    });
 
     return res.json({
         success: true,
@@ -104,7 +125,7 @@ router.get('/stats/:studentId', (req, res) => {
         },
         message: 'Estatísticas calculadas com sucesso'
     });
-});
+  }));
 
 /**
  * POST /api/attendance/mark
@@ -120,23 +141,18 @@ router.get('/stats/:studentId', (req, res) => {
  *   notes?: string
  * }
  */
-router.post('/mark', (req, res) => {
+router.post('/mark',
+  [
+    body('studentId').isInt({ min: 1 }).withMessage('ID do aluno deve ser um número positivo'),
+    body('classId').isInt({ min: 1 }).withMessage('ID da turma deve ser um número positivo'),
+    body('className').trim().notEmpty().withMessage('Nome da turma é obrigatório'),
+    body('status').isIn(['presente', 'falta', 'atraso']).withMessage('Status deve ser: presente, falta ou atraso'),
+    body('teacherName').trim().notEmpty().withMessage('Nome do professor é obrigatório'),
+    body('notes').optional().isLength({ max: 200 }).withMessage('Notas não podem exceder 200 caracteres')
+  ],
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { studentId, classId, className, status, teacherName, notes } = req.body;
-
-    // Validação
-    if (!studentId || !classId || !className || !status || !teacherName) {
-        return res.status(400).json({
-            success: false,
-            error: 'Campos obrigatórios: studentId, classId, className, status, teacherName'
-        });
-    }
-
-    if (!['presente', 'falta', 'atraso'].includes(status)) {
-        return res.status(400).json({
-            success: false,
-            error: 'Status inválido. Use: presente, falta ou atraso'
-        });
-    }
 
     // Criar novo registro
     const attendanceRecord = {
@@ -152,9 +168,7 @@ router.post('/mark', (req, res) => {
     };
 
     attendanceDatabase.push(attendanceRecord);
-
-    console.log(`✅ POST /api/attendance/mark - Presença marcada para aluno ${studentId}`);
-    console.log(`   Status: ${status} | Turma: ${className}`);
+    logger.info('Presença marcada', { studentId, classId, status });
 
     // 🔔 Socket.io - Notificar o aluno em tempo real
     if (req.app.io) {
@@ -166,8 +180,7 @@ router.post('/mark', (req, res) => {
             notes: notes || null,
             timestamp: new Date()
         });
-
-        console.log(`📡 Socket.io enviado para student-${studentId}`);
+        logger.info(`Notificação de presença enviada para aluno ${studentId}`);
     }
 
     return res.status(201).json({
@@ -175,7 +188,8 @@ router.post('/mark', (req, res) => {
         data: attendanceRecord,
         message: `Presença marcada com sucesso! ${teacherName} registrou ${status} para a aula de ${className}`
     });
-});
+  })
+);
 
 /**
  * PUT /api/attendance/:attendanceId
