@@ -1,6 +1,7 @@
 import express from 'express';
 import { body, param, validationResult } from 'express-validator';
-import { handleValidationErrors, asyncHandler } from '../middleware/errorHandler.js';
+import { asyncHandler } from '../middleware/errorHandler.js';
+import { handleValidationErrors } from '../middleware/validators.js';
 import logger from '../utils/logger.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 import db from '../models/index.js';
@@ -188,9 +189,6 @@ router.post('/',
     res.status(201).json(rubricaCompleta);
   })
 );
-        res.status(500).json({ error: 'Erro ao criar rubrica' });
-    }
-});
 
 // PUT /api/rubricas/:id - Atualizar rubrica
 router.put('/:id', async (req, res) => {
@@ -325,11 +323,9 @@ router.post('/avaliar',
         });
 
         res.status(201).json(avaliacaoCompleta);
-    } catch (error) {
-        console.error('Erro ao criar avaliação:', error);
-        res.status(500).json({ error: 'Erro ao criar avaliação' });
-    }
-});
+    logger.info('Avaliação criada com sucesso', { projetoId, equipeId, notaFinal: notaFinal });
+  })
+);
 
 // GET /api/rubricas/avaliacoes/:projectId - Listar avaliações de um projeto
 router.get('/avaliacoes/:projectId', async (req, res) => {

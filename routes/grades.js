@@ -1,6 +1,7 @@
 import express from 'express';
 import { body, param, validationResult } from 'express-validator';
-import { handleValidationErrors, asyncHandler } from '../middleware/errorHandler.js';
+import { asyncHandler } from '../middleware/errorHandler.js';
+import { handleValidationErrors } from '../middleware/validators.js';
 import logger from '../utils/logger.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 

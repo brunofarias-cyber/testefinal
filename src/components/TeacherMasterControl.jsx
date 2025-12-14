@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { io } from 'socket.io-client';
 import {
     Calendar,
     CheckSquare,
@@ -20,9 +21,15 @@ import {
     Upload,
     Award,
     BarChart2,
+    BarChart,
     ClipboardList,
     Wand2,
-    Sparkles
+    Sparkles,
+    Edit2,
+    CheckCircle,
+    Star,
+    BarChart3,
+    Bell
 } from "lucide-react";
 import TeacherRubricEditablePoints from "./TeacherRubricEditablePoints";
 import StudentGrades from "./StudentGrades";
@@ -31,12 +38,40 @@ import TeacherReportsEditavel from "./TeacherReportsEditavel";
 import { allBnccCodes, getYearOptions, getAISuggestions } from "../constants/bnccCodes";
 
 const TeacherMasterControl = ({ onNavigateTo }) => {
-    const [activeSection, setActiveSection] = useState('planning'); // planning, calendar, attendance, bncc, rubrics, evaluation
+    const [activeSection, setActiveSection] = useState('planning'); // planning, calendar, attendance, bncc, rubrics, evaluation, activities, grades, submissions
     const [selectedClass, setSelectedClass] = useState('9A');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [planningSubTab, setPlanningSubTab] = useState('lessons'); // lessons, rubrics
     const [evaluationType, setEvaluationType] = useState('individual'); // individual, group
     
+    // Socket.io
+    const [socket, setSocket] = useState(null);
+    const [notification, setNotification] = useState(null);
+    
+    // ===== ATIVIDADES STATE (Do TeacherCentralHub) =====
+    const [activities, setActivities] = useState([
+        {
+            id: 1,
+            title: 'Horta Sustentável',
+            description: 'Criar uma horta sustentável em sua casa ou escola.',
+            dueDate: '2024-12-15',
+            maxPoints: 100,
+            status: 'active',
+            submissionCount: 8,
+            totalStudents: 30,
+        },
+        {
+            id: 2,
+            title: 'Robótica com Sucata',
+            description: 'Construir um robô simples usando materiais reciclados.',
+            dueDate: '2024-12-20',
+            maxPoints: 100,
+            status: 'active',
+            submissionCount: 5,
+            totalStudents: 30,
+        }
+    ]);
+
     // Estados para Planejamento
     const [lessons, setLessons] = useState([
         {
@@ -100,6 +135,52 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
         ]
     });
 
+    // ===== NOTAS STATE (Do TeacherCentralHub) =====
+    const [grades, setGrades] = useState([
+        {
+            id: 1,
+            studentName: 'João Silva',
+            rubricId: 1,
+            projectTitle: 'Horta Sustentável',
+            criteriaScores: [
+                { criteriaId: 1, criteriaName: 'Planejamento', points: 23, maxPoints: 25 },
+                { criteriaId: 2, criteriaName: 'Execução', points: 24, maxPoints: 25 },
+                { criteriaId: 3, criteriaName: 'Documentação', points: 22, maxPoints: 25 },
+                { criteriaId: 4, criteriaName: 'Apresentação', points: 23, maxPoints: 25 }
+            ],
+            totalPoints: 92,
+            feedback: 'Excelente trabalho!'
+        }
+    ]);
+
+    // ===== RÚBRICAS STATE (Consolidado) =====
+    const [rubrics, setRubrics] = useState([
+        {
+            id: 1,
+            projectTitle: 'Horta Sustentável',
+            criteria: [
+                { id: 1, name: 'Planejamento', maxPoints: 25 },
+                { id: 2, name: 'Execução', maxPoints: 25 },
+                { id: 3, name: 'Documentação', maxPoints: 25 },
+                { id: 4, name: 'Apresentação', maxPoints: 25 }
+            ],
+            totalPoints: 100
+        }
+    ]);
+
+    // ===== PRESENÇA STATE (Compatível com TeacherCentralHub) =====
+    const [attendance, setAttendance] = useState([
+        { id: 1, studentName: 'João Silva', date: '2024-12-11', status: 'Presente' },
+        { id: 2, studentName: 'Maria Santos', date: '2024-12-11', status: 'Presente' },
+        { id: 3, studentName: 'Pedro Costa', date: '2024-12-11', status: 'Falta' }
+    ]);
+
+    // ===== ENTREGAS STATE (Do TeacherCentralHub) =====
+    const [submissions, setSubmissions] = useState([
+        { id: 1, studentName: 'João Silva', projectTitle: 'Horta', fileName: 'horta.pdf', uploadedAt: '2024-11-15', status: 'pending' },
+        { id: 2, studentName: 'Maria Santos', projectTitle: 'Robótica', fileName: 'robotica.docx', uploadedAt: '2024-11-14', status: 'graded' }
+    ]);
+
     const [showNewLessonForm, setShowNewLessonForm] = useState(false);
     const [newLesson, setNewLesson] = useState({
         title: "",
@@ -117,6 +198,12 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
             setActiveSection(tabToActivate);
             sessionStorage.removeItem('masterControlTab');
         }
+
+        // Socket.io initialization
+        const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000');
+        newSocket.on('connect', () => console.log('✅ Conectado ao servidor'));
+        setSocket(newSocket);
+        return () => newSocket.disconnect();
     }, []);
 
     // Estados para seleção de BNCC e sugestões de IA
@@ -241,6 +328,39 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
 
     const deleteEvent = (id) => {
         setCalendarEvents(calendarEvents.filter(e => e.id !== id));
+    };
+
+    // Funções de Atividades
+    const [showActivityForm, setShowActivityForm] = useState(false);
+    const [activityForm, setActivityForm] = useState({ title: '', description: '', dueDate: '', maxPoints: 100 });
+
+    const handleAddActivity = () => {
+        if (!activityForm.title || !activityForm.description || !activityForm.dueDate) {
+            showNotification('Preencha todos os campos!', 'error');
+            return;
+        }
+        const newActivity = {
+            id: Date.now(),
+            ...activityForm,
+            status: 'active',
+            submissionCount: 0,
+            totalStudents: 30
+        };
+        setActivities([...activities, newActivity]);
+        setActivityForm({ title: '', description: '', dueDate: '', maxPoints: 100 });
+        setShowActivityForm(false);
+        showNotification('Atividade criada com sucesso!', 'success');
+    };
+
+    const handleDeleteActivity = (id) => {
+        setActivities(activities.filter(a => a.id !== id));
+        showNotification('Atividade deletada!', 'success');
+    };
+
+    // Funções de Notificação
+    const showNotification = (message, type = 'info') => {
+        setNotification({ message, type, show: true });
+        setTimeout(() => setNotification({ ...notification, show: false }), 3000);
     };
 
     // Renderização das Seções
@@ -1251,6 +1371,131 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
             </div>
     );
 
+    const renderActivities = () => (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h3 className="text-2xl font-bold text-slate-800">Gerenciar Atividades</h3>
+                <button
+                    onClick={() => setShowActivityForm(true)}
+                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-xl font-bold hover:shadow-lg transition-all active:scale-95 flex items-center gap-2"
+                >
+                    <Plus size={20} />
+                    Nova Atividade
+                </button>
+            </div>
+
+            {showActivityForm && (
+                <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
+                    <h4 className="text-xl font-bold mb-4">➕ Criar Nova Atividade</h4>
+                    <div className="space-y-4">
+                        <input
+                            type="text"
+                            placeholder="Título"
+                            value={activityForm.title}
+                            onChange={(e) => setActivityForm({ ...activityForm, title: e.target.value })}
+                            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                        <textarea
+                            placeholder="Descrição"
+                            value={activityForm.description}
+                            onChange={(e) => setActivityForm({ ...activityForm, description: e.target.value })}
+                            rows="3"
+                            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                        />
+                        <div className="grid grid-cols-2 gap-4">
+                            <input
+                                type="date"
+                                value={activityForm.dueDate}
+                                onChange={(e) => setActivityForm({ ...activityForm, dueDate: e.target.value })}
+                                className="px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            />
+                            <input
+                                type="number"
+                                placeholder="Pontos"
+                                value={activityForm.maxPoints}
+                                onChange={(e) => setActivityForm({ ...activityForm, maxPoints: parseInt(e.target.value) })}
+                                className="px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                            />
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleAddActivity}
+                                className="flex-1 px-4 py-2.5 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600"
+                            >
+                                Criar
+                            </button>
+                            <button
+                                onClick={() => setShowActivityForm(false)}
+                                className="flex-1 px-4 py-2.5 bg-slate-200 text-slate-700 rounded-lg font-semibold hover:bg-slate-300"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="space-y-4">
+                {activities.map(activity => (
+                    <div key={activity.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 className="text-xl font-bold text-slate-800">{activity.title}</h4>
+                                <p className="text-sm text-slate-600 mt-1">{activity.description}</p>
+                            </div>
+                            <span className={`px-3 py-1 rounded-lg text-sm font-bold ${
+                                activity.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'
+                            }`}>
+                                {activity.status === 'active' ? '✅ Ativa' : '🔒 Fechada'}
+                            </span>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-slate-100">
+                            <div>
+                                <p className="text-xs text-slate-600 mb-1">📅 Data Entrega</p>
+                                <p className="font-bold text-slate-800">{activity.dueDate}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-slate-600 mb-1">⭐ Pontos</p>
+                                <p className="font-bold text-slate-800">{activity.maxPoints}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-slate-600 mb-1">📤 Entregas</p>
+                                <p className="font-bold text-slate-800">{activity.submissionCount}/{activity.totalStudents}</p>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button className="flex-1 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200">
+                                <Edit2 size={16} className="inline mr-2" />
+                                Editar
+                            </button>
+                            <button
+                                onClick={() => handleDeleteActivity(activity.id)}
+                                className="flex-1 px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200"
+                            >
+                                <Trash2 size={16} className="inline mr-2" />
+                                Deletar
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    const renderGrades = () => (
+        <StudentGrades grades={grades} setGrades={setGrades} />
+    );
+
+    const renderRubrics = () => (
+        <TeacherRubricEditablePoints rubrics={rubrics} setRubrics={setRubrics} />
+    );
+
+    const renderSubmissions = () => (
+        <InteractiveEvaluation submissions={submissions} setSubmissions={setSubmissions} />
+    );
+
     return (
         <div className="max-w-7xl mx-auto">
             {/* Header */}
@@ -1335,6 +1580,42 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
                     <ClipboardList size={20} />
                     Relatórios
                 </button>
+                <button
+                    onClick={() => setActiveSection('activities')}
+                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
+                        activeSection === 'activities' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
+                    }`}
+                >
+                    <CheckCircle size={20} />
+                    Atividades
+                </button>
+                <button
+                    onClick={() => setActiveSection('grades')}
+                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
+                        activeSection === 'grades' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
+                    }`}
+                >
+                    <BookOpen size={20} />
+                    Notas
+                </button>
+                <button
+                    onClick={() => setActiveSection('rubrics')}
+                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
+                        activeSection === 'rubrics' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
+                    }`}
+                >
+                    <BarChart size={20} />
+                    Rúbricas
+                </button>
+                <button
+                    onClick={() => setActiveSection('submissions')}
+                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
+                        activeSection === 'submissions' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
+                    }`}
+                >
+                    <Upload size={20} />
+                    Entregas
+                </button>
             </div>
 
             {/* Conteúdo das Seções */}
@@ -1345,6 +1626,10 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
                 {activeSection === 'evaluation' && renderEvaluation()}
                 {activeSection === 'reports' && <TeacherReportsEditavel />}
                 {activeSection === 'bncc' && renderBNCC()}
+                {activeSection === 'activities' && renderActivities()}
+                {activeSection === 'grades' && renderGrades()}
+                {activeSection === 'rubrics' && renderRubrics()}
+                {activeSection === 'submissions' && renderSubmissions()}
             </div>
         </div>
     );

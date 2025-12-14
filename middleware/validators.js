@@ -20,9 +20,10 @@ export const validateAttendance = [
     .isInt({ min: 1 })
     .withMessage('ID do aluno deve ser um número positivo'),
   body('status')
-    .isIn(['present', 'absent', 'late'])
-    .withMessage('Status deve ser: present, absent ou late'),
+    .isIn(['presente', 'falta', 'atraso'])
+    .withMessage('Status deve ser: presente, falta ou atraso'),
   body('date')
+    .optional()
     .isISO8601()
     .withMessage('Data deve estar em formato ISO 8601')
 ];

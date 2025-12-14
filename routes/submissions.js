@@ -1,6 +1,7 @@
 import express from 'express';
 import { body, param, validationResult } from 'express-validator';
-import { handleValidationErrors, asyncHandler } from '../middleware/errorHandler.js';
+import { asyncHandler } from '../middleware/errorHandler.js';
+import { handleValidationErrors } from '../middleware/validators.js';
 import logger from '../utils/logger.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
 
@@ -235,7 +236,15 @@ router.get('/:submissionId', (req, res) => {
  *   status?: 'submitted' | 'graded'
  * }
  */
-router.put('/:submissionId/feedback', (req, res) => {
+router.put('/:submissionId/feedback',
+  [
+    param('submissionId').isInt({ min: 1 }).withMessage('ID da entrega deve ser um número positivo'),
+    body('grade').optional().isFloat({ min: 0, max: 10 }).withMessage('Nota deve estar entre 0 e 10'),
+    body('feedback').optional().isLength({ max: 500 }).withMessage('Feedback não pode exceder 500 caracteres'),
+    body('status').optional().isIn(['submitted', 'graded']).withMessage('Status deve ser: submitted ou graded')
+  ],
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
     const { submissionId } = req.params;
     const { grade, feedback, status } = req.body;
 

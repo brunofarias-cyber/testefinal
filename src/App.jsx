@@ -109,7 +109,6 @@ import StudentSubmissionsView from "./components/StudentSubmissionsView";
 import RubricDistributionModal from "./components/RubricDistributionModal";
 import StudentRubricsView from "./components/StudentRubricsView";
 import TeacherActivityManager from "./components/TeacherActivityManager";
-import TeacherCentralHub from "./components/TeacherCentralHub";
 import StudentCentralHub from "./components/StudentCentralHub";
 
 
@@ -2425,7 +2424,6 @@ function DashboardApp() {
             if (activeTab === 'teacher-ecosystem') return <SchoolEcosystem onNavigateTo={setActiveTab} />;
             if (activeTab === 'new-early-warning') return <EarlyWarningSystem onNavigateTo={setActiveTab} />;
             if (activeTab === 'work-correction') return <WorkSubmissionCorrection onNavigateTo={setActiveTab} />;
-            if (activeTab === 'teacher-central') return <TeacherCentralHub />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'coordinator') {

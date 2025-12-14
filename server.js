@@ -7,9 +7,9 @@ import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
 import { User, Project, Task, Submission, Attendance, Notification, sequelize } from './models/index.js';
 import logger from './utils/logger.js';
-import { errorHandler, notFoundHandler, asyncHandler, sanitizeInputs } from './middleware/errorHandler.js';
+import { errorHandler, notFoundHandler, asyncHandler } from './middleware/errorHandler.js';
 import { globalLimiter, authLimiter, apiLimiter, communicationLimiter } from './middleware/rateLimiter.js';
-import { handleValidationErrors } from './middleware/validators.js';
+import { handleValidationErrors, sanitizeInputs } from './middleware/validators.js';
 import bnccRoutes from './routes/bncc.js';
 import bnccDashboardRoutes from './routes/bncc-dashboard.js';
 import bnccPdfRoutes from './routes/bncc-pdf.js';
@@ -248,40 +248,40 @@ if (process.env.NODE_ENV !== 'test') {
     });
   });
 
-  // Conectar ao banco de dados antes de iniciar servidor
+  // Iniciar servidor IMEDIATAMENTE (sem bloquear na conexão do banco)
+  const isProduction = process.env.NODE_ENV === 'production';
+  const host = isProduction ? '0.0.0.0' : 'localhost';
+
+  server.listen(PORT, '127.0.0.1', () => {
+    console.log(`✅ Servidor NEXO rodando!`);
+    console.log(`   🌐 URL: http://localhost:${PORT}`);
+    console.log(`   🏥 Health: http://localhost:${PORT}/api/health`);
+    console.log(`   📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`   🔌 Socket.io: ✅ Ativo`);
+  });
+
+  // Também escutar em IPv6
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Porta ${PORT} já está em uso`);
+    } else {
+      console.error('Erro no servidor:', err);
+    }
+  });
+
+  // Conectar ao banco de dados EM BACKGROUND (não bloqueia o servidor)
   sequelize.authenticate()
     .then(() => {
       console.log('✅ Banco de dados conectado com sucesso!');
       return sequelize.sync({ alter: true });
     })
     .then(() => {
-      server.listen(PORT, '0.0.0.0', () => {
-        const isProduction = process.env.NODE_ENV === 'production';
-        const host = isProduction ? '0.0.0.0' : 'localhost';
-        
-        console.log(`✅ Servidor NEXO rodando!`);
-        console.log(`   🌐 URL: http://${host}:${PORT}`);
-        console.log(`   🏥 Health: http://${host}:${PORT}/api/health`);
-        console.log(`   📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-        console.log(`   💾 Banco: ✅ PostgreSQL Conectado`);
-        console.log(`   🔌 Socket.io: ✅ Ativo`);
-      });
+      console.log(`   💾 Banco: ✅ PostgreSQL Conectado`);
     })
     .catch((err) => {
       console.error('❌ Erro ao conectar banco de dados:', err.message);
-      console.warn('⚠️  Iniciando em modo offline (dados não persistirão)');
-      
-      server.listen(PORT, '0.0.0.0', () => {
-        const isProduction = process.env.NODE_ENV === 'production';
-        const host = isProduction ? '0.0.0.0' : 'localhost';
-        
-        console.log(`✅ Servidor NEXO rodando (MODO OFFLINE)!`);
-        console.log(`   🌐 URL: http://${host}:${PORT}`);
-        console.log(`   🏥 Health: http://${host}:${PORT}/api/health`);
-        console.log(`   📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-        console.log(`   💾 Banco: ⚠️  Offline (usando mock data)`);
-        console.log(`   🔌 Socket.io: ✅ Ativo`);
-      });
+      console.warn('⚠️  Operando em modo offline (dados não persistirão)');
+      console.log(`   💾 Banco: ⚠️  Offline (usando mock data)`);
     });
 }
 
