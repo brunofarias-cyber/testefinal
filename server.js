@@ -250,14 +250,15 @@ if (process.env.NODE_ENV !== 'test') {
 
   // Iniciar servidor IMEDIATAMENTE (sem bloquear na conexão do banco)
   const isProduction = process.env.NODE_ENV === 'production';
-  const host = isProduction ? '0.0.0.0' : 'localhost';
+  const host = isProduction ? '0.0.0.0' : '127.0.0.1';
 
-  server.listen(PORT, '127.0.0.1', () => {
+  server.listen(PORT, host, () => {
     console.log(`✅ Servidor NEXO rodando!`);
     console.log(`   🌐 URL: http://localhost:${PORT}`);
     console.log(`   🏥 Health: http://localhost:${PORT}/api/health`);
     console.log(`   📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
     console.log(`   🔌 Socket.io: ✅ Ativo`);
+    console.log(`   🔗 Host: ${host}`);
   });
 
   // Também escutar em IPv6
