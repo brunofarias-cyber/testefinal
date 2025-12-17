@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Home,
   FileText,
   Calendar,
   CheckSquare,
@@ -12,6 +13,7 @@ import {
 
 export const SidebarVertical = ({ activeSection, setActiveSection }) => {
   const sections = [
+    { id: 'dashboard', icon: Home, label: 'Início', title: 'Dashboard' },
     { id: 'planning', icon: FileText, label: 'Planej.', title: 'Planejamento' },
     { id: 'calendar', icon: Calendar, label: 'Calendário', title: 'Calendário' },
     { id: 'attendance', icon: CheckSquare, label: 'Presença', title: 'Chamada' },

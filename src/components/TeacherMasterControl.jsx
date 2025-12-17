@@ -38,7 +38,7 @@ import { SidebarVertical, QuickInfoSidebar } from "./TeacherSidebars";
 import { allBnccCodes, getYearOptions, getAISuggestions } from "../constants/bnccCodes";
 
 const TeacherMasterControl = ({ onNavigateTo }) => {
-    const [activeSection, setActiveSection] = useState('planning'); // planning, calendar, attendance, evaluation, activities, grades, submissions, bncc
+    const [activeSection, setActiveSection] = useState('dashboard'); // dashboard, planning, calendar, attendance, evaluation, activities, grades, submissions, bncc
     const [evaluationTab, setEvaluationTab] = useState('individual'); // individual, group, rubrics
     const [rubricTab, setRubricTab] = useState('rubric1'); // rubric1, rubric2
     const [selectedClass, setSelectedClass] = useState('9A');
@@ -1195,7 +1195,19 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
     );
 
     // Renderizar Avaliação
-    const renderEvaluation = () => (
+    const renderEvaluation = () => {
+        // Guard clause para evitar erros de undefined
+        if (!attendanceData || !attendanceData[selectedClass]) {
+            return (
+                <div className="p-6 bg-yellow-50 border-2 border-yellow-300 rounded-xl text-center">
+                    <AlertCircle size={32} className="mx-auto mb-3 text-yellow-600" />
+                    <h3 className="text-lg font-bold text-yellow-900 mb-2">Dados de Turma Indisponíveis</h3>
+                    <p className="text-yellow-800">Selecione uma turma válida para acessar a avaliação</p>
+                </div>
+            );
+        }
+
+        return (
         <div>
             <div className="mb-6">
                 <h2 className="text-2xl font-bold text-slate-900">Avaliação com Rubricas</h2>
@@ -1458,7 +1470,8 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
             </div>
             )}
         </div>
-    );
+        );
+    };
 
     const renderActivities = () => (
         <div className="space-y-6">
@@ -1577,6 +1590,139 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
         <StudentGrades grades={grades} setGrades={setGrades} />
     );
 
+    const renderDashboard = () => (
+        <div className="space-y-6">
+            {/* Header com Turma */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
+                <h2 className="text-3xl font-extrabold mb-2">Bem-vindo de volta! 👋</h2>
+                <p className="text-blue-100">Turma {selectedClass} • {new Date().toLocaleDateString('pt-BR', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+            </div>
+
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white rounded-xl border-2 border-slate-200 p-4 hover:shadow-lg transition-all cursor-pointer" onClick={() => setActiveSection('activities')}>
+                    <div className="flex items-center justify-between mb-2">
+                        <Edit2 size={24} className="text-blue-600" />
+                        <span className="text-2xl font-bold text-slate-900">{activities.length}</span>
+                    </div>
+                    <p className="text-sm text-slate-600">Atividades Ativas</p>
+                </div>
+
+                <div className="bg-white rounded-xl border-2 border-slate-200 p-4 hover:shadow-lg transition-all cursor-pointer" onClick={() => setActiveSection('evaluation')}>
+                    <div className="flex items-center justify-between mb-2">
+                        <Star size={24} className="text-purple-600" />
+                        <span className="text-2xl font-bold text-slate-900">{(attendanceData[selectedClass] || []).length}</span>
+                    </div>
+                    <p className="text-sm text-slate-600">Alunos para Avaliar</p>
+                </div>
+
+                <div className="bg-white rounded-xl border-2 border-slate-200 p-4 hover:shadow-lg transition-all cursor-pointer" onClick={() => setActiveSection('calendar')}>
+                    <div className="flex items-center justify-between mb-2">
+                        <Calendar size={24} className="text-green-600" />
+                        <span className="text-2xl font-bold text-slate-900">{calendarEvents.length}</span>
+                    </div>
+                    <p className="text-sm text-slate-600">Eventos Próximos</p>
+                </div>
+
+                <div className="bg-white rounded-xl border-2 border-slate-200 p-4 hover:shadow-lg transition-all cursor-pointer" onClick={() => setActiveSection('attendance')}>
+                    <div className="flex items-center justify-between mb-2">
+                        <CheckSquare size={24} className="text-orange-600" />
+                        <span className="text-2xl font-bold text-slate-900">{(attendanceData[selectedClass] || []).filter(s => s.status === 'present').length}</span>
+                    </div>
+                    <p className="text-sm text-slate-600">Presentes Hoje</p>
+                </div>
+            </div>
+
+            {/* Recent Activities Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Próximos Eventos */}
+                <div className="bg-white rounded-xl border-2 border-slate-200 p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Calendar size={20} className="text-blue-600" />
+                        <h3 className="text-xl font-bold text-slate-900">Próximos Eventos</h3>
+                    </div>
+                    <div className="space-y-3">
+                        {calendarEvents.slice(0, 3).map(event => (
+                            <div key={event.id} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                                <div className="flex-1">
+                                    <p className="font-bold text-slate-900">{event.title}</p>
+                                    <p className="text-xs text-slate-600">{event.date}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <button 
+                        onClick={() => setActiveSection('calendar')}
+                        className="mt-4 w-full py-2 text-blue-600 font-semibold hover:bg-blue-50 rounded-lg transition-all"
+                    >
+                        Ver Todos →
+                    </button>
+                </div>
+
+                {/* Atividades Ativas */}
+                <div className="bg-white rounded-xl border-2 border-slate-200 p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Edit2 size={20} className="text-purple-600" />
+                        <h3 className="text-xl font-bold text-slate-900">Atividades em Andamento</h3>
+                    </div>
+                    <div className="space-y-3">
+                        {activities.slice(0, 3).map(activity => (
+                            <div key={activity.id} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                <div className="w-2 h-2 bg-purple-600 rounded-full mt-2"></div>
+                                <div className="flex-1">
+                                    <p className="font-bold text-slate-900">{activity.title}</p>
+                                    <p className="text-xs text-slate-600">{activity.submissionCount}/{activity.totalStudents} enviadas</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <button 
+                        onClick={() => setActiveSection('activities')}
+                        className="mt-4 w-full py-2 text-purple-600 font-semibold hover:bg-purple-50 rounded-lg transition-all"
+                    >
+                        Ver Todas →
+                    </button>
+                </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border-2 border-blue-200 p-6">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">Ações Rápidas</h3>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <button 
+                        onClick={() => setActiveSection('planning')}
+                        className="p-4 bg-white rounded-lg border-2 border-blue-300 hover:shadow-lg transition-all text-center"
+                    >
+                        <FileText size={24} className="mx-auto mb-2 text-blue-600" />
+                        <p className="font-semibold text-sm text-slate-900">Planejamento</p>
+                    </button>
+                    <button 
+                        onClick={() => setActiveSection('grades')}
+                        className="p-4 bg-white rounded-lg border-2 border-green-300 hover:shadow-lg transition-all text-center"
+                    >
+                        <Target size={24} className="mx-auto mb-2 text-green-600" />
+                        <p className="font-semibold text-sm text-slate-900">Notas</p>
+                    </button>
+                    <button 
+                        onClick={() => setActiveSection('bncc')}
+                        className="p-4 bg-white rounded-lg border-2 border-orange-300 hover:shadow-lg transition-all text-center"
+                    >
+                        <BookOpen size={24} className="mx-auto mb-2 text-orange-600" />
+                        <p className="font-semibold text-sm text-slate-900">BNCC</p>
+                    </button>
+                    <button 
+                        onClick={() => setActiveSection('evaluation')}
+                        className="p-4 bg-white rounded-lg border-2 border-purple-300 hover:shadow-lg transition-all text-center"
+                    >
+                        <Award size={24} className="mx-auto mb-2 text-purple-600" />
+                        <p className="font-semibold text-sm text-slate-900">Avaliar</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
     const renderSubmissions = () => (
         <InteractiveEvaluation submissions={submissions} setSubmissions={setSubmissions} />
     );
@@ -1619,6 +1765,7 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
 
                 {/* Conteúdo Principal */}
                 <div className="flex-1 bg-white rounded-xl border-2 border-slate-200 p-6 max-h-[calc(100vh-200px)] overflow-y-auto shadow-sm">
+                    {activeSection === 'dashboard' && renderDashboard()}
                     {activeSection === 'planning' && renderPlanning()}
                     {activeSection === 'calendar' && renderCalendar()}
                     {activeSection === 'attendance' && renderAttendance()}
