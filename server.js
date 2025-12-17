@@ -212,51 +212,74 @@ for (const testPath of possiblePaths) {
 
 if (!distExists) {
   console.warn(`⚠️⚠️⚠️ NENHUM DIST ENCONTRADO! ⚠️⚠️⚠️`);
-  console.log(`Listando conteúdo de __dirname (${__dirname}):`);
+  console.log(`Tentando construir automaticamente...`);
+  
   try {
-    const files = fs.readdirSync(__dirname);
-    console.log(`   Arquivos: ${files.join(', ')}`);
+    // Tentar construir automaticamente
+    const { execSync } = await import('child_process');
+    console.log(`🏗️  Executando: npm run build:render`);
+    execSync('npm run build:render', { 
+      cwd: __dirname,
+      stdio: 'inherit'
+    });
     
-    // Procurar recursivamente por pasta dist (ignorando node_modules)
-    const findDist = (dir, depth = 0) => {
-      if (depth > 3) return null;
-      try {
-        const files = fs.readdirSync(dir);
-        for (const file of files) {
-          if (file === 'dist') {
-            const fullPath = path.join(dir, file);
-            if (fs.statSync(fullPath).isDirectory()) {
-              return fullPath;
-            }
-          }
-        }
-        // Procurar em subdiretórios (ignorar node_modules e .git)
-        for (const file of files) {
-          if (file.startsWith('.') || file === 'node_modules') continue;
-          const fullPath = path.join(dir, file);
-          try {
-            if (fs.statSync(fullPath).isDirectory()) {
-              const result = findDist(fullPath, depth + 1);
-              if (result) return result;
-            }
-          } catch (e) {
-            // Ignore permission errors
-          }
-        }
-      } catch (e) {
-        // Ignore
-      }
-      return null;
-    };
-    
-    const foundDist = findDist(__dirname);
-    if (foundDist) {
-      distPath = foundDist;
+    // Verificar se foi criado
+    if (fs.existsSync(path.join(__dirname, 'dist'))) {
+      distPath = path.join(__dirname, 'dist');
       distExists = true;
-      console.log(`✅ DIST ENCONTRADO (busca recursiva): ${foundDist}`);
+      console.log(`✅ DIST CONSTRUÍDO COM SUCESSO: ${distPath}`);
     }
   } catch (e) {
-    console.error(`   Erro ao listar: ${e.message}`);
+    console.error(`❌ Erro ao construir dist:`, e.message);
+  }
+  
+  if (!distExists) {
+    console.log(`Listando conteúdo de __dirname (${__dirname}):`);
+    try {
+      const files = fs.readdirSync(__dirname);
+      console.log(`   Arquivos: ${files.join(', ')}`);
+      
+      // Procurar recursivamente por pasta dist (ignorando node_modules)
+      const findDist = (dir, depth = 0) => {
+        if (depth > 3) return null;
+        try {
+          const files = fs.readdirSync(dir);
+          for (const file of files) {
+            if (file === 'dist') {
+              const fullPath = path.join(dir, file);
+              if (fs.statSync(fullPath).isDirectory()) {
+                return fullPath;
+              }
+            }
+          }
+          // Procurar em subdiretórios (ignorar node_modules e .git)
+          for (const file of files) {
+            if (file.startsWith('.') || file === 'node_modules') continue;
+            const fullPath = path.join(dir, file);
+            try {
+              if (fs.statSync(fullPath).isDirectory()) {
+                const result = findDist(fullPath, depth + 1);
+                if (result) return result;
+              }
+            } catch (e) {
+              // Ignore permission errors
+            }
+          }
+        } catch (e) {
+          // Ignore
+        }
+        return null;
+      };
+      
+      const foundDist = findDist(__dirname);
+      if (foundDist) {
+        distPath = foundDist;
+        distExists = true;
+        console.log(`✅ DIST ENCONTRADO (busca recursiva): ${foundDist}`);
+      }
+    } catch (e) {
+      console.error(`   Erro ao listar: ${e.message}`);
+    }
   }
   
   if (!distExists) {
