@@ -172,16 +172,27 @@ app.get('/api/health', (req, res) => {
 });
 
 // ===== STATIC FRONTEND (Vite build) =====
-const distPath = path.join(__dirname, 'dist');
+// Usar caminhos relativos para funcionar tanto em dev como em produção
+const distPath = process.env.NODE_ENV === 'production' 
+  ? path.resolve('/opt/render/project', 'dist')  // Render
+  : path.join(__dirname, 'dist');                 // Local
+
 console.log(`📁 Procurando dist em: ${distPath}`);
+console.log(`📊 NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`📊 __dirname: ${__dirname}`);
 
 // Verificar se dist existe
 const distExists = fs.existsSync(distPath);
 console.log(`📦 Pasta dist existe: ${distExists}`);
 
 if (distExists) {
-  app.use(express.static(distPath));
+  app.use(express.static(distPath, {
+    maxAge: '1h',
+    etag: false
+  }));
   console.log(`✅ Servindo arquivos estáticos de: ${distPath}`);
+} else {
+  console.warn(`⚠️  Pasta dist não encontrada em: ${distPath}`);
 }
 
 // SPA fallback para o frontend - deve vir ANTES do root endpoint
@@ -192,6 +203,7 @@ app.get('*', (req, res) => {
   
   if (distExists) {
     const indexPath = path.join(distPath, 'index.html');
+    console.log(`🔄 SPA Fallback: Serving ${indexPath}`);
     return res.sendFile(indexPath);
   }
   
@@ -211,6 +223,16 @@ app.get('*', (req, res) => {
       '/api/messages'
     ]
   });
+});
+
+// Rota específica para a raiz
+app.get('/', (req, res) => {
+  if (distExists) {
+    const indexPath = path.join(distPath, 'index.html');
+    console.log(`✅ Root (/) sendo servido: ${indexPath}`);
+    return res.sendFile(indexPath);
+  }
+  res.status(200).json({ message: 'Backend NEXO API - Frontend not built' });
 });
 
 // Start server immediately
