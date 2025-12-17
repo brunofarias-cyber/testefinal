@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-export default function CollapsibleGestaoNav({ children }) {
+export default function CollapsibleGestaoNav({ children, title = "Gestão" }) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
@@ -18,13 +18,13 @@ export default function CollapsibleGestaoNav({ children }) {
   }, [isExpanded]);
 
   return (
-    <div className="mb-6">
+    <>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-2 flex items-center justify-between hover:bg-slate-100 rounded-lg transition-colors"
+        className="w-full px-4 py-2 flex items-center justify-between hover:bg-slate-100 rounded-lg transition-colors mb-2"
       >
         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-          Gestão
+          {title}
         </p>
         {isExpanded ? (
           <ChevronUp size={16} className="text-slate-400" />
@@ -33,11 +33,11 @@ export default function CollapsibleGestaoNav({ children }) {
         )}
       </button>
       
-      <nav className={`space-y-1 overflow-hidden transition-all duration-300 ${
-        isExpanded ? "max-h-96" : "max-h-0"
+      <nav className={`space-y-1 overflow-hidden transition-all duration-300 ease-out ${
+        isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
       }`}>
         {children}
       </nav>
-    </div>
+    </>
   );
 }

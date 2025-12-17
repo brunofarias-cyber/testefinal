@@ -331,7 +331,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                 </div>
 
                 <div className="mb-6">
-                    <CollapsibleGestaoNav>
+                    <CollapsibleGestaoNav title="Gestão">
                         {role === 'teacher' && (
                             <>
                                 <NavItem
