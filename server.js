@@ -172,41 +172,92 @@ app.get('/api/health', (req, res) => {
 });
 
 // ===== STATIC FRONTEND (Vite build) =====
-// Procurar em vários caminhos possíveis
+// Procurar em vários caminhos possíveis - RENDER pode variar
 let distPath = null;
 let distExists = false;
 
 const possiblePaths = [
   path.join(__dirname, 'dist'),                          // Local (dev)
-  path.resolve('/opt/render/project', 'dist'),           // Render oficial
-  path.resolve(process.cwd(), 'dist'),                   // CWD
+  '/opt/render/project/dist',                            // Render padrão
+  `${process.cwd()}/dist`,                               // CWD
+  '/workspace/dist',                                     // Alternativo
+  path.resolve(__dirname, '../dist'),                    // Relativo
+  path.resolve(__dirname, '../../dist'),                 // Relativo 2
 ];
 
-console.log(`📁 Procurando dist...`);
+console.log(`📁 Procurando DIST...`);
 console.log(`   NODE_ENV: ${process.env.NODE_ENV}`);
 console.log(`   __dirname: ${__dirname}`);
 console.log(`   process.cwd(): ${process.cwd()}`);
+console.log(`   Verificando ${possiblePaths.length} caminhos...`);
 
 for (const testPath of possiblePaths) {
   if (fs.existsSync(testPath)) {
     distPath = testPath;
     distExists = true;
-    console.log(`✅ Encontrado em: ${testPath}`);
+    console.log(`✅ ENCONTRADO: ${testPath}`);
+    
+    // Listar arquivos em dist
+    try {
+      const files = fs.readdirSync(testPath);
+      console.log(`   Conteúdo: ${files.slice(0, 5).join(', ')}`);
+    } catch (e) {
+      console.error(`   Erro ao listar: ${e.message}`);
+    }
     break;
   } else {
-    console.log(`   ❌ Não existe: ${testPath}`);
+    console.log(`   ❌ ${testPath}`);
   }
 }
 
 if (!distExists) {
-  console.warn(`⚠️  dist não encontrado! Listando __dirname:`);
+  console.warn(`⚠️⚠️⚠️ NENHUM DIST ENCONTRADO! ⚠️⚠️⚠️`);
+  console.log(`Listando conteúdo de __dirname (${__dirname}):`);
   try {
     const files = fs.readdirSync(__dirname);
-    console.log(`   Arquivos: ${files.slice(0, 15).join(', ')}`);
+    console.log(`   Arquivos: ${files.join(', ')}`);
+    
+    // Procurar recursivamente por pasta dist
+    const findDist = (dir, depth = 0) => {
+      if (depth > 3) return null;
+      try {
+        const files = fs.readdirSync(dir);
+        for (const file of files) {
+          if (file === 'dist') {
+            const fullPath = path.join(dir, file);
+            if (fs.statSync(fullPath).isDirectory()) {
+              return fullPath;
+            }
+          }
+        }
+        // Procurar em subdiretórios
+        for (const file of files) {
+          if (file.startsWith('.')) continue;
+          const fullPath = path.join(dir, file);
+          if (fs.statSync(fullPath).isDirectory()) {
+            const result = findDist(fullPath, depth + 1);
+            if (result) return result;
+          }
+        }
+      } catch (e) {
+        // Ignore
+      }
+      return null;
+    };
+    
+    const foundDist = findDist(__dirname);
+    if (foundDist) {
+      distPath = foundDist;
+      distExists = true;
+      console.log(`✅ DIST ENCONTRADO (busca recursiva): ${foundDist}`);
+    }
   } catch (e) {
-    console.error(`   Erro ao listar:`, e.message);
+    console.error(`   Erro ao listar: ${e.message}`);
   }
-  distPath = possiblePaths[0];
+  
+  if (!distExists) {
+    distPath = possiblePaths[0];
+  }
 }
 
 if (distExists) {
@@ -214,9 +265,9 @@ if (distExists) {
     maxAge: '1h',
     etag: false
   }));
-  console.log(`✅ Servindo estáticos de: ${distPath}`);
+  console.log(`✅ SERVINDO ESTÁTICOS DE: ${distPath}`);
 } else {
-  console.warn(`⚠️  Pasta dist não encontrada em: ${distPath}`);
+  console.warn(`⚠️⚠️⚠️ DIST NÃO ENCONTRADO - FRONTEND NÃO SERÁ SERVIDO ⚠️⚠️⚠️`);
 }
 
 // SPA fallback para o frontend - deve vir ANTES do root endpoint
