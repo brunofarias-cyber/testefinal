@@ -1592,131 +1592,71 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
 
     const renderDashboard = () => (
         <div className="space-y-6">
-            {/* Header com Turma */}
+            {/* Welcome Card - Simples */}
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
-                <h2 className="text-3xl font-extrabold mb-2">Bem-vindo de volta! 👋</h2>
-                <p className="text-blue-100">Turma {selectedClass} • {new Date().toLocaleDateString('pt-BR', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+                <h2 className="text-2xl font-bold">Bem-vindo! 👋</h2>
+                <p className="text-blue-100 text-sm mt-1">Turma {selectedClass}</p>
             </div>
 
-            {/* Quick Stats Grid */}
+            {/* 4 Cards Principais - Clicáveis */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white rounded-xl border-2 border-slate-200 p-4 hover:shadow-lg transition-all cursor-pointer" onClick={() => setActiveSection('activities')}>
-                    <div className="flex items-center justify-between mb-2">
-                        <Edit2 size={24} className="text-blue-600" />
-                        <span className="text-2xl font-bold text-slate-900">{activities.length}</span>
-                    </div>
-                    <p className="text-sm text-slate-600">Atividades Ativas</p>
+                <div 
+                    onClick={() => setActiveSection('activities')}
+                    className="bg-blue-50 rounded-lg border-2 border-blue-300 p-6 cursor-pointer hover:shadow-lg hover:scale-105 transition-all text-center"
+                >
+                    <div className="text-4xl font-bold text-blue-600 mb-2">{activities.length}</div>
+                    <p className="font-semibold text-slate-700 text-sm">Atividades</p>
                 </div>
 
-                <div className="bg-white rounded-xl border-2 border-slate-200 p-4 hover:shadow-lg transition-all cursor-pointer" onClick={() => setActiveSection('evaluation')}>
-                    <div className="flex items-center justify-between mb-2">
-                        <Star size={24} className="text-purple-600" />
-                        <span className="text-2xl font-bold text-slate-900">{(attendanceData[selectedClass] || []).length}</span>
-                    </div>
-                    <p className="text-sm text-slate-600">Alunos para Avaliar</p>
+                <div 
+                    onClick={() => setActiveSection('evaluation')}
+                    className="bg-purple-50 rounded-lg border-2 border-purple-300 p-6 cursor-pointer hover:shadow-lg hover:scale-105 transition-all text-center"
+                >
+                    <div className="text-4xl font-bold text-purple-600 mb-2">{(attendanceData[selectedClass] || []).length}</div>
+                    <p className="font-semibold text-slate-700 text-sm">Alunos</p>
                 </div>
 
-                <div className="bg-white rounded-xl border-2 border-slate-200 p-4 hover:shadow-lg transition-all cursor-pointer" onClick={() => setActiveSection('calendar')}>
-                    <div className="flex items-center justify-between mb-2">
-                        <Calendar size={24} className="text-green-600" />
-                        <span className="text-2xl font-bold text-slate-900">{calendarEvents.length}</span>
-                    </div>
-                    <p className="text-sm text-slate-600">Eventos Próximos</p>
+                <div 
+                    onClick={() => setActiveSection('calendar')}
+                    className="bg-green-50 rounded-lg border-2 border-green-300 p-6 cursor-pointer hover:shadow-lg hover:scale-105 transition-all text-center"
+                >
+                    <div className="text-4xl font-bold text-green-600 mb-2">{calendarEvents.length}</div>
+                    <p className="font-semibold text-slate-700 text-sm">Eventos</p>
                 </div>
 
-                <div className="bg-white rounded-xl border-2 border-slate-200 p-4 hover:shadow-lg transition-all cursor-pointer" onClick={() => setActiveSection('attendance')}>
-                    <div className="flex items-center justify-between mb-2">
-                        <CheckSquare size={24} className="text-orange-600" />
-                        <span className="text-2xl font-bold text-slate-900">{(attendanceData[selectedClass] || []).filter(s => s.status === 'present').length}</span>
-                    </div>
-                    <p className="text-sm text-slate-600">Presentes Hoje</p>
-                </div>
-            </div>
-
-            {/* Recent Activities Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Próximos Eventos */}
-                <div className="bg-white rounded-xl border-2 border-slate-200 p-6">
-                    <div className="flex items-center gap-2 mb-4">
-                        <Calendar size={20} className="text-blue-600" />
-                        <h3 className="text-xl font-bold text-slate-900">Próximos Eventos</h3>
-                    </div>
-                    <div className="space-y-3">
-                        {calendarEvents.slice(0, 3).map(event => (
-                            <div key={event.id} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
-                                <div className="flex-1">
-                                    <p className="font-bold text-slate-900">{event.title}</p>
-                                    <p className="text-xs text-slate-600">{event.date}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <button 
-                        onClick={() => setActiveSection('calendar')}
-                        className="mt-4 w-full py-2 text-blue-600 font-semibold hover:bg-blue-50 rounded-lg transition-all"
-                    >
-                        Ver Todos →
-                    </button>
-                </div>
-
-                {/* Atividades Ativas */}
-                <div className="bg-white rounded-xl border-2 border-slate-200 p-6">
-                    <div className="flex items-center gap-2 mb-4">
-                        <Edit2 size={20} className="text-purple-600" />
-                        <h3 className="text-xl font-bold text-slate-900">Atividades em Andamento</h3>
-                    </div>
-                    <div className="space-y-3">
-                        {activities.slice(0, 3).map(activity => (
-                            <div key={activity.id} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                                <div className="w-2 h-2 bg-purple-600 rounded-full mt-2"></div>
-                                <div className="flex-1">
-                                    <p className="font-bold text-slate-900">{activity.title}</p>
-                                    <p className="text-xs text-slate-600">{activity.submissionCount}/{activity.totalStudents} enviadas</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <button 
-                        onClick={() => setActiveSection('activities')}
-                        className="mt-4 w-full py-2 text-purple-600 font-semibold hover:bg-purple-50 rounded-lg transition-all"
-                    >
-                        Ver Todas →
-                    </button>
+                <div 
+                    onClick={() => setActiveSection('attendance')}
+                    className="bg-orange-50 rounded-lg border-2 border-orange-300 p-6 cursor-pointer hover:shadow-lg hover:scale-105 transition-all text-center"
+                >
+                    <div className="text-4xl font-bold text-orange-600 mb-2">{(attendanceData[selectedClass] || []).filter(s => s.status === 'present').length}</div>
+                    <p className="font-semibold text-slate-700 text-sm">Presentes</p>
                 </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border-2 border-blue-200 p-6">
-                <h3 className="text-lg font-bold text-slate-900 mb-4">Ações Rápidas</h3>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                    <button 
-                        onClick={() => setActiveSection('planning')}
-                        className="p-4 bg-white rounded-lg border-2 border-blue-300 hover:shadow-lg transition-all text-center"
-                    >
-                        <FileText size={24} className="mx-auto mb-2 text-blue-600" />
-                        <p className="font-semibold text-sm text-slate-900">Planejamento</p>
-                    </button>
-                    <button 
-                        onClick={() => setActiveSection('grades')}
-                        className="p-4 bg-white rounded-lg border-2 border-green-300 hover:shadow-lg transition-all text-center"
-                    >
-                        <Target size={24} className="mx-auto mb-2 text-green-600" />
-                        <p className="font-semibold text-sm text-slate-900">Notas</p>
-                    </button>
-                    <button 
-                        onClick={() => setActiveSection('bncc')}
-                        className="p-4 bg-white rounded-lg border-2 border-orange-300 hover:shadow-lg transition-all text-center"
-                    >
-                        <BookOpen size={24} className="mx-auto mb-2 text-orange-600" />
-                        <p className="font-semibold text-sm text-slate-900">BNCC</p>
-                    </button>
+            {/* Próxima Ação Recomendada */}
+            <div className="bg-white rounded-lg border-2 border-slate-200 p-6">
+                <h3 className="font-bold text-lg text-slate-900 mb-4">O que fazer agora?</h3>
+                <div className="space-y-2">
                     <button 
                         onClick={() => setActiveSection('evaluation')}
-                        className="p-4 bg-white rounded-lg border-2 border-purple-300 hover:shadow-lg transition-all text-center"
+                        className="w-full text-left p-4 bg-gradient-to-r from-purple-100 to-pink-100 border-l-4 border-purple-600 rounded hover:shadow-lg transition-all"
                     >
-                        <Award size={24} className="mx-auto mb-2 text-purple-600" />
-                        <p className="font-semibold text-sm text-slate-900">Avaliar</p>
+                        <p className="font-bold text-slate-900">Avaliar Alunos</p>
+                        <p className="text-sm text-slate-600">Use as rúbricas para avaliar o desempenho</p>
+                    </button>
+                    <button 
+                        onClick={() => setActiveSection('activities')}
+                        className="w-full text-left p-4 bg-gradient-to-r from-blue-100 to-cyan-100 border-l-4 border-blue-600 rounded hover:shadow-lg transition-all"
+                    >
+                        <p className="font-bold text-slate-900">Criar Atividade</p>
+                        <p className="text-sm text-slate-600">Adicione uma nova atividade para a turma</p>
+                    </button>
+                    <button 
+                        onClick={() => setActiveSection('calendar')}
+                        className="w-full text-left p-4 bg-gradient-to-r from-green-100 to-teal-100 border-l-4 border-green-600 rounded hover:shadow-lg transition-all"
+                    >
+                        <p className="font-bold text-slate-900">Ver Calendário</p>
+                        <p className="text-sm text-slate-600">Veja prazos e eventos próximos</p>
                     </button>
                 </div>
             </div>
