@@ -172,25 +172,49 @@ app.get('/api/health', (req, res) => {
 });
 
 // ===== STATIC FRONTEND (Vite build) =====
-// Usar caminhos relativos para funcionar tanto em dev como em produção
-const distPath = process.env.NODE_ENV === 'production' 
-  ? path.resolve('/opt/render/project', 'dist')  // Render
-  : path.join(__dirname, 'dist');                 // Local
+// Procurar em vários caminhos possíveis
+let distPath = null;
+let distExists = false;
 
-console.log(`📁 Procurando dist em: ${distPath}`);
-console.log(`📊 NODE_ENV: ${process.env.NODE_ENV}`);
-console.log(`📊 __dirname: ${__dirname}`);
+const possiblePaths = [
+  path.join(__dirname, 'dist'),                          // Local (dev)
+  path.resolve('/opt/render/project', 'dist'),           // Render oficial
+  path.resolve(process.cwd(), 'dist'),                   // CWD
+];
 
-// Verificar se dist existe
-const distExists = fs.existsSync(distPath);
-console.log(`📦 Pasta dist existe: ${distExists}`);
+console.log(`📁 Procurando dist...`);
+console.log(`   NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`   __dirname: ${__dirname}`);
+console.log(`   process.cwd(): ${process.cwd()}`);
+
+for (const testPath of possiblePaths) {
+  if (fs.existsSync(testPath)) {
+    distPath = testPath;
+    distExists = true;
+    console.log(`✅ Encontrado em: ${testPath}`);
+    break;
+  } else {
+    console.log(`   ❌ Não existe: ${testPath}`);
+  }
+}
+
+if (!distExists) {
+  console.warn(`⚠️  dist não encontrado! Listando __dirname:`);
+  try {
+    const files = fs.readdirSync(__dirname);
+    console.log(`   Arquivos: ${files.slice(0, 15).join(', ')}`);
+  } catch (e) {
+    console.error(`   Erro ao listar:`, e.message);
+  }
+  distPath = possiblePaths[0];
+}
 
 if (distExists) {
   app.use(express.static(distPath, {
     maxAge: '1h',
     etag: false
   }));
-  console.log(`✅ Servindo arquivos estáticos de: ${distPath}`);
+  console.log(`✅ Servindo estáticos de: ${distPath}`);
 } else {
   console.warn(`⚠️  Pasta dist não encontrada em: ${distPath}`);
 }
