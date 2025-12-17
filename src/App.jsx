@@ -98,6 +98,7 @@ import MissionsSystem from "./components/MissionsSystem";
 import StudentProgressTracker from "./components/StudentProgress";
 import StudentPortfolio from "./components/StudentPortfolio";
 import SchoolEcosystem from "./components/SchoolEcosystem";
+import CollapsibleGestaoNav from "./components/CollapsibleGestaoNav";
 import CopilotIA from "./components/CopilotIA";
 import EarlyWarningSystem from "./components/EarlyWarningSystem";
 import WorkSubmissionCorrection from "./components/WorkSubmissionCorrection";
@@ -330,10 +331,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                 </div>
 
                 <div className="mb-6">
-                    <p className="px-4 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
-                        {role === 'teacher' ? 'Gestão' : role === 'student' ? 'Acadêmico' : 'Administração'}
-                    </p>
-                    <nav className="space-y-1">
+                    <CollapsibleGestaoNav>
                         {role === 'teacher' && (
                             <>
                                 <NavItem
@@ -358,7 +356,6 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<GitBranch size={20} />} label="Conhecendo os Projetos" active={activeTab === 'teacher-ecosystem'} onClick={() => setActiveTab('teacher-ecosystem')} />
                                 <NavItem icon={<Shield size={20} />} label="Situação para Análise" active={activeTab === 'new-early-warning'} onClick={() => setActiveTab('new-early-warning')} />
                                 <NavItem icon={<FileText size={20} />} label="Correção de Trabalhos" active={activeTab === 'work-correction'} onClick={() => setActiveTab('work-correction')} />
-                                <NavItem icon={<BarChart3 size={20} />} label="Central do Professor" active={activeTab === 'teacher-central'} onClick={() => setActiveTab('teacher-central')} />
                             </>
                         )}
                         {role === 'student' && (
@@ -383,7 +380,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<TrendingUp size={20} />} label="Dashboard Avançado" active={activeTab === 'coordinator-advanced'} onClick={() => setActiveTab('coordinator-advanced')} />
                             </>
                         )}
-                    </nav>
+                    </CollapsibleGestaoNav>
                 </div>
             </div>
 
