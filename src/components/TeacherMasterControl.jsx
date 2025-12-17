@@ -35,10 +35,12 @@ import TeacherRubricEditablePoints from "./TeacherRubricEditablePoints";
 import StudentGrades from "./StudentGrades";
 import InteractiveEvaluation from "./InteractiveEvaluation";
 import TeacherReportsEditavel from "./TeacherReportsEditavel";
+import { SidebarVertical, QuickInfoSidebar } from "./TeacherSidebars";
 import { allBnccCodes, getYearOptions, getAISuggestions } from "../constants/bnccCodes";
 
 const TeacherMasterControl = ({ onNavigateTo }) => {
     const [activeSection, setActiveSection] = useState('planning'); // planning, calendar, attendance, bncc, rubrics, evaluation, activities, grades, submissions
+    const [rubricTab, setRubricTab] = useState('rubric1'); // rubric1, rubric2
     const [selectedClass, setSelectedClass] = useState('9A');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [planningSubTab, setPlanningSubTab] = useState('lessons'); // lessons, rubrics
@@ -1489,7 +1491,47 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
     );
 
     const renderRubrics = () => (
-        <TeacherRubricEditablePoints rubrics={rubrics} setRubrics={setRubrics} />
+        <div className="space-y-4">
+            {/* Sub-abas para Rubricas */}
+            <div className="flex gap-2 border-b-2 border-slate-200 mb-4">
+                <button 
+                    onClick={() => setRubricTab('rubric1')}
+                    className={`px-6 py-3 font-bold flex items-center gap-2 transition-all ${
+                        rubricTab === 'rubric1' 
+                            ? 'text-blue-600 border-b-4 border-blue-600' 
+                            : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                >
+                    <Award size={20} />
+                    Rubrica de Criatividade
+                </button>
+                <button 
+                    onClick={() => setRubricTab('rubric2')}
+                    className={`px-6 py-3 font-bold flex items-center gap-2 transition-all ${
+                        rubricTab === 'rubric2' 
+                            ? 'text-blue-600 border-b-4 border-blue-600' 
+                            : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                >
+                    <Award size={20} />
+                    Rubrica de Execução
+                </button>
+            </div>
+            
+            {/* Conteúdo da rubrica selecionada */}
+            <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
+                {rubricTab === 'rubric1' && (
+                    <div className="bg-white p-4 rounded-lg border-2 border-slate-200">
+                        <TeacherRubricEditablePoints rubrics={[rubrics[0]]} setRubrics={setRubrics} />
+                    </div>
+                )}
+                {rubricTab === 'rubric2' && (
+                    <div className="bg-white p-4 rounded-lg border-2 border-slate-200">
+                        <TeacherRubricEditablePoints rubrics={[rubrics[1]]} setRubrics={setRubrics} />
+                    </div>
+                )}
+            </div>
+        </div>
     );
 
     const renderSubmissions = () => (
@@ -1497,139 +1539,63 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
     );
 
     return (
-        <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white text-2xl">
-                        ⚡
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+            {/* Header Fixo */}
+            <div className="sticky top-0 z-40 bg-white border-b-2 border-slate-200 shadow-sm">
+                <div className="max-w-full px-6 py-4">
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white text-xl">
+                                ⚡
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-extrabold text-slate-900">Central do Professor</h1>
+                                <p className="text-xs text-slate-600">Gerencie tudo em um só lugar</p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                            <Users size={20} className="text-slate-600" />
+                            <select
+                                value={selectedClass}
+                                onChange={(e) => setSelectedClass(e.target.value)}
+                                className="px-3 py-2 border-2 border-slate-300 rounded-lg font-bold text-slate-900 text-sm"
+                            >
+                                <option value="9A">Turma 9A</option>
+                                <option value="9B">Turma 9B</option>
+                            </select>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-4xl font-extrabold text-slate-900">Central do Professor</h1>
-                        <p className="text-slate-600">Planejamento, Calendário, Chamada, Avaliação, BNCC e Relatórios em um só lugar</p>
-                    </div>
-                </div>
-
-                {/* Seletor de Turma */}
-                <div className="flex items-center gap-3">
-                    <Users size={20} className="text-slate-600" />
-                    <select
-                        value={selectedClass}
-                        onChange={(e) => setSelectedClass(e.target.value)}
-                        className="px-4 py-2 border-2 border-slate-300 rounded-lg font-bold text-slate-900"
-                    >
-                        <option value="9A">Turma 9A</option>
-                        <option value="9B">Turma 9B</option>
-                    </select>
                 </div>
             </div>
 
-            {/* Tabs de Navegação */}
-            <div className="bg-white rounded-xl border-2 border-slate-200 p-2 mb-8 flex gap-2 overflow-x-auto">
-                <button
-                    onClick={() => setActiveSection('planning')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
-                        activeSection === 'planning' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                >
-                    <FileText size={20} />
-                    Planejamento
-                </button>
-                <button
-                    onClick={() => setActiveSection('calendar')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
-                        activeSection === 'calendar' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                >
-                    <Calendar size={20} />
-                    Calendário
-                </button>
-                <button
-                    onClick={() => setActiveSection('attendance')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
-                        activeSection === 'attendance' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                >
-                    <CheckSquare size={20} />
-                    Chamada
-                </button>
-                <button
-                    onClick={() => setActiveSection('evaluation')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
-                        activeSection === 'evaluation' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                >
-                    <Award size={20} />
-                    Avaliação
-                </button>
-                <button
-                    onClick={() => setActiveSection('bncc')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
-                        activeSection === 'bncc' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                >
-                    <Target size={20} />
-                    BNCC
-                </button>
-                <button
-                    onClick={() => setActiveSection('reports')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
-                        activeSection === 'reports' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                >
-                    <ClipboardList size={20} />
-                    Relatórios
-                </button>
-                <button
-                    onClick={() => setActiveSection('activities')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
-                        activeSection === 'activities' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                >
-                    <CheckCircle size={20} />
-                    Atividades
-                </button>
-                <button
-                    onClick={() => setActiveSection('grades')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
-                        activeSection === 'grades' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                >
-                    <BookOpen size={20} />
-                    Notas
-                </button>
-                <button
-                    onClick={() => setActiveSection('rubrics')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
-                        activeSection === 'rubrics' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                >
-                    <BarChart size={20} />
-                    Rúbricas
-                </button>
-                <button
-                    onClick={() => setActiveSection('submissions')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold transition flex items-center justify-center gap-2 whitespace-nowrap ${
-                        activeSection === 'submissions' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                >
-                    <Upload size={20} />
-                    Entregas
-                </button>
-            </div>
+            {/* Layout Principal: Sidebar + Conteúdo + QuickInfo */}
+            <div className="flex gap-4 p-4 max-w-7xl mx-auto">
+                {/* Sidebar Esquerda - Navegação Vertical */}
+                <SidebarVertical activeSection={activeSection} setActiveSection={setActiveSection} />
 
-            {/* Conteúdo das Seções */}
-            <div className="bg-slate-50 rounded-xl p-6">
-                {activeSection === 'planning' && renderPlanning()}
-                {activeSection === 'calendar' && renderCalendar()}
-                {activeSection === 'attendance' && renderAttendance()}
-                {activeSection === 'evaluation' && renderEvaluation()}
-                {activeSection === 'reports' && <TeacherReportsEditavel />}
-                {activeSection === 'bncc' && renderBNCC()}
-                {activeSection === 'activities' && renderActivities()}
-                {activeSection === 'grades' && renderGrades()}
-                {activeSection === 'rubrics' && renderRubrics()}
-                {activeSection === 'submissions' && renderSubmissions()}
+                {/* Conteúdo Principal */}
+                <div className="flex-1 bg-white rounded-xl border-2 border-slate-200 p-6 max-h-[calc(100vh-200px)] overflow-y-auto shadow-sm">
+                    {activeSection === 'planning' && renderPlanning()}
+                    {activeSection === 'calendar' && renderCalendar()}
+                    {activeSection === 'attendance' && renderAttendance()}
+                    {activeSection === 'evaluation' && renderEvaluation()}
+                    {activeSection === 'reports' && <TeacherReportsEditavel />}
+                    {activeSection === 'bncc' && renderBNCC()}
+                    {activeSection === 'activities' && renderActivities()}
+                    {activeSection === 'grades' && renderGrades()}
+                    {activeSection === 'rubrics' && renderRubrics()}
+                    {activeSection === 'submissions' && renderSubmissions()}
+                </div>
+
+                {/* Sidebar Direita - Info Rápida */}
+                <QuickInfoSidebar stats={{
+                    activities: activities.length,
+                    evaluations: rubrics.length,
+                    students: 30,
+                    submissionRate: 75,
+                    classAverage: '8.2'
+                }} />
             </div>
         </div>
     );
