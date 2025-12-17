@@ -34,7 +34,8 @@ import {
 import TeacherRubricEditablePoints from "./TeacherRubricEditablePoints";
 import StudentGrades from "./StudentGrades";
 import InteractiveEvaluation from "./InteractiveEvaluation";
-import { SidebarVertical, QuickInfoSidebar } from "./TeacherSidebars";
+import { QuickInfoSidebar } from "./TeacherSidebars";
+import SidebarCollapseNew from "./SidebarCollapseNew";
 import { allBnccCodes, getYearOptions, getAISuggestions } from "../constants/bnccCodes";
 
 const TeacherMasterControl = ({ onNavigateTo }) => {
@@ -1692,8 +1693,8 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
 
             {/* Layout Principal: Sidebar + Conteúdo + QuickInfo */}
             <div className="flex gap-4 p-4 max-w-7xl mx-auto">
-                {/* Sidebar Esquerda - Navegação Vertical */}
-                <SidebarVertical activeSection={activeSection} setActiveSection={setActiveSection} />
+                {/* Sidebar Esquerda - Nova Sidebar Colapsável */}
+                <SidebarCollapseNew activeSection={activeSection} setActiveSection={setActiveSection} />
 
                 {/* Conteúdo Principal */}
                 <div className="flex-1 bg-white rounded-xl border-2 border-slate-200 p-6 max-h-[calc(100vh-200px)] overflow-y-auto shadow-sm">
