@@ -217,10 +217,14 @@ if (!distExists) {
   try {
     // Tentar construir automaticamente
     const { execSync } = await import('child_process');
-    console.log(`🏗️  Executando: npm run build:render`);
-    execSync('npm run build:render', { 
+    
+    console.log(`📋 Node.js: ${process.version}`);
+    console.log(`🏗️  Executando: npx vite build (timeout: 120s)`);
+    
+    execSync('npx vite build', { 
       cwd: __dirname,
-      stdio: 'inherit'
+      stdio: 'inherit',
+      timeout: 120000 // 2 minutos
     });
     
     // Verificar se foi criado
@@ -228,6 +232,9 @@ if (!distExists) {
       distPath = path.join(__dirname, 'dist');
       distExists = true;
       console.log(`✅ DIST CONSTRUÍDO COM SUCESSO: ${distPath}`);
+    } else {
+      console.error(`❌ Build completou mas dist/ não foi criado`);
+    }
     }
   } catch (e) {
     console.error(`❌ Erro ao construir dist:`, e.message);

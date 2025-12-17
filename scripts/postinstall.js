@@ -3,6 +3,12 @@
 /**
  * Post-install script para garantir que o build é feito
  * Este script roda após npm install e tenta construir o frontend
+ * 
+ * Estratégia:
+ * 1. Verificar Node.js version
+ * 2. Verificar se dist já existe
+ * 3. Se não existe, tenta construir com npx vite build
+ * 4. Se falhar, não quebra o npm install (exit 0)
  */
 
 import fs from 'fs';
@@ -12,46 +18,56 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const rootDir = path.join(__dirname, '..');
 
-console.log('🏗️ Post-install: Verificando se dist/ precisa ser construído...');
+console.log('🏗️ Post-install: Checando build do frontend...');
 
-// Verificar versão do Node.js
+// 1. Verificar versão do Node.js
 const nodeVersion = process.version;
-console.log(`   Node.js version: ${nodeVersion}`);
+console.log(`   Node.js: ${nodeVersion}`);
 
-const majorMinor = nodeVersion.split('.').slice(0, 2).join('.');
-if (majorMinor === 'v20' && parseInt(nodeVersion.split('.')[1]) < 19) {
-  console.error('❌ Node.js 20.19+ é obrigatório para Vite v5');
-  console.error(`❌ Você está usando ${nodeVersion}`);
-  process.exit(1);
+const [major, minor] = nodeVersion.slice(1).split('.').map(Number);
+if (major < 20 || (major === 20 && minor < 19)) {
+  console.warn('⚠️ Node.js 20.19+ recomendado para Vite v5');
+  console.warn(`⚠️ Você tem ${nodeVersion}`);
+  // Continuar mesmo assim, o servidor pode tentar depois
 }
 
-const distPath = path.join(__dirname, '..', 'dist');
+// 2. Verificar se dist/index.html já existe
+const distPath = path.join(rootDir, 'dist');
 const indexPath = path.join(distPath, 'index.html');
 
 if (fs.existsSync(indexPath)) {
-  console.log('✅ dist/index.html já existe, pulando build');
+  console.log('✅ dist/index.html já existe');
   process.exit(0);
 }
 
-console.log('⚠️ dist/index.html não encontrado, construindo...');
+console.log('⚠️ dist/index.html não encontrado');
 
-try {
-  console.log('🏗️ Executando: npm run build:render');
-  execSync('npm run build:render', { 
-    stdio: 'inherit',
-    cwd: path.join(__dirname, '..')
-  });
-  console.log('✅ Build concluído com sucesso!');
+// 3. Tentar construir
+if (process.env.NODE_ENV === 'production' || process.env.CI) {
+  console.log('🏗️ Ambiente: ' + (process.env.NODE_ENV || 'CI'));
+  console.log('🏗️ Tentando construir com: npx vite build');
   
-  // Verificar se realmente foi criado
-  if (!fs.existsSync(indexPath)) {
-    throw new Error('dist/index.html não foi criado após build');
+  try {
+    execSync('npx vite build', { 
+      stdio: 'inherit',
+      cwd: rootDir,
+      timeout: 120000 // 2 minutos timeout
+    });
+    
+    if (fs.existsSync(indexPath)) {
+      console.log('✅ Build concluído com sucesso!');
+      process.exit(0);
+    } else {
+      throw new Error('dist/index.html não foi criado');
+    }
+  } catch (error) {
+    console.error('❌ Erro ao construir:', error.message);
+    console.warn('⚠️ Build será tentado novamente ao iniciar servidor');
+    process.exit(0); // Não quebra npm install
   }
-  
+} else {
+  console.log('⚠️ NODE_ENV !== production, skip build');
   process.exit(0);
-} catch (error) {
-  console.error('❌ Erro ao construir dist:', error.message);
-  console.error('⚠️ Build será tentado novamente ao iniciar o servidor');
-  process.exit(0); // Não falhar o npm install
 }
