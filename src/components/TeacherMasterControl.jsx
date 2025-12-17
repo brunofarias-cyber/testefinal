@@ -1593,66 +1593,104 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
     );
 
     const renderDashboard = () => (
-        <div className="space-y-6">
-            {/* Welcome Simples */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
-                <h2 className="text-2xl font-bold">Bem-vindo! 👋</h2>
-                <p className="text-blue-100 text-sm mt-1">Turma {selectedClass}</p>
-            </div>
-
-            {/* Planejamento Básico - Aula de Hoje */}
-            <div className="bg-white rounded-lg border-2 border-slate-200 p-6">
-                <h3 className="text-xl font-bold text-slate-900 mb-4">📚 Aula de Hoje</h3>
-                <div className="space-y-3">
-                    {lessons.filter(l => l.class === selectedClass).slice(0, 2).map(lesson => (
-                        <div key={lesson.id} className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-600">
-                            <p className="font-bold text-slate-900">{lesson.title}</p>
-                            <p className="text-sm text-slate-600 mt-1">⏱️ {lesson.duration}</p>
-                            <div className="mt-2 flex gap-2 flex-wrap">
-                                {lesson.objectives.slice(0, 2).map((obj, i) => (
-                                    <span key={i} className="text-xs bg-blue-200 text-blue-900 px-2 py-1 rounded">
-                                        {obj.substring(0, 20)}...
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                    <button 
-                        onClick={() => setActiveSection('planning')}
-                        className="w-full mt-2 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
-                    >
-                        Ver Planejamento Completo →
-                    </button>
+        <div className="space-y-4">
+            {/* Welcome Card - Minimalista */}
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-5 text-white shadow-lg">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-xl font-extrabold">Bem-vindo! 👋</h2>
+                        <p className="text-indigo-100 text-xs mt-0.5">Turma {selectedClass}</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center text-2xl">
+                        ⚡
+                    </div>
                 </div>
             </div>
 
-            {/* Chamada Rápida */}
-            <div className="bg-white rounded-lg border-2 border-slate-200 p-6">
-                <h3 className="text-xl font-bold text-slate-900 mb-4">✅ Fazer Chamada</h3>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <p className="text-3xl font-bold text-green-600">{(attendanceData[selectedClass] || []).filter(s => s.status === 'present').length}</p>
-                        <p className="text-sm text-slate-600">presentes</p>
+            {/* Grid de 3 Ações Rápidas */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {/* Card 1: Planejamento */}
+                <div className="bg-white rounded-lg border-2 border-blue-200 p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between mb-3">
+                        <div>
+                            <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Planejamento</p>
+                            <p className="text-2xl font-extrabold text-slate-900 mt-1">{lessons.filter(l => l.class === selectedClass).length}</p>
+                            <p className="text-xs text-slate-600 mt-0.5">Aulas planejadas</p>
+                        </div>
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <FileText size={18} className="text-blue-600" />
+                        </div>
+                    </div>
+                    <button 
+                        onClick={() => setActiveSection('planning')}
+                        className="w-full mt-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-sm transition-colors"
+                    >
+                        Ver Aulas
+                    </button>
+                </div>
+
+                {/* Card 2: Chamada */}
+                <div className="bg-white rounded-lg border-2 border-green-200 p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between mb-3">
+                        <div>
+                            <p className="text-xs font-bold text-green-600 uppercase tracking-wide">Chamada</p>
+                            <p className="text-2xl font-extrabold text-green-600 mt-1">{(attendanceData[selectedClass] || []).filter(s => s.status === 'present').length}</p>
+                            <p className="text-xs text-slate-600 mt-0.5">Presentes hoje</p>
+                        </div>
+                        <div className="p-2 bg-green-100 rounded-lg">
+                            <CheckSquare size={18} className="text-green-600" />
+                        </div>
                     </div>
                     <button 
                         onClick={() => setActiveSection('attendance')}
-                        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
+                        className="w-full mt-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-sm transition-colors"
                     >
-                        Abrir Chamada
+                        Fazer Chamada
+                    </button>
+                </div>
+
+                {/* Card 3: Avaliação */}
+                <div className="bg-white rounded-lg border-2 border-purple-200 p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between mb-3">
+                        <div>
+                            <p className="text-xs font-bold text-purple-600 uppercase tracking-wide">Avaliação</p>
+                            <p className="text-2xl font-extrabold text-slate-900 mt-1">{rubrics.length}</p>
+                            <p className="text-xs text-slate-600 mt-0.5">Rúbricas ativas</p>
+                        </div>
+                        <div className="p-2 bg-purple-100 rounded-lg">
+                            <Star size={18} className="text-purple-600" />
+                        </div>
+                    </div>
+                    <button 
+                        onClick={() => setActiveSection('evaluation')}
+                        className="w-full mt-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold text-sm transition-colors"
+                    >
+                        Avaliar
                     </button>
                 </div>
             </div>
 
-            {/* Avaliação Rápida */}
-            <div className="bg-white rounded-lg border-2 border-slate-200 p-6">
-                <h3 className="text-xl font-bold text-slate-900 mb-4">⭐ Avaliar Alunos</h3>
-                <p className="text-sm text-slate-600 mb-4">Avalie seus alunos usando rúbricas</p>
-                <button 
-                    onClick={() => setActiveSection('evaluation')}
-                    className="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold"
-                >
-                    Ir para Avaliação
-                </button>
+            {/* Quick Info - Mínimo */}
+            <div className="bg-slate-50 rounded-lg border border-slate-200 p-4">
+                <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Status Rápido</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <div className="text-center">
+                        <p className="text-lg font-bold text-slate-900">{activities.length}</p>
+                        <p className="text-xs text-slate-600">Atividades</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-lg font-bold text-slate-900">30</p>
+                        <p className="text-xs text-slate-600">Alunos</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-lg font-bold text-slate-900">5</p>
+                        <p className="text-xs text-slate-600">Avaliações</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-lg font-bold text-slate-900">92%</p>
+                        <p className="text-xs text-slate-600">Taxa Entrega</p>
+                    </div>
+                </div>
             </div>
         </div>
     );

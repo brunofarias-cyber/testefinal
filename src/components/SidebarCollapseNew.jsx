@@ -102,15 +102,17 @@ export default function SidebarCollapseNew({ activeSection, setActiveSection }) 
     const content = (
       <button
         onClick={() => setActiveSection(id)}
-        className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-semibold transition-all duration-300 ease-out ${
-          isExpanded ? "justify-start" : "justify-center"
+        className={`flex items-center rounded-lg text-sm font-semibold transition-all duration-200 ease-out ${
+          isExpanded
+            ? "w-full justify-start gap-3 px-3 py-2.5"
+            : "w-10 h-10 justify-center"
         } ${btnClass}`}
         title={isExpanded ? undefined : label}
       >
-        <Icon size={20} strokeWidth={2} />
-        {isExpanded && <span className="truncate">{label}</span>}
+        <Icon size={isExpanded ? 18 : 16} strokeWidth={2} />
+        {isExpanded && <span className="truncate text-xs">{label}</span>}
         {active && isExpanded && (
-          <span className={`ml-auto w-2.5 h-2.5 rounded-full ${color.dot} animate-pulse`} />
+          <span className={`ml-auto w-2 h-2 rounded-full ${color.dot} animate-pulse`} />
         )}
       </button>
     );
@@ -122,43 +124,47 @@ export default function SidebarCollapseNew({ activeSection, setActiveSection }) 
   return (
     <aside
       className={`h-fit max-h-[calc(100vh-180px)] overflow-y-auto transition-all duration-300 ease-out ${
-        isExpanded ? "w-72" : "w-24"
+        isExpanded ? "w-64" : "w-14"
       } bg-white border-2 border-slate-200 rounded-2xl shadow-lg sticky top-20`}
     >
       {/* Header com Botão Toggle */}
-      <div className="flex items-center justify-between p-4 border-b border-slate-100">
+      <div
+        className={`flex items-center justify-between transition-all duration-300 ease-out ${
+          isExpanded ? "p-3" : "p-2"
+        } border-b border-slate-100`}
+      >
         {isExpanded && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Navegação</span>
-          </div>
+          <span className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Menu</span>
         )}
         <button
-          className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all duration-200 ml-auto"
+          className={`p-1.5 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all duration-200 ${
+            isExpanded ? "ml-auto" : "mx-auto"
+          }`}
           onClick={() => setIsExpanded((v) => !v)}
           aria-label="Alternar sidebar"
           title={isExpanded ? "Recolher" : "Expandir"}
         >
           {isExpanded ? (
-            <ChevronLeft size={20} strokeWidth={2} />
+            <ChevronLeft size={16} strokeWidth={2.5} />
           ) : (
-            <ChevronRight size={20} strokeWidth={2} />
+            <ChevronRight size={16} strokeWidth={2.5} />
           )}
         </button>
       </div>
 
       {/* Conteúdo */}
-      <div className={`space-y-2 p-4 ${isExpanded ? "" : "flex flex-col items-center"}`}>
+      <div className={`${isExpanded ? "p-2 space-y-2" : "p-1.5 flex flex-col items-center gap-1"}`}>
         {sections.map((sec, idx) => (
-          <div key={sec.id} className={idx < sections.length - 1 ? "pb-3 mb-3 border-b border-slate-100" : ""}>
+          <div key={sec.id} className={isExpanded && idx < sections.length - 1 ? "pb-1.5 mb-1.5 border-b border-slate-100" : ""}>
             {isExpanded && (
-              <div className="flex items-center gap-2 px-2 py-2 mb-2">
-                <span className={`w-2.5 h-2.5 rounded-full ${sec.color.dot}`} />
-                <span className={`text-[11px] font-extrabold uppercase tracking-widest ${sec.color.title}`}>
+              <div className="flex items-center gap-1.5 px-2 py-1 mb-1">
+                <span className={`w-1.5 h-1.5 rounded-full ${sec.color.dot}`} />
+                <span className={`text-[9px] font-extrabold uppercase tracking-widest ${sec.color.title}`}>
                   {sec.title}
                 </span>
               </div>
             )}
-            <div className={`space-y-1 ${isExpanded ? "" : "flex flex-col items-center gap-2"}`}>
+            <div className={isExpanded ? "space-y-0.5" : "flex flex-col items-center gap-0.5"}>
               {sec.items.map((it) => (
                 <ItemButton
                   key={it.id}
