@@ -1700,63 +1700,69 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-            {/* Header Fixo */}
-            <div className="sticky top-0 z-40 bg-white border-b-2 border-slate-200 shadow-sm">
-                <div className="max-w-full px-6 py-4">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white text-xl">
-                                ⚡
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-extrabold text-slate-900">Central do Professor</h1>
-                                <p className="text-xs text-slate-600">Gerencie tudo em um só lugar</p>
-                            </div>
+        <div className="min-h-screen bg-slate-50">
+            {/* Header Ultra-Compacto com Gestão Horizontal */}
+            <div className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+                <div className="flex items-center justify-between px-4 py-3 gap-4">
+                    {/* Título + Turma */}
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                            ⚡
                         </div>
-                        
-                        <div className="flex items-center gap-3">
-                            <Users size={20} className="text-slate-600" />
-                            <select
-                                value={selectedClass}
-                                onChange={(e) => setSelectedClass(e.target.value)}
-                                className="px-3 py-2 border-2 border-slate-300 rounded-lg font-bold text-slate-900 text-sm"
-                            >
-                                <option value="9A">Turma 9A</option>
-                                <option value="9B">Turma 9B</option>
-                            </select>
+                        <div className="min-w-0">
+                            <h1 className="text-base font-extrabold text-slate-900 truncate">Central do Professor</h1>
+                            <p className="text-xs text-slate-500">Turma {selectedClass}</p>
                         </div>
                     </div>
+
+                    {/* Gestão Horizontal - Colapsável */}
+                    <div className="hidden sm:flex items-center gap-2 flex-shrink-0 border-l border-slate-200 pl-4">
+                        <div className="flex items-center gap-1 text-xs">
+                            <span className="font-bold text-indigo-600">{activities.length}</span>
+                            <span className="text-slate-600">Atividades</span>
+                        </div>
+                        <div className="w-px h-4 bg-slate-200"></div>
+                        <div className="flex items-center gap-1 text-xs">
+                            <span className="font-bold text-amber-600">{rubrics.length}</span>
+                            <span className="text-slate-600">Avaliações</span>
+                        </div>
+                        <div className="w-px h-4 bg-slate-200"></div>
+                        <div className="flex items-center gap-1 text-xs">
+                            <span className="font-bold text-green-600">92%</span>
+                            <span className="text-slate-600">Entrega</span>
+                        </div>
+                    </div>
+
+                    {/* Seletor Turma */}
+                    <select
+                        value={selectedClass}
+                        onChange={(e) => setSelectedClass(e.target.value)}
+                        className="px-2 py-1.5 border border-slate-300 rounded-lg font-semibold text-slate-900 text-xs flex-shrink-0"
+                    >
+                        <option value="9A">Turma 9A</option>
+                        <option value="9B">Turma 9B</option>
+                    </select>
                 </div>
             </div>
 
-            {/* Seção de Gestão Colapsável */}
-            <div className="px-4 lg:px-6 xl:px-8 py-4">
-                <CollapsibleGestaoSection stats={{
-                    activities: activities.length,
-                    evaluations: rubrics.length,
-                    students: 30,
-                    submissionRate: 75,
-                    classAverage: '8.2'
-                }} />
-            </div>
-
             {/* Layout Principal: Sidebar + Conteúdo + QuickInfo */}
-            <div className="flex gap-4 p-4 max-w-7xl mx-auto">
+            <div className="flex gap-3 p-3 h-[calc(100vh-70px)] overflow-hidden">
                 {/* Sidebar Esquerda - Nova Sidebar Colapsável */}
                 <SidebarCollapseNew activeSection={activeSection} setActiveSection={setActiveSection} />
 
-                {/* Conteúdo Principal */}
-                <div className="flex-1 bg-white rounded-xl border-2 border-slate-200 p-6 max-h-[calc(100vh-200px)] overflow-y-auto shadow-sm">
-                    {activeSection === 'dashboard' && renderDashboard()}
-                    {activeSection === 'planning' && renderPlanning()}
-                    {activeSection === 'calendar' && renderCalendar()}
-                    {activeSection === 'attendance' && renderAttendance()}
-                    {activeSection === 'evaluation' && renderEvaluation()}
-                    {activeSection === 'bncc' && renderBNCC()}
-                    {activeSection === 'activities' && renderActivities()}
-                    {activeSection === 'grades' && renderGrades()}
-                    {activeSection === 'submissions' && renderSubmissions()}
+                {/* Conteúdo Principal - Maximizado */}
+                <div className="flex-1 bg-white rounded-lg border border-slate-200 overflow-y-auto shadow-sm">
+                    <div className="p-5">
+                        {activeSection === 'dashboard' && renderDashboard()}
+                        {activeSection === 'planning' && renderPlanning()}
+                        {activeSection === 'calendar' && renderCalendar()}
+                        {activeSection === 'attendance' && renderAttendance()}
+                        {activeSection === 'evaluation' && renderEvaluation()}
+                        {activeSection === 'bncc' && renderBNCC()}
+                        {activeSection === 'activities' && renderActivities()}
+                        {activeSection === 'grades' && renderGrades()}
+                        {activeSection === 'submissions' && renderSubmissions()}
+                    </div>
                 </div>
 
                 {/* Sidebar Direita - Info Rápida */}

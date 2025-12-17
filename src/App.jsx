@@ -335,10 +335,22 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                         {role === 'teacher' && (
                             <>
                                 <NavItem
-                                    icon={<Zap size={20} />}
-                                    label="⚡ Central do Professor"
-                                    active={activeTab === 'master-control'}
-                                    onClick={() => setActiveTab('master-control')}
+                                    icon={<FileText size={20} />}
+                                    label="Planejamento"
+                                    active={activeTab === 'planning'}
+                                    onClick={() => setActiveTab('planning')}
+                                />
+                                <NavItem
+                                    icon={<CheckSquare size={20} />}
+                                    label="Gestão"
+                                    active={activeTab === 'evaluation'}
+                                    onClick={() => setActiveTab('evaluation')}
+                                />
+                                <NavItem
+                                    icon={<BookOpen size={20} />}
+                                    label="Notas & BNCC"
+                                    active={activeTab === 'bncc'}
+                                    onClick={() => setActiveTab('bncc')}
                                 />
                                 <NavItem
                                     icon={<AlertCircle size={20} />}
@@ -2403,7 +2415,6 @@ function DashboardApp() {
         }
 
         if (role === 'teacher') {
-            if (activeTab === 'master-control') return <TeacherMasterControl onNavigateTo={setActiveTab} />;
             if (activeTab === 'teacher-intelligence') return <TeacherIntelligenceCenter onNavigateTo={setActiveTab} />;
             if (activeTab === 'dashboard') return <ProfessorDashboard />;
             if (activeTab === 'classes' || activeTab === 'manage-classes') return <TeacherClassManager />;
@@ -2414,6 +2425,7 @@ function DashboardApp() {
             if (activeTab === 'messages') return <MessagingSystemV2 userRole="teacher" currentUserId={currentUser?.id || 1} currentUserName={currentUser?.name || 'Professor'} />;
             if (activeTab === 'reports') return <TeacherReportsEditavel />;
             if (activeTab === 'rubrics') return <TeacherRubricEditablePoints />;
+            if (activeTab === 'evaluation') return <TeacherRubricEditablePoints />;
             if (activeTab === 'bncc') return <TeacherBnccPage projectId={1} classId={1} />;
             if (activeTab === 'activities') return <ActivityBank />;
             if (activeTab === 'teams') return <TeamManagement />;
