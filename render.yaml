@@ -8,14 +8,7 @@ services:
     region: oregon
     plan: free
     branch: main
-    buildCommand: |
-      echo "📦 Installing dependencies..." &&
-      npm ci --legacy-peer-deps &&
-      echo "🏗️ Building frontend..." &&
-      npm run build:render &&
-      echo "✅ Frontend build complete" &&
-      ls -lh dist/ &&
-      echo "🎉 Build successful!"
+    buildCommand: npm ci --legacy-peer-deps && npm run build:render && echo "Build OK" && ls -lh dist/index.html
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
