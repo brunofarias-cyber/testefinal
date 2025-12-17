@@ -19,7 +19,7 @@
     "dev:server-only": "npm run server",
     "build": "vite build",
     "build:render": "npx vite build",
-    "postinstall": "node scripts/postinstall.js",
+    "postinstall": "echo 'Post-install skipped - build happens on server startup'",
     "heroku-postbuild": "npm run build:render",
     "preview": "vite preview",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
