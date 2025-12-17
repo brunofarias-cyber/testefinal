@@ -36,6 +36,7 @@ import StudentGrades from "./StudentGrades";
 import InteractiveEvaluation from "./InteractiveEvaluation";
 import { QuickInfoSidebar } from "./TeacherSidebars";
 import SidebarCollapseNew from "./SidebarCollapseNew";
+import CollapsibleGestaoSection from "./CollapsibleGestaoSection";
 import { allBnccCodes, getYearOptions, getAISuggestions } from "../constants/bnccCodes";
 
 const TeacherMasterControl = ({ onNavigateTo }) => {
@@ -1689,6 +1690,17 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Seção de Gestão Colapsável */}
+            <div className="px-4 lg:px-6 xl:px-8 py-4">
+                <CollapsibleGestaoSection stats={{
+                    activities: activities.length,
+                    evaluations: rubrics.length,
+                    students: 30,
+                    submissionRate: 75,
+                    classAverage: '8.2'
+                }} />
             </div>
 
             {/* Layout Principal: Sidebar + Conteúdo + QuickInfo */}
