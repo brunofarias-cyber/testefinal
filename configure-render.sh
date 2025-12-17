@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# ⚡ Script para configurar DATABASE_URL no Render via CLI
+# Uso: bash configure-render.sh
+
+echo "🚀 Configurando DATABASE_URL no Render..."
+echo ""
+echo "Sua Connection String do Neon:"
+echo "postgresql://neondb_owner:npg_e9S1MZIvFyDh@ep-frosty-surf-ac5dikxg-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+echo ""
+echo "📋 Passos no Render Dashboard:"
+echo ""
+echo "1️⃣  Ir para: https://dashboard.render.com"
+echo "2️⃣  Clicar no serviço: 'nexo-fullstack'"
+echo "3️⃣  Clique em: 'Environment' (no menu superior)"
+echo "4️⃣  Clique em: 'Add Environment Variable' (botão azul)"
+echo ""
+echo "5️⃣  Preencha:"
+echo "   ✓ Key: DATABASE_URL"
+echo "   ✓ Value: postgresql://neondb_owner:npg_e9S1MZIvFyDh@ep-frosty-surf-ac5dikxg-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+echo ""
+echo "6️⃣  Clique: 'Save'"
+echo ""
+echo "7️⃣  Agora clique em 'Manual Deploy' (ou 'Deployments' > 'Create Deploy')"
+echo "8️⃣  Selecione branch 'main' e clique 'Create Deploy'"
+echo ""
+echo "✅ Deploy será iniciado e deve conectar ao Neon!"
+echo ""
+echo "🔍 Para verificar logs:"
+echo "   - Clique em 'Logs' no Render Dashboard"
+echo "   - Procure por: '✅ Banco de dados conectado com sucesso!'"
+echo ""
