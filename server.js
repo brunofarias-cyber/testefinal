@@ -217,7 +217,7 @@ if (!distExists) {
     const files = fs.readdirSync(__dirname);
     console.log(`   Arquivos: ${files.join(', ')}`);
     
-    // Procurar recursivamente por pasta dist
+    // Procurar recursivamente por pasta dist (ignorando node_modules)
     const findDist = (dir, depth = 0) => {
       if (depth > 3) return null;
       try {
@@ -230,13 +230,17 @@ if (!distExists) {
             }
           }
         }
-        // Procurar em subdiretórios
+        // Procurar em subdiretórios (ignorar node_modules e .git)
         for (const file of files) {
-          if (file.startsWith('.')) continue;
+          if (file.startsWith('.') || file === 'node_modules') continue;
           const fullPath = path.join(dir, file);
-          if (fs.statSync(fullPath).isDirectory()) {
-            const result = findDist(fullPath, depth + 1);
-            if (result) return result;
+          try {
+            if (fs.statSync(fullPath).isDirectory()) {
+              const result = findDist(fullPath, depth + 1);
+              if (result) return result;
+            }
+          } catch (e) {
+            // Ignore permission errors
           }
         }
       } catch (e) {
