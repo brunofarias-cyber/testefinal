@@ -5,10 +5,8 @@ import {
   CheckSquare,
   Star,
   BookOpen,
-  BarChart2,
   Edit2,
   Target,
-  Award,
   Send
 } from 'lucide-react';
 
@@ -19,10 +17,8 @@ export const SidebarVertical = ({ activeSection, setActiveSection }) => {
     { id: 'attendance', icon: CheckSquare, label: 'Presença', title: 'Chamada' },
     { id: 'evaluation', icon: Star, label: 'Avaliação', title: 'Avaliação' },
     { id: 'bncc', icon: BookOpen, label: 'BNCC', title: 'BNCC' },
-    { id: 'reports', icon: BarChart2, label: 'Relatórios', title: 'Relatórios' },
     { id: 'activities', icon: Edit2, label: 'Atividades', title: 'Atividades' },
     { id: 'grades', icon: Target, label: 'Notas', title: 'Notas' },
-    { id: 'rubrics', icon: Award, label: 'Rubricas', title: 'Rubricas' },
     { id: 'submissions', icon: Send, label: 'Submissões', title: 'Submissões' }
   ];
 

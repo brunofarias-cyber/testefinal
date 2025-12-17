@@ -34,12 +34,12 @@ import {
 import TeacherRubricEditablePoints from "./TeacherRubricEditablePoints";
 import StudentGrades from "./StudentGrades";
 import InteractiveEvaluation from "./InteractiveEvaluation";
-import TeacherReportsEditavel from "./TeacherReportsEditavel";
 import { SidebarVertical, QuickInfoSidebar } from "./TeacherSidebars";
 import { allBnccCodes, getYearOptions, getAISuggestions } from "../constants/bnccCodes";
 
 const TeacherMasterControl = ({ onNavigateTo }) => {
-    const [activeSection, setActiveSection] = useState('planning'); // planning, calendar, attendance, bncc, rubrics, evaluation, activities, grades, submissions
+    const [activeSection, setActiveSection] = useState('planning'); // planning, calendar, attendance, evaluation, activities, grades, submissions, bncc
+    const [evaluationTab, setEvaluationTab] = useState('individual'); // individual, group, rubrics
     const [rubricTab, setRubricTab] = useState('rubric1'); // rubric1, rubric2
     const [selectedClass, setSelectedClass] = useState('9A');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -1202,6 +1202,46 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
                 <p className="text-slate-600 text-sm">Avalie alunos individualmente ou por grupo usando as mesmas rubricas</p>
             </div>
 
+            {/* Tabs de Avaliação: Individual, Grupo, Rubricas */}
+            <div className="flex gap-2 border-b-2 border-slate-200 mb-6 bg-white rounded-t-xl p-4">
+                <button 
+                    onClick={() => setEvaluationTab('individual')}
+                    className={`px-6 py-3 font-bold flex items-center gap-2 transition-all rounded-t-lg ${
+                        evaluationTab === 'individual' 
+                            ? 'bg-blue-100 text-blue-600 border-b-4 border-blue-600' 
+                            : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                >
+                    <Users size={20} />
+                    Individual
+                </button>
+                <button 
+                    onClick={() => setEvaluationTab('group')}
+                    className={`px-6 py-3 font-bold flex items-center gap-2 transition-all rounded-t-lg ${
+                        evaluationTab === 'group' 
+                            ? 'bg-green-100 text-green-600 border-b-4 border-green-600' 
+                            : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                >
+                    <Users size={20} />
+                    Por Grupo
+                </button>
+                <button 
+                    onClick={() => setEvaluationTab('rubrics')}
+                    className={`px-6 py-3 font-bold flex items-center gap-2 transition-all rounded-t-lg ${
+                        evaluationTab === 'rubrics' 
+                            ? 'bg-purple-100 text-purple-600 border-b-4 border-purple-600' 
+                            : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                >
+                    <Award size={20} />
+                    Rúbricas
+                </button>
+            </div>
+
+            {/* Conteúdo condicional baseado na tab */}
+            {evaluationTab !== 'rubrics' && (
+            <div>
             {/* Seletor de Tipo de Avaliação */}
             <div className="bg-white rounded-xl border-2 border-slate-200 p-4 mb-6">
                 <div className="flex gap-3">
@@ -1371,6 +1411,53 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
                     </div>
                 </div>
             </div>
+            )}
+
+            {/* Aba de Rúbricas */}
+            {evaluationTab === 'rubrics' && (
+            <div className="space-y-4">
+                {/* Sub-abas para Rubricas */}
+                <div className="flex gap-2 border-b-2 border-slate-200 mb-4 bg-white rounded-xl p-4">
+                    <button 
+                        onClick={() => setRubricTab('rubric1')}
+                        className={`px-6 py-3 font-bold flex items-center gap-2 transition-all ${
+                            rubricTab === 'rubric1' 
+                                ? 'text-blue-600 border-b-4 border-blue-600' 
+                                : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                    >
+                        <Award size={20} />
+                        Rubrica de Criatividade
+                    </button>
+                    <button 
+                        onClick={() => setRubricTab('rubric2')}
+                        className={`px-6 py-3 font-bold flex items-center gap-2 transition-all ${
+                            rubricTab === 'rubric2' 
+                                ? 'text-blue-600 border-b-4 border-blue-600' 
+                                : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                    >
+                        <Award size={20} />
+                        Rubrica de Execução
+                    </button>
+                </div>
+                
+                {/* Conteúdo da rubrica selecionada */}
+                <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
+                    {rubricTab === 'rubric1' && (
+                        <div className="bg-white p-4 rounded-lg border-2 border-slate-200">
+                            <TeacherRubricEditablePoints rubrics={[rubrics[0]]} setRubrics={setRubrics} />
+                        </div>
+                    )}
+                    {rubricTab === 'rubric2' && (
+                        <div className="bg-white p-4 rounded-lg border-2 border-slate-200">
+                            <TeacherRubricEditablePoints rubrics={[rubrics[1]]} setRubrics={setRubrics} />
+                        </div>
+                    )}
+                </div>
+            </div>
+            )}
+        </div>
     );
 
     const renderActivities = () => (
@@ -1490,50 +1577,6 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
         <StudentGrades grades={grades} setGrades={setGrades} />
     );
 
-    const renderRubrics = () => (
-        <div className="space-y-4">
-            {/* Sub-abas para Rubricas */}
-            <div className="flex gap-2 border-b-2 border-slate-200 mb-4">
-                <button 
-                    onClick={() => setRubricTab('rubric1')}
-                    className={`px-6 py-3 font-bold flex items-center gap-2 transition-all ${
-                        rubricTab === 'rubric1' 
-                            ? 'text-blue-600 border-b-4 border-blue-600' 
-                            : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                >
-                    <Award size={20} />
-                    Rubrica de Criatividade
-                </button>
-                <button 
-                    onClick={() => setRubricTab('rubric2')}
-                    className={`px-6 py-3 font-bold flex items-center gap-2 transition-all ${
-                        rubricTab === 'rubric2' 
-                            ? 'text-blue-600 border-b-4 border-blue-600' 
-                            : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                >
-                    <Award size={20} />
-                    Rubrica de Execução
-                </button>
-            </div>
-            
-            {/* Conteúdo da rubrica selecionada */}
-            <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
-                {rubricTab === 'rubric1' && (
-                    <div className="bg-white p-4 rounded-lg border-2 border-slate-200">
-                        <TeacherRubricEditablePoints rubrics={[rubrics[0]]} setRubrics={setRubrics} />
-                    </div>
-                )}
-                {rubricTab === 'rubric2' && (
-                    <div className="bg-white p-4 rounded-lg border-2 border-slate-200">
-                        <TeacherRubricEditablePoints rubrics={[rubrics[1]]} setRubrics={setRubrics} />
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-
     const renderSubmissions = () => (
         <InteractiveEvaluation submissions={submissions} setSubmissions={setSubmissions} />
     );
@@ -1580,11 +1623,9 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
                     {activeSection === 'calendar' && renderCalendar()}
                     {activeSection === 'attendance' && renderAttendance()}
                     {activeSection === 'evaluation' && renderEvaluation()}
-                    {activeSection === 'reports' && <TeacherReportsEditavel />}
                     {activeSection === 'bncc' && renderBNCC()}
                     {activeSection === 'activities' && renderActivities()}
                     {activeSection === 'grades' && renderGrades()}
-                    {activeSection === 'rubrics' && renderRubrics()}
                     {activeSection === 'submissions' && renderSubmissions()}
                 </div>
 
