@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node server.js",
     "start:backend": "node server.js",
+    "prebuild": "echo 'Pre-build check'",
     "start:frontend": "vite",
     "server": "node server.js",
     "server:dev": "nodemon server.js",

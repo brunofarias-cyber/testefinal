@@ -8,7 +8,7 @@ services:
     region: oregon
     plan: free
     branch: main
-    buildCommand: npm ci --legacy-peer-deps && npm run build:render && echo "Build OK" && ls -lh dist/index.html
+    buildCommand: npm install --legacy-peer-deps --production=false && npm run build:render && ls -lh dist/index.html
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
