@@ -235,7 +235,6 @@ if (!distExists) {
     } else {
       console.error(`❌ Build completou mas dist/ não foi criado`);
     }
-    }
   } catch (e) {
     console.error(`❌ Erro ao construir dist:`, e.message);
   }
