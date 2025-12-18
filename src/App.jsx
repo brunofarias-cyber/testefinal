@@ -60,7 +60,6 @@ import {
 } from "lucide-react";
 import TeacherPlanning from "./components/TeacherPlanning";
 import ProjectWizardBNCC from "./components/ProjectWizardBNCC";
-import ProjectWizardAI from "./components/ProjectWizardAI";
 import MessagingSystem from "./components/MessagingSystem";
 import MessagingSystemV2 from "./components/MessagingSystemV2";
 import TeacherPerformance from "./components/TeacherPerformance";
@@ -2421,7 +2420,7 @@ function DashboardApp() {
             if (activeTab === 'classes' || activeTab === 'manage-classes') return <TeacherClassManager />;
             if (activeTab === 'attendance') return <TeacherAttendance />;
             if (activeTab === 'calendar') return <TeacherCalendar events={calendarEvents} onAddEvent={handleAddCalendarEvent} />;
-            if (activeTab === 'planning') return <ProjectWizardAI />;
+            if (activeTab === 'planning') return <ProjectWizardBNCC />;
             if (activeTab === 'performance') return <TeacherPerformance />;
             if (activeTab === 'messages') return <MessagingSystemV2 userRole="teacher" currentUserId={currentUser?.id || 1} currentUserName={currentUser?.name || 'Professor'} />;
             if (activeTab === 'reports') return <TeacherReportsEditavel />;
