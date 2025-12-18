@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { Plus, X, Check, ChevronLeft, ArrowRight, FileText } from 'lucide-react';
-import {
-  BNCC_AREAS,
-  BNCC_HABILIDADES,
-  BNCC_COMPETENCIAS_GERAIS
-} from '../../backend/data/bncc-data-complete';
+import HabilidadesSelectorBNCC from './HabilidadesSelectorBNCC';
+import { BNCC_COMPLETO, AREAS_DISPONIVEIS } from '../constants/bnccCompleto';
 
 /**
  * ═══════════════════════════════════════════════════════════════════════
@@ -41,25 +38,22 @@ const ProjectWizardBNCC = () => {
   // DADOS
   // ────────────────────────────────────────────────────────────────
 
-  const areas = BNCC_AREAS;
-  const todasHabilidades = BNCC_HABILIDADES;
-  const habilidadesDaArea = todasHabilidades.filter(h => h.area_id === selectedArea);
-  const competenciasGerais = BNCC_COMPETENCIAS_GERAIS;
-
-  // Habilidades selecionadas com detalhes
-  const habilidadesSelecionadasDetalhes = selectedHabilidades
-    .map(id => todasHabilidades.find(h => h.id === id))
-    .filter(Boolean);
+  const areas = [
+    { id: 'Ciências', nome: 'Ciências Naturais', icone: '🔬', descricao: 'Estude fenômenos naturais e físicos' },
+    { id: 'Ciências Sociais', nome: 'Ciências Sociais', icone: '🌍', descricao: 'Explore história, geografia e sociedade' },
+    { id: 'Língua Portuguesa', nome: 'Língua Portuguesa', icone: '📚', descricao: 'Trabalhe linguagem e leitura' },
+    { id: 'Matemática', nome: 'Matemática', icone: '🔢', descricao: 'Desenvolva raciocínio matemático' }
+  ];
 
   // ────────────────────────────────────────────────────────────────
   // HANDLERS
   // ────────────────────────────────────────────────────────────────
 
-  const toggleHabilidade = (id) => {
+  const toggleHabilidade = (code) => {
     setSelectedHabilidades(prev =>
-      prev.includes(id)
-        ? prev.filter(h => h !== id)
-        : [...prev, id]
+      prev.includes(code)
+        ? prev.filter(h => h !== code)
+        : [...prev, code]
     );
   };
 
@@ -322,34 +316,12 @@ const ProjectWizardBNCC = () => {
                   </span>
                 </p>
 
-                {habilidadesDaArea.length > 0 ? (
-                  <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
-                    {habilidadesDaArea.map(hab => (
-                      <label
-                        key={hab.id}
-                        className="flex items-start gap-3 p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedHabilidades.includes(hab.id)}
-                          onChange={() => toggleHabilidade(hab.id)}
-                          className="w-5 h-5 mt-1 rounded border-slate-300 text-indigo-600 cursor-pointer"
-                        />
-                        <div className="flex-1">
-                          <div className="font-bold text-slate-800">
-                            {hab.codigo} - {hab.titulo}
-                          </div>
-                          <p className="text-sm text-slate-600 mt-1">{hab.descricao}</p>
-                          <p className="text-xs text-slate-400 mt-2">{hab.ano_escolar}</p>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-4 bg-slate-100 rounded-lg text-center text-slate-600">
-                    Nenhuma habilidade encontrada para esta área
-                  </div>
-                )}
+                {/* Novo Componente: Seletor Organizado por Anos */}
+                <HabilidadesSelectorBNCC
+                  areaAtiva={selectedArea}
+                  selectedHabilidades={selectedHabilidades}
+                  onToggleHabilidade={toggleHabilidade}
+                />
 
                 {selectedHabilidades.length > 0 && (
                   <div className="mt-6 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
@@ -359,11 +331,11 @@ const ProjectWizardBNCC = () => {
                       {selectedHabilidades.length !== 1 ? 's' : ''}
                     </p>
 
-                    <div className="mt-3 space-y-1 text-xs text-indigo-600">
-                      {habilidadesSelecionadasDetalhes.map(hab => (
-                        <div key={hab.id} className="flex items-start gap-2">
+                    <div className="mt-3 space-y-1 text-xs text-indigo-600 max-h-32 overflow-y-auto">
+                      {selectedHabilidades.map(code => (
+                        <div key={code} className="flex items-start gap-2">
                           <span>▪</span>
-                          <span>{hab.codigo}</span>
+                          <span>{code}</span>
                         </div>
                       ))}
                     </div>
