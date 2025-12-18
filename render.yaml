@@ -1,4 +1,5 @@
 # Render Deployment Configuration
+# Updated: 2025-12-18
 
 services:
   # Full Stack Service (Backend + Frontend)
