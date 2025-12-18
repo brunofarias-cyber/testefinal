@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus, X, Check, ChevronLeft, ArrowRight, FileText, Sparkles, AlertCircle } from 'lucide-react';
 import HabilidadesSelectorBNCC from './HabilidadesSelectorBNCC';
-import { BNCC_COMPLETO } from '../constants/bnccCompleto';
+import { BNCC_OFICIAL } from '../constants/bnccOficial';
 
 /**
  * ═══════════════════════════════════════════════════════════════════════
@@ -70,7 +70,7 @@ const ProjectWizardAI = () => {
         body: JSON.stringify({
           projectDescription: projectDescription,
           projectName: projectName,
-          availableAreas: Object.keys(BNCC_COMPLETO)
+          availableAreas: Object.keys(BNCC_OFICIAL)
         })
       });
 

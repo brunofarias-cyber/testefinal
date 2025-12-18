@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
-import { BNCC_COMPLETO } from '../constants/bnccCompleto';
+import { BNCC_OFICIAL } from '../constants/bnccOficial';
 
 const ANOS_DISPONIVEIS = ['6º ano', '7º ano', '8º ano', '9º ano'];
 
@@ -16,7 +16,7 @@ export default function HabilidadesSelectorBNCC({ areaAtiva, selectedHabilidades
     '9º ano': false
   });
 
-  if (!areaAtiva || !BNCC_COMPLETO[areaAtiva]) {
+  if (!areaAtiva || !BNCC_OFICIAL[areaAtiva]) {
     return (
       <div className="text-center py-8 text-slate-500">
         Selecione uma área para ver as habilidades
@@ -24,7 +24,7 @@ export default function HabilidadesSelectorBNCC({ areaAtiva, selectedHabilidades
     );
   }
 
-  const habilidadesPorAno = BNCC_COMPLETO[areaAtiva];
+  const habilidadesPorAno = BNCC_OFICIAL[areaAtiva];
 
   const toggleAno = (ano) => {
     setAnoExpanded(prev => ({
