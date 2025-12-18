@@ -20,6 +20,7 @@ import theoreticalReferencesRoutes from './routes/theoretical-references.js';
 import aiFeaturesRoutes from './routes/ai-features.js';
 import dashboardStatsRoutes from './routes/dashboard-stats.js';
 import wizardBnccRoutes from './routes/wizard-bncc.js';
+import { setupAIRoutes } from './src/api/wizardAI.js';
 import classesRoutes from './routes/classes.js';
 import teamChatRoutes from './routes/team-chat.js';
 import messagesRoutes from './routes/messages.js';
@@ -70,6 +71,10 @@ app.use('/api/theoretical-references', theoreticalReferencesRoutes);
 app.use('/api/ai-features', aiFeaturesRoutes);
 app.use('/api/dashboard', dashboardStatsRoutes);
 app.use('/api/wizard-bncc', wizardBnccRoutes);
+
+// Setup das rotas de IA para sugestão de habilidades
+setupAIRoutes(app);
+
 app.use('/api/classes', classesRoutes);
 app.use('/api/team-chat', teamChatRoutes);
 app.use('/api/messages', messagesRoutes);

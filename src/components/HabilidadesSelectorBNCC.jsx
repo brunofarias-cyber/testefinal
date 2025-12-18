@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
-import { BNCC_COMPLETO, AREAS_DISPONIVEIS, ANOS_DISPONIVEIS } from '../constants/bnccCompleto';
+import { BNCC_COMPLETO } from '../constants/bnccCompleto';
+
+const ANOS_DISPONIVEIS = ['6º ano', '7º ano', '8º ano', '9º ano'];
 
 /**
  * Componente de Seleção de Habilidades BNCC
