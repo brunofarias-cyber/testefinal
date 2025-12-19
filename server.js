@@ -364,9 +364,67 @@ if (process.env.NODE_ENV !== 'test') {
   // Disponibilizar io para as rotas
   app.io = io;
 
+  // Map para rastrear usuários online: userId -> { name, socketId, timestamp }
+  const onlineUsers = new Map();
+
   // Configurar Socket.io
   io.on('connection', (socket) => {
     console.log(`✅ Cliente conectado: ${socket.id}`);
+
+    // ===== PRESENÇA =====
+    socket.on('user-online', (data) => {
+      const { userId, userName, timestamp } = data;
+      
+      // Armazenar usuário online
+      onlineUsers.set(userId, {
+        name: userName,
+        socketId: socket.id,
+        timestamp,
+        status: 'online'
+      });
+      
+      console.log(`🟢 Usuário ${userName} (${userId}) conectado`);
+      
+      // Notificar todos sobre novo usuário online
+      io.emit('user-online', {
+        userId,
+        userName,
+        timestamp,
+        socketId: socket.id
+      });
+    });
+
+    // Solicitar lista de usuários online
+    socket.on('get-online-users', () => {
+      const usersList = Array.from(onlineUsers.values()).map((user, index) => {
+        const userId = Array.from(onlineUsers.keys())[index];
+        return {
+          userId,
+          userName: user.name,
+          timestamp: user.timestamp,
+          socketId: user.socketId
+        };
+      });
+      
+      socket.emit('online-users-list', { users: usersList });
+    });
+
+    // Usuário desconectando
+    socket.on('user-offline', (data) => {
+      const { userId } = data;
+      const user = onlineUsers.get(userId);
+      
+      if (user) {
+        onlineUsers.delete(userId);
+        console.log(`🔴 Usuário ${user.name} (${userId}) desconectado`);
+        
+        // Notificar todos sobre desconexão
+        io.emit('user-offline', {
+          userId,
+          timestamp: new Date()
+        });
+      }
+    });
 
     // ===== SALAS PESSOAIS =====
     // Aluno entra em sua sala pessoal
@@ -477,27 +535,23 @@ if (process.env.NODE_ENV !== 'test') {
       console.log(`🔔 Notificação enviada para ${userId}`);
     });
 
-    // ===== STATUS ONLINE =====
-    // Broadcast de status online
-    socket.on('user-online', (data) => {
-      const { userId, role } = data;
-      io.emit('user-status', {
-        userId,
-        role,
-        status: 'online',
-        timestamp: new Date()
-      });
-      console.log(`🟢 ${role} ${userId} está online`);
-    });
-
     // Broadcast de status offline
     socket.on('disconnect', () => {
       console.log(`❌ Cliente desconectado: ${socket.id}`);
-      io.emit('user-status', {
-        socketId: socket.id,
-        status: 'offline',
-        timestamp: new Date()
-      });
+      
+      // Encontrar e remover usuário offline
+      for (const [userId, user] of onlineUsers.entries()) {
+        if (user.socketId === socket.id) {
+          onlineUsers.delete(userId);
+          console.log(`🔴 ${user.name} (${userId}) desconectado (disconnect)`);
+          
+          io.emit('user-offline', {
+            userId,
+            timestamp: new Date()
+          });
+          break;
+        }
+      }
     });
   });
 
