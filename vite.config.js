@@ -8,9 +8,19 @@ export default defineConfig({
         outDir: 'dist',
         sourcemap: false,
         minify: 'terser',
+        chunkSizeWarningLimit: 1000,
         rollupOptions: {
             output: {
-                manualChunks: undefined
+                manualChunks(id) {
+                    // Vendor chunks
+                    if (id.includes('node_modules/react')) return 'vendor-react';
+                    if (id.includes('node_modules/lucide-react')) return 'vendor-lucide';
+                    if (id.includes('node_modules/recharts')) return 'vendor-charts';
+                    if (id.includes('node_modules/socket.io-client')) return 'vendor-socket';
+                    if (id.includes('node_modules/axios') || 
+                        id.includes('node_modules/date-fns') ||
+                        id.includes('node_modules/clsx')) return 'vendor-utils';
+                }
             }
         }
     },
