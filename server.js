@@ -366,6 +366,7 @@ if (process.env.NODE_ENV !== 'test') {
   io.on('connection', (socket) => {
     console.log(`✅ Cliente conectado: ${socket.id}`);
 
+    // ===== SALAS PESSOAIS =====
     // Aluno entra em sua sala pessoal
     socket.on('join-student', (studentId) => {
       socket.join(`student-${studentId}`);
@@ -378,8 +379,109 @@ if (process.env.NODE_ENV !== 'test') {
       console.log(`👨‍🏫 Professor ${teacherId} entrou na sala`);
     });
 
+    // ===== CHAT EM EQUIPES =====
+    // Entrar em sala de equipe
+    socket.on('join-team', (teamId) => {
+      socket.join(`team-${teamId}`);
+      console.log(`📢 Usuário entrou na equipe ${teamId}`);
+      io.to(`team-${teamId}`).emit('user-joined', { teamId, socketId: socket.id });
+    });
+
+    // Enviar mensagem em equipe
+    socket.on('send-team-message', (data) => {
+      const { teamId, message, sender, timestamp } = data;
+      io.to(`team-${teamId}`).emit('receive-team-message', {
+        teamId,
+        message,
+        sender,
+        timestamp: timestamp || new Date(),
+        socketId: socket.id
+      });
+      console.log(`💬 Mensagem de equipe em ${teamId} de ${sender}`);
+    });
+
+    // ===== NOTAS EM TEMPO REAL =====
+    // Professor envia nota para aluno
+    socket.on('send-grade', (data) => {
+      const { studentId, projectId, finalGrade, feedback, teacher } = data;
+      io.to(`student-${studentId}`).emit('grade-received', {
+        projectId,
+        finalGrade,
+        feedback,
+        teacher,
+        timestamp: new Date()
+      });
+      console.log(`📝 Nota enviada para aluno ${studentId}`);
+    });
+
+    // Notificar atualização de nota
+    socket.on('grade-updated', (data) => {
+      const { studentId, gradeId, finalGrade } = data;
+      io.to(`student-${studentId}`).emit('grade-update-notification', {
+        gradeId,
+        finalGrade,
+        timestamp: new Date()
+      });
+      console.log(`📝 Atualização de nota para aluno ${studentId}`);
+    });
+
+    // ===== PRESENÇA EM TEMPO REAL =====
+    // Professor marca presença
+    socket.on('mark-attendance', (data) => {
+      const { studentId, status, classId } = data;
+      io.to(`student-${studentId}`).emit('attendance-marked', {
+        status,
+        classId,
+        timestamp: new Date()
+      });
+      console.log(`✅ Presença marcada para aluno ${studentId}: ${status}`);
+    });
+
+    // Notificar atualização de presença
+    socket.on('attendance-updated', (data) => {
+      const { studentId, attendanceId, status } = data;
+      io.to(`student-${studentId}`).emit('attendance-update-notification', {
+        attendanceId,
+        status,
+        timestamp: new Date()
+      });
+      console.log(`✅ Atualização de presença para aluno ${studentId}`);
+    });
+
+    // ===== NOTIFICAÇÕES =====
+    // Enviar notificação para usuário específico
+    socket.on('send-notification', (data) => {
+      const { userId, type, title, message } = data;
+      io.to(`student-${userId}`).emit('notification-received', {
+        type,
+        title,
+        message,
+        timestamp: new Date()
+      });
+      console.log(`🔔 Notificação enviada para ${userId}`);
+    });
+
+    // ===== STATUS ONLINE =====
+    // Broadcast de status online
+    socket.on('user-online', (data) => {
+      const { userId, role } = data;
+      io.emit('user-status', {
+        userId,
+        role,
+        status: 'online',
+        timestamp: new Date()
+      });
+      console.log(`🟢 ${role} ${userId} está online`);
+    });
+
+    // Broadcast de status offline
     socket.on('disconnect', () => {
       console.log(`❌ Cliente desconectado: ${socket.id}`);
+      io.emit('user-status', {
+        socketId: socket.id,
+        status: 'offline',
+        timestamp: new Date()
+      });
     });
   });
 

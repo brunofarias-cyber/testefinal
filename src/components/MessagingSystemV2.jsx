@@ -181,16 +181,36 @@ const MessagingSystemV2 = ({ userRole = "teacher", currentUserId = 1, currentUse
     useEffect(() => {
         if (!socket || !selectedTeam) return;
 
+        // Entrar na sala de equipe
+        socket.emit('join-team', selectedTeam.id);
+
+        // Listener para novas mensagens da equipe
         const handleNewMessage = (message) => {
             console.log('📩 Nova mensagem recebida:', message);
             setMessages((prev) => [...prev, message]);
             scrollToBottom();
         };
 
+        // Listener para mensagens recebidas via novo evento
+        const handleTeamMessage = (data) => {
+            console.log('💬 Mensagem de equipe recebida:', data);
+            setMessages((prev) => [...prev, {
+                id: Date.now(),
+                teamId: data.teamId,
+                senderId: data.sender,
+                senderName: data.sender,
+                text: data.message,
+                timestamp: data.timestamp
+            }]);
+            scrollToBottom();
+        };
+
         socket.on('new_message', handleNewMessage);
+        socket.on('receive-team-message', handleTeamMessage);
 
         return () => {
             socket.off('new_message', handleNewMessage);
+            socket.off('receive-team-message', handleTeamMessage);
         };
     }, [socket, selectedTeam]);
 
@@ -220,7 +240,12 @@ const MessagingSystemV2 = ({ userRole = "teacher", currentUserId = 1, currentUse
         try {
             // Enviar via Socket.io (mais rápido)
             if (socket && connected) {
-                socket.emit('send_message', newMessage);
+                socket.emit('send-team-message', {
+                    teamId: selectedTeam.id,
+                    message: messageText.trim(),
+                    sender: currentUserName,
+                    timestamp: new Date()
+                });
                 console.log('✅ Mensagem enviada via Socket.io');
             } else {
                 // Fallback: enviar via REST API
