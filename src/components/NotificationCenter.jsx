@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bell, X, AlertCircle, Info, CheckCircle, Clock } from 'lucide-react';
 
-const NotificationCenter = ({ userRole = "student" }) => {
-    const [notifications, setNotifications] = useState([
+const NotificationCenter = ({ 
+    userRole = "student", 
+    notifications: propNotifications = null,
+    setNotifications: propSetNotifications = null
+}) => {
+    const [localNotifications, setLocalNotifications] = useState([
         {
             id: 1,
             type: 'deadline',
@@ -45,10 +49,22 @@ const NotificationCenter = ({ userRole = "student" }) => {
         }
     ]);
 
+    // Usar props se passadas, caso contrário usar state local
+    const notifications = propNotifications !== null ? propNotifications : localNotifications;
+    const setNotifications = propSetNotifications !== null ? propSetNotifications : setLocalNotifications;
+
+    // Sincronizar quando props mudam
+    useEffect(() => {
+        if (propNotifications !== null) {
+            setLocalNotifications(propNotifications);
+        }
+    }, [propNotifications]);
+
     const handleMarkAsRead = (id) => {
         setNotifications(notifications.map(n =>
             n.id === id ? { ...n, read: true } : n
         ));
+
     };
 
     const handleDismiss = (id) => {

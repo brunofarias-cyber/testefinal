@@ -397,7 +397,29 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                 </div>
             </div>
 
-            <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+            <div className="p-4 border-t border-slate-100 bg-slate-50/50 space-y-3">
+                {/* Notificações */}
+                <button
+                    onClick={() => setActiveTab('notifications')}
+                    className="w-full flex items-center gap-3 px-3 py-3 hover:bg-white hover:shadow-md rounded-xl transition-all text-left group border border-transparent hover:border-slate-100 relative"
+                >
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 group-hover:bg-blue-200 transition-colors relative">
+                        <Bell size={18} />
+                        {notifications.filter(n => !n.read).length > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                                {notifications.filter(n => !n.read).length}
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-800">Notificações</p>
+                        <p className="text-xs text-slate-500">
+                            {notifications.filter(n => !n.read).length} não lida{notifications.filter(n => !n.read).length !== 1 ? 's' : ''}
+                        </p>
+                    </div>
+                </button>
+
+                {/* Logout */}
                 {currentUser && (
                     <div className="mb-3 px-1">
                         <p className="text-sm font-bold text-slate-800 truncate">{currentUser.name}</p>
@@ -2318,6 +2340,32 @@ function DashboardApp() {
     const [projects, setProjects] = useState(MOCK_PROJECTS);
     const [calendarEvents, setCalendarEvents] = useState(INITIAL_EVENTS);
     const [selectedProject, setSelectedProject] = useState(null);
+    const [notifications, setNotifications] = useState([
+        {
+            id: 1,
+            type: 'deadline',
+            title: 'Prazo próximo: Horta Sustentável',
+            message: 'Entrega em 2 dias',
+            timestamp: new Date(Date.now() - 2 * 60000),
+            read: false
+        },
+        {
+            id: 2,
+            type: 'feedback',
+            title: 'Novo feedback recebido',
+            message: 'Professor deixou comentário',
+            timestamp: new Date(Date.now() - 15 * 60000),
+            read: false
+        },
+        {
+            id: 3,
+            type: 'achievement',
+            title: 'Conquista desbloqueada!',
+            message: 'Você completou "Pesquisador"',
+            timestamp: new Date(Date.now() - 1 * 3600000),
+            read: true
+        }
+    ]);
 
     // Fetch real projects from API
     useEffect(() => {
@@ -2453,7 +2501,7 @@ function DashboardApp() {
             if (activeTab === 'student-central') return <StudentCentralHub studentId={currentUser?.id || 101} />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
             if (activeTab === 'messages') return <MessagingSystemV2 userRole="student" currentUserId={currentUser?.id || 101} currentUserName={currentUser?.name || 'Aluno'} />;
-            if (activeTab === 'notifications') return <NotificationCenter />;
+            if (activeTab === 'notifications') return <NotificationCenter notifications={notifications} setNotifications={setNotifications} userRole={role} />;
             if (activeTab === 'skills') return <StudentBnccPage studentId={currentUser?.id || 101} />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
