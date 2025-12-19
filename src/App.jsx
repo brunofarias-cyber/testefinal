@@ -391,6 +391,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
                                 <NavItem icon={<Users size={20} />} label="Professores" active={activeTab === 'teachers'} onClick={() => setActiveTab('teachers')} />
                                 <NavItem icon={<BarChart2 size={20} />} label="Indicadores" active={activeTab === 'metrics'} onClick={() => setActiveTab('metrics')} />
                                 <NavItem icon={<TrendingUp size={20} />} label="Dashboard Avançado" active={activeTab === 'coordinator-advanced'} onClick={() => setActiveTab('coordinator-advanced')} />
+                                <NavItem icon={<AlertCircle size={20} />} label="Notificações" active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} />
                             </>
                         )}
                     </CollapsibleGestaoNav>
@@ -2490,6 +2491,7 @@ function DashboardApp() {
             if (activeTab === 'teachers') return <CoordinatorTeachersList />;
             if (activeTab === 'metrics') return <CoordinatorMetrics />;
             if (activeTab === 'coordinator-advanced') return <CoordinatorAdvanced />;
+            if (activeTab === 'notifications') return <NotificationCenter notifications={notifications} setNotifications={setNotifications} userRole={role} />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
         }
         if (role === 'student') {
