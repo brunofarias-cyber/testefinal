@@ -158,13 +158,13 @@ const ProfessorDashboard = ({
                 {/* Card 1: Correções Pendentes */}
                 <KPICard
                     titulo="Correções Pendentes"
-                    valor={data.kpis.correcoesPendentes}
+                    valor={data?.kpis?.correcoesPendentes || 0}
                     icone={<FileText size={28} />}
                     corFundo="from-blue-50 to-blue-100"
                     corTexto="text-blue-700"
                     corIcone="bg-blue-200 text-blue-600"
                     descricao="Entregas aguardando avaliação"
-                    destaque={data.kpis.correcoesPendentes > 0}
+                    destaque={(data?.kpis?.correcoesPendentes || 0) > 0}
                     trending={+5}
                     onClick={() => onNavigateTo('reports')}
                     acao="Ir para Relatórios"
@@ -176,13 +176,13 @@ const ProfessorDashboard = ({
                 {/* Card 2: Alunos em Risco */}
                 <KPICard
                     titulo="Alunos em Risco"
-                    valor={data.kpis.alunosEmRisco}
+                    valor={data?.kpis?.alunosEmRisco || 0}
                     icone={<AlertCircle size={28} />}
                     corFundo="from-red-50 to-red-100"
                     corTexto="text-red-700"
                     corIcone="bg-red-200 text-red-600"
                     descricao="Média abaixo de 6.0"
-                    destaque={data.kpis.alunosEmRisco > 0}
+                    destaque={(data?.kpis?.alunosEmRisco || 0) > 0}
                     alerta={true}
                     trending={-2}
                     onClick={() => onNavigateTo('messages')}
@@ -195,15 +195,15 @@ const ProfessorDashboard = ({
                 {/* Card 3: Projetos Concluídos com Progresso Circular (Melhoria #2) */}
                 <KPICard
                     titulo="Projetos Concluídos"
-                    valor={`${data.kpis.projetosConcluidos}%`}
-                    valorNumerico={data.kpis.projetosConcluidos}
+                    valor={`${data?.kpis?.projetosConcluidos || 0}%`}
+                    valorNumerico={data?.kpis?.projetosConcluidos || 0}
                     showCircleProgress={true}
                     icone={<CheckCircle size={28} />}
                     corFundo="from-green-50 to-green-100"
                     corTexto="text-green-700"
                     corIcone="bg-green-200 text-green-600"
                     descricao="Progresso geral da turma"
-                    destaque={data.kpis.projetosConcluidos === 100}
+                    destaque={(data?.kpis?.projetosConcluidos || 0) === 100}
                     trending={+8}
                     onClick={() => onNavigateTo('planning')}
                     acao="Ver Projetos"
@@ -225,7 +225,7 @@ const ProfessorDashboard = ({
                     </p>
                 </div>
 
-                {data.graficoEvolucao.length > 0 ? (
+                {data?.graficoEvolucao?.length > 0 ? (
                     <ResponsiveContainer width="100%" height={350}>
                         <LineChart
                             data={data.graficoEvolucao}
@@ -290,23 +290,23 @@ const ProfessorDashboard = ({
                 <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <InsightBox
                         label="Média Atual"
-                        valor={data.graficoEvolucao.length > 0
-                            ? Number(data.graficoEvolucao[data.graficoEvolucao.length - 1].mediaNotas).toFixed(1)
+                        valor={data?.graficoEvolucao?.length > 0
+                            ? Number(data.graficoEvolucao[data.graficoEvolucao.length - 1]?.mediaNotas || 0).toFixed(1)
                             : '-'}
                         cor="indigo"
                         darkMode={darkMode}
                     />
                     <InsightBox
                         label="Melhor Desempenho"
-                        valor={data.graficoEvolucao.length > 0
-                            ? Math.max(...data.graficoEvolucao.map(d => d.mediaNotas)).toFixed(1)
+                        valor={data?.graficoEvolucao?.length > 0
+                            ? Math.max(...(data.graficoEvolucao?.map(d => d?.mediaNotas || 0) || [0])).toFixed(1)
                             : '-'}
                         cor="green"
                         darkMode={darkMode}
                     />
                     <InsightBox
                         label="Total de Avaliações"
-                        valor={data.graficoEvolucao.length.toString()}
+                        valor={(data?.graficoEvolucao?.length || 0).toString()}
                         cor="blue"
                         darkMode={darkMode}
                     />
@@ -320,7 +320,7 @@ const ProfessorDashboard = ({
                     Atividades Recentes
                 </h2>
 
-                {data.timeline.length > 0 ? (
+                {data?.timeline?.length > 0 ? (
                     <div className="space-y-4">
                         {data.timeline.map((atividade, idx) => (
                             <TimelineItem
