@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRealTimeNotifications, useRealTimeTeamChat } from '../hooks/useRealTime';
-import { Bell, Send, Trash2 } from 'lucide-react';
+import { Bell, Send, Trash2, ChevronUp } from 'lucide-react';
 
 /**
  * NotificationCenter - Exibe notificações em tempo real
@@ -74,11 +74,19 @@ export const NotificationCenter = ({ userId }) => {
 };
 
 /**
- * RealTimeTeamChat - Chat de time com Socket.io
+ * RealTimeTeamChat - Chat de time com Socket.io e Persistência
  */
 export const RealTimeTeamChat = ({ teamId, userId, userName }) => {
-  const { messages, sendTeamMessage } = useRealTimeTeamChat(teamId, userId);
+  const { messages, loading, sendTeamMessage, loadMoreMessages, hasMoreMessages } = 
+    useRealTimeTeamChat(teamId, userId);
   const [messageText, setMessageText] = useState('');
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+
+  // Auto-scroll ao final quando novas mensagens chegam
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -88,59 +96,88 @@ export const RealTimeTeamChat = ({ teamId, userId, userName }) => {
     }
   };
 
+  const handleLoadMore = () => {
+    if (hasMoreMessages) {
+      loadMoreMessages(messages.length);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow">
+      {/* Header */}
+      <div className="px-4 py-3 border-b bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-t-lg">
+        <h3 className="font-semibold text-sm">💬 Chat do Time</h3>
+        <p className="text-xs opacity-90">{messages.length} mensagens</p>
+      </div>
+
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 ? (
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+        {/* Load More Button */}
+        {hasMoreMessages && messages.length > 0 && (
+          <button
+            onClick={handleLoadMore}
+            disabled={loading}
+            className="w-full py-2 text-sm text-blue-500 hover:bg-blue-50 rounded transition disabled:opacity-50"
+          >
+            {loading ? '⏳ Carregando...' : (
+              <>
+                <ChevronUp className="w-4 h-4 inline" /> Carregar mensagens antigas
+              </>
+            )}
+          </button>
+        )}
+
+        {messages.length === 0 && !loading ? (
           <div className="flex items-center justify-center h-full text-gray-500">
-            Nenhuma mensagem ainda
+            Nenhuma mensagem ainda. Comece a conversar!
           </div>
         ) : (
           messages.map(msg => (
             <div
               key={msg.id}
-              className={`flex ${msg.sender === userId ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${msg.senderId === userId || msg.sender === userId ? 'justify-end' : 'justify-start'}`}
             >
               <div
                 className={`max-w-xs px-4 py-2 rounded-lg ${
-                  msg.sender === userId
-                    ? 'bg-blue-500 text-white'
+                  msg.senderId === userId || msg.sender === userId
+                    ? `bg-blue-500 text-white ${msg.pending ? 'opacity-60' : ''}`
                     : 'bg-gray-200 text-gray-900'
                 }`}
               >
-                {msg.sender !== userId && (
+                {(msg.senderId !== userId && msg.sender !== userId) && (
                   <p className="text-xs font-semibold mb-1">
-                    {msg.sender}
+                    {msg.senderName || msg.sender}
                   </p>
                 )}
                 <p className="break-words">{msg.message}</p>
                 <span className="text-xs opacity-70 mt-1 block">
-                  {new Date(msg.timestamp).toLocaleTimeString('pt-BR', {
+                  {new Date(msg.createdAt || msg.timestamp).toLocaleTimeString('pt-BR', {
                     hour: '2-digit',
                     minute: '2-digit'
                   })}
+                  {msg.pending && ' 📤'}
                 </span>
               </div>
             </div>
           ))
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSendMessage} className="p-4 border-t">
+      <form onSubmit={handleSendMessage} className="p-4 border-t bg-gray-50 rounded-b-lg">
         <div className="flex gap-2">
           <input
             type="text"
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             placeholder="Digite uma mensagem..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-sm"
           />
           <button
             type="submit"
-            disabled={!messageText.trim()}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 transition"
+            disabled={!messageText.trim() || loading}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 transition flex items-center gap-2"
           >
             <Send className="w-4 h-4" />
           </button>

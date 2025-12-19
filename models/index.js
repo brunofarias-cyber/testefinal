@@ -26,6 +26,7 @@ import TutorInteractionModel from './TutorInteraction.js';
 import AssignmentModel from './Assignment.js';
 import ClassModel from './Class.js';
 import TeamModel from './Team.js';
+import { TeamMessageModel } from './TeamMessage.js';
 import RubricaModel from './Rubrica.js';
 import RubricaCriterioModel from './RubricaCriterio.js';
 import RubricaNivelModel from './RubricaNivel.js';
@@ -53,6 +54,7 @@ const TutorInteraction = TutorInteractionModel(sequelize);
 const Assignment = AssignmentModel(sequelize);
 const Class = ClassModel(sequelize);
 const Team = TeamModel(sequelize);
+const TeamMessage = TeamMessageModel(sequelize);
 const Rubrica = RubricaModel(sequelize);
 const RubricaCriterio = RubricaCriterioModel(sequelize);
 const RubricaNivel = RubricaNivelModel(sequelize);
@@ -287,6 +289,7 @@ export default {
     Assignment,
     Class,
     Team,
+    TeamMessage,
     Rubrica,
     RubricaCriterio,
     RubricaNivel,

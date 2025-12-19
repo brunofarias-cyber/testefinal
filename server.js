@@ -23,6 +23,7 @@ import wizardBnccRoutes from './routes/wizard-bncc.js';
 import { setupAIRoutes } from './src/api/wizardAI.js';
 import classesRoutes from './routes/classes.js';
 import teamChatRoutes from './routes/team-chat.js';
+import teamMessagesRoutes from './routes/teamMessages.js';
 import messagesRoutes from './routes/messages.js';
 import teamsRoutes from './routes/teams.js';
 import studentProjectsRoutes from './routes/student-projects.js';
@@ -77,6 +78,7 @@ setupAIRoutes(app);
 
 app.use('/api/classes', classesRoutes);
 app.use('/api/team-chat', teamChatRoutes);
+app.use('/api/team-messages', teamMessagesRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/teams', teamsRoutes);
 app.use('/api/student-projects', studentProjectsRoutes);

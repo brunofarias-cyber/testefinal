@@ -170,13 +170,30 @@ export const useRealTimeAttendance = (studentId) => {
 };
 
 /**
- * Hook useRealTimeTeamChat - Gerenciar chat de time em tempo real
+ * Hook useRealTimeTeamChat - Gerenciar chat de time em tempo real com persistência
  */
 export const useRealTimeTeamChat = (teamId, userId) => {
   const { socket, connected } = useSocket();
   const emit = useEmitEvent(socket, connected);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+
+  // Carregar mensagens iniciais do banco de dados
+  useEffect(() => {
+    if (!teamId || loading) return;
+
+    setLoading(true);
+    fetch(`/api/team-messages/${teamId}?limit=50`)
+      .then(res => res.json())
+      .then(data => {
+        console.log(`📚 ${data.messages.length} mensagens carregadas do BD`);
+        setMessages(data.messages);
+        setHasMoreMessages(data.pagination.total > 50);
+      })
+      .catch(err => console.error('❌ Erro ao carregar mensagens:', err))
+      .finally(() => setLoading(false));
+  }, [teamId]);
 
   // Juntar ao time ao montar
   useEffect(() => {
@@ -186,31 +203,80 @@ export const useRealTimeTeamChat = (teamId, userId) => {
     }
   }, [socket, teamId]);
 
-  // Escutar mensagens do time
+  // Escutar mensagens do time em tempo real
   const handleTeamMessage = useCallback((data) => {
-    console.log('💬 Mensagem recebida:', data);
-    setMessages(prev => [{
-      id: Date.now(),
-      ...data,
-      received: true
-    }, ...prev]);
-  }, []);
+    console.log('💬 Mensagem recebida em tempo real:', data);
+    
+    // Evitar duplicação se a mensagem foi enviada por este usuário
+    if (data.socketId && data.senderId === userId) {
+      setMessages(prev => prev.map(m => 
+        m.pending ? { ...m, pending: false, id: data.id } : m
+      ));
+    } else {
+      setMessages(prev => [{
+        id: data.id || Date.now(),
+        ...data,
+        received: true
+      }, ...prev]);
+    }
+  }, [userId]);
 
   useSocketEvent(socket, 'receive-team-message', handleTeamMessage);
 
   // Enviar mensagem de time
   const sendTeamMessage = useCallback((messageText) => {
+    // Criar mensagem pendente local
+    const tempMessage = {
+      id: `pending-${Date.now()}`,
+      teamId,
+      message: messageText,
+      sender: userId,
+      senderName: 'Você',
+      timestamp: new Date(),
+      pending: true
+    };
+
+    // Adicionar à UI imediatamente
+    setMessages(prev => [tempMessage, ...prev]);
+
+    // Enviar para servidor
     emit('send-team-message', {
       teamId,
       message: messageText,
       sender: userId,
       timestamp: new Date()
     });
+
+    // Também salvar no BD para persistência
+    fetch('/api/team-messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        teamId,
+        senderId: userId,
+        message: messageText,
+        messageType: 'text'
+      })
+    }).catch(err => console.error('❌ Erro ao salvar mensagem:', err));
   }, [teamId, userId, emit]);
+
+  // Carregar mais mensagens antigas
+  const loadMoreMessages = useCallback((offset) => {
+    fetch(`/api/team-messages/${teamId}?limit=50&offset=${offset}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log(`📚 ${data.messages.length} mensagens antigas carregadas`);
+        setMessages(prev => [...prev, ...data.messages]);
+        setHasMoreMessages(data.pagination.offset + data.pagination.limit < data.pagination.total);
+      })
+      .catch(err => console.error('❌ Erro ao carregar mais mensagens:', err));
+  }, [teamId]);
 
   return {
     messages,
     loading,
-    sendTeamMessage
+    sendTeamMessage,
+    loadMoreMessages,
+    hasMoreMessages
   };
 };
