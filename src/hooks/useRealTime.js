@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useSocket, useSocketEvent, useEmitEvent } from './useSocket';
 
 /**
@@ -170,7 +170,7 @@ export const useRealTimeAttendance = (studentId) => {
 };
 
 /**
- * Hook useRealTimeTeamChat - Gerenciar chat de time em tempo real com persistência
+ * Hook useRealTimeTeamChat - Gerenciar chat de time em tempo real com persistência e typing indicators
  */
 export const useRealTimeTeamChat = (teamId, userId) => {
   const { socket, connected } = useSocket();
@@ -178,6 +178,8 @@ export const useRealTimeTeamChat = (teamId, userId) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [typingUsers, setTypingUsers] = useState({});
+  const typingTimeoutRef = useRef({});
 
   // Carregar mensagens iniciais do banco de dados
   useEffect(() => {
@@ -219,11 +221,47 @@ export const useRealTimeTeamChat = (teamId, userId) => {
         received: true
       }, ...prev]);
     }
+
+    // Remover indicador de digitação do usuário que enviou
+    setTypingUsers(prev => {
+      const newTyping = { ...prev };
+      delete newTyping[data.senderId || data.sender];
+      return newTyping;
+    });
   }, [userId]);
 
   useSocketEvent(socket, 'receive-team-message', handleTeamMessage);
 
-  // Enviar mensagem de time
+  // Escutar indicadores de digitação
+  const handleUserTyping = useCallback((data) => {
+    const { userId: typingUserId, userName } = data;
+    
+    if (typingUserId === userId) return; // Ignorar se for o próprio usuário
+
+    // Limpar timeout anterior
+    if (typingTimeoutRef.current[typingUserId]) {
+      clearTimeout(typingTimeoutRef.current[typingUserId]);
+    }
+
+    // Adicionar usuário à lista de digitação
+    setTypingUsers(prev => ({
+      ...prev,
+      [typingUserId]: { name: userName, timestamp: Date.now() }
+    }));
+
+    // Auto-remover após 3 segundos de inatividade
+    typingTimeoutRef.current[typingUserId] = setTimeout(() => {
+      setTypingUsers(prev => {
+        const newTyping = { ...prev };
+        delete newTyping[typingUserId];
+        return newTyping;
+      });
+    }, 3000);
+  }, [userId]);
+
+  useSocketEvent(socket, 'user-typing', handleUserTyping);
+
+  // Enviar mensagem de tipo
   const sendTeamMessage = useCallback((messageText) => {
     // Criar mensagem pendente local
     const tempMessage = {
@@ -238,6 +276,14 @@ export const useRealTimeTeamChat = (teamId, userId) => {
 
     // Adicionar à UI imediatamente
     setMessages(prev => [tempMessage, ...prev]);
+
+    // Notificar que parou de digitar
+    emit('user-typing', {
+      teamId,
+      userId,
+      userName: 'Você',
+      isTyping: false
+    });
 
     // Enviar para servidor
     emit('send-team-message', {
@@ -260,6 +306,16 @@ export const useRealTimeTeamChat = (teamId, userId) => {
     }).catch(err => console.error('❌ Erro ao salvar mensagem:', err));
   }, [teamId, userId, emit]);
 
+  // Notificar que está digitando (com debounce)
+  const notifyTyping = useCallback((isTyping = true) => {
+    emit('user-typing', {
+      teamId,
+      userId,
+      userName: 'Usuário',
+      isTyping
+    });
+  }, [teamId, userId, emit]);
+
   // Carregar mais mensagens antigas
   const loadMoreMessages = useCallback((offset) => {
     fetch(`/api/team-messages/${teamId}?limit=50&offset=${offset}`)
@@ -272,11 +328,20 @@ export const useRealTimeTeamChat = (teamId, userId) => {
       .catch(err => console.error('❌ Erro ao carregar mais mensagens:', err));
   }, [teamId]);
 
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      Object.values(typingTimeoutRef.current).forEach(clearTimeout);
+    };
+  }, []);
+
   return {
     messages,
     loading,
     sendTeamMessage,
     loadMoreMessages,
-    hasMoreMessages
+    hasMoreMessages,
+    typingUsers,
+    notifyTyping
   };
 };

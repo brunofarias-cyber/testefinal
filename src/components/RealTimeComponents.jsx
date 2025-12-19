@@ -74,14 +74,15 @@ export const NotificationCenter = ({ userId }) => {
 };
 
 /**
- * RealTimeTeamChat - Chat de time com Socket.io e Persistência
+ * RealTimeTeamChat - Chat de time com Socket.io, Persistência e Typing Indicators
  */
 export const RealTimeTeamChat = ({ teamId, userId, userName }) => {
-  const { messages, loading, sendTeamMessage, loadMoreMessages, hasMoreMessages } = 
+  const { messages, loading, sendTeamMessage, loadMoreMessages, hasMoreMessages, typingUsers, notifyTyping } = 
     useRealTimeTeamChat(teamId, userId);
   const [messageText, setMessageText] = useState('');
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
 
   // Auto-scroll ao final quando novas mensagens chegam
   useEffect(() => {
@@ -96,11 +97,30 @@ export const RealTimeTeamChat = ({ teamId, userId, userName }) => {
     }
   };
 
+  const handleInputChange = (e) => {
+    setMessageText(e.target.value);
+    
+    // Notificar que está digitando com debounce
+    notifyTyping(true);
+    
+    // Limpar timeout anterior
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    // Auto-parar após 1 segundo sem digitar
+    typingTimeoutRef.current = setTimeout(() => {
+      notifyTyping(false);
+    }, 1000);
+  };
+
   const handleLoadMore = () => {
     if (hasMoreMessages) {
       loadMoreMessages(messages.length);
     }
   };
+
+  const typingList = Object.entries(typingUsers).map(([id, data]) => data.name).filter(Boolean);
 
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow">
@@ -161,6 +181,23 @@ export const RealTimeTeamChat = ({ teamId, userId, userName }) => {
             </div>
           ))
         )}
+
+        {/* Typing Indicator */}
+        {typingList.length > 0 && (
+          <div className="flex justify-start">
+            <div className="px-4 py-2 rounded-lg bg-gray-100 text-gray-600 text-sm">
+              <span className="italic">
+                {typingList.join(', ')} {typingList.length === 1 ? 'está' : 'estão'} digitando
+              </span>
+              <span className="ml-2">
+                <span className="inline-block w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+                <span className="inline-block w-2 h-2 bg-gray-400 rounded-full animate-bounce ml-1" style={{animationDelay: '150ms'}}></span>
+                <span className="inline-block w-2 h-2 bg-gray-400 rounded-full animate-bounce ml-1" style={{animationDelay: '300ms'}}></span>
+              </span>
+            </div>
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -170,7 +207,8 @@ export const RealTimeTeamChat = ({ teamId, userId, userName }) => {
           <input
             type="text"
             value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
+            onChange={handleInputChange}
+            onBlur={() => notifyTyping(false)}
             placeholder="Digite uma mensagem..."
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-sm"
           />

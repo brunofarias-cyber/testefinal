@@ -402,6 +402,20 @@ if (process.env.NODE_ENV !== 'test') {
       console.log(`💬 Mensagem de equipe em ${teamId} de ${sender}`);
     });
 
+    // Indicador de digitação
+    socket.on('user-typing', (data) => {
+      const { teamId, userId, userName, isTyping } = data;
+      if (isTyping) {
+        console.log(`⌨️ ${userName} está digitando no time ${teamId}`);
+      }
+      io.to(`team-${teamId}`).emit('user-typing', {
+        userId,
+        userName,
+        isTyping,
+        teamId
+      });
+    });
+
     // ===== NOTAS EM TEMPO REAL =====
     // Professor envia nota para aluno
     socket.on('send-grade', (data) => {
