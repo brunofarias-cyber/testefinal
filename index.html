@@ -10,6 +10,43 @@
 
 <body>
   <div id="root"></div>
+  
+  <script>
+    // Send all console logs to the server for debugging
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    function sendToServer(level, args) {
+      const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      const data = JSON.stringify({ level, message, timestamp: new Date().toISOString() });
+      
+      // Use Blob + sendBeacon for better compatibility
+      const blob = new Blob([data], { type: 'application/json' });
+      navigator.sendBeacon('/api/client-log', blob);
+      
+      if (level === 'log') originalLog.apply(console, args);
+      else originalError.apply(console, args);
+    }
+    
+    console.log = function(...args) {
+      sendToServer('log', args);
+    };
+    
+    console.error = function(...args) {
+      sendToServer('error', args);
+    };
+    
+    window.addEventListener('error', (event) => {
+      console.error('Uncaught Error:', event.error?.message || String(event));
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('Unhandled Promise Rejection:', event.reason);
+    });
+    
+    console.log('🚀 App starting...');
+  </script>
+  
   <script type="module" src="/src/main.jsx"></script>
 </body>
 

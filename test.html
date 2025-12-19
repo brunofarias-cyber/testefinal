@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>React Load Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #00ff00;
+            background: #0a0a0a;
+        }
+        .pass { color: #00ff00; }
+        .fail { color: #ff0000; }
+    </style>
+</head>
+<body>
+    <h1>React & Vite Load Test</h1>
+    
+    <div id="tests"></div>
+    
+    <script>
+        const testDiv = document.getElementById('tests');
+        
+        function addTest(name, pass, message) {
+            const div = document.createElement('div');
+            div.className = 'test-item';
+            div.innerHTML = `<span class="${pass ? 'pass' : 'fail'}">${pass ? '✅' : '❌'} ${name}</span>: ${message}`;
+            testDiv.appendChild(div);
+            console.log(`${name}: ${message}`);
+        }
+        
+        // Test 1: Check if we're on the right path
+        addTest('Browser Location', true, window.location.href);
+        
+        // Test 2: Check if React can be loaded
+        try {
+            // Simulate what happens when main.jsx loads
+            addTest('DOM Ready', document.readyState === 'loading' ? false : true, `Document state: ${document.readyState}`);
+        } catch(e) {
+            addTest('DOM Ready', false, e.message);
+        }
+        
+        // Test 3: Check if root element exists
+        const root = document.getElementById('root');
+        addTest('Root Element', !!root, root ? 'Found' : 'Not found');
+        
+        // Test 4: Check if Vite client can be loaded
+        fetch('/@vite/client')
+            .then(r => addTest('Vite Client', r.ok, `Status: ${r.status}`))
+            .catch(e => addTest('Vite Client', false, e.message));
+        
+        // Test 5: Try to load main.jsx
+        import('/src/main.jsx')
+            .then(() => addTest('main.jsx Import', true, 'Successfully imported'))
+            .catch(err => addTest('main.jsx Import', false, err.message || JSON.stringify(err)));
+        
+        // Test 6: Check React from the React script
+        setTimeout(() => {
+            try {
+                addTest('React Global', typeof React !== 'undefined', typeof React);
+            } catch(e) {
+                addTest('React Global', false, e.message);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

@@ -178,6 +178,27 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Client-side logging endpoint
+const clientLogs = [];
+app.post('/api/client-log', express.json({ limit: '1MB' }), (req, res) => {
+  try {
+    console.log(`📝 Raw req.body type:`, typeof req.body, `keys:`, Object.keys(req.body || {}));
+    const { level, message, timestamp } = req.body || {};
+    if (level && message) {
+      const logEntry = { level, message, timestamp, clientTime: new Date().toISOString() };
+      clientLogs.push(logEntry);
+      console.log(`📱 [CLIENT-${level.toUpperCase()}] ${message}`);
+    }
+  } catch (e) {
+    console.log(`📱 [CLIENT-ERROR] ${e.message}`);
+  }
+  res.status(204).send();
+});
+
+app.get('/api/client-logs', (req, res) => {
+  res.json({ logs: clientLogs.slice(-100) }); // Return last 100 logs
+});
+
 // ===== STATIC FRONTEND (Vite build) =====
 // Procurar em vários caminhos possíveis - RENDER pode variar
 let distPath = null;

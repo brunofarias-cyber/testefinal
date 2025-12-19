@@ -2335,6 +2335,7 @@ const CoordinatorKanban = ({ projects, setProjects }) => {
 }
 
 function DashboardApp() {
+    console.log('🔴 DashboardApp iniciando...');
     const [viewState, setViewState] = useState('landing');
     const [showLoginScreen, setShowLoginScreen] = useState(false);
     const [activeTab, setActiveTab] = useState('dashboard');

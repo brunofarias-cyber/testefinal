@@ -60,15 +60,21 @@ if (!rootElement) {
     
     console.log('🎨 Renderizando app...');
     root.render(
-      <StrictMode>
-        <BrowserRouter>
-          <ErrorBoundary>
-            <App />
-          </ErrorBoundary>
-        </BrowserRouter>
-      </StrictMode>
+      <BrowserRouter>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </BrowserRouter>
     );
     console.log('✅ App renderizado com sucesso');
+    
+    // Check DOM after render
+    setTimeout(() => {
+      const rootDiv = document.getElementById('root');
+      console.log('🔍 DOM CHECK - root.innerHTML length:', (rootDiv?.innerHTML || '').length);
+      console.log('🔍 DOM CHECK - root.children count:', rootDiv?.children?.length || 0);
+      console.log('🔍 DOM CHECK - document.body.innerHTML length:', document.body.innerHTML.length);
+    }, 1000);
   } catch (error) {
     console.error('❌ Erro ao renderizar:', error);
     document.body.innerHTML = `<div style="padding: 20px; color: red;"><h1>❌ Erro ao renderizar app</h1><pre>${error.message}</pre></div>`;
