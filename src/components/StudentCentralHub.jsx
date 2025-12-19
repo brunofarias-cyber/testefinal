@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
+import { useRealTimeAttendance } from '../hooks/useRealTime';
 import { 
   Award, Upload, CheckSquare, Star, Bell, BarChart3,
   Download, CheckCircle, AlertCircle, Clock
@@ -9,6 +10,9 @@ const StudentCentralHub = ({ studentId = 101 }) => {
   const [activeSection, setActiveSection] = useState('grades');
   const [notification, setNotification] = useState(null);
   const [socket, setSocket] = useState(null);
+
+  // Usar hook de presença em tempo real
+  const { attendance: realtimeAttendance } = useRealTimeAttendance(studentId);
 
   // ===== NOTAS (GRADES) =====
   const [grades, setGrades] = useState([
@@ -119,6 +123,25 @@ const StudentCentralHub = ({ studentId = 101 }) => {
     setSocket(newSocket);
     return () => newSocket.disconnect();
   }, [studentId]);
+
+  // Combinar attendance real-time com dados locais
+  useEffect(() => {
+    if (realtimeAttendance && realtimeAttendance.length > 0) {
+      setAttendance(prevAttendance => {
+        // Merge com novos registros
+        const attendanceMap = new Map(prevAttendance.map(a => [a.date, a]));
+        realtimeAttendance.forEach(ra => {
+          if (!attendanceMap.has(ra.date)) {
+            attendanceMap.set(ra.date, ra);
+          }
+        });
+        // Ordenar por data decrescente
+        return Array.from(attendanceMap.values()).sort((a, b) => 
+          new Date(b.date) - new Date(a.date)
+        );
+      });
+    }
+  }, [realtimeAttendance]);
 
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
