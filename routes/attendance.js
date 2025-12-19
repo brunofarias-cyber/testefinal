@@ -4,7 +4,8 @@ import { asyncHandler } from '../middleware/errorHandler.js';
 import { handleValidationErrors } from '../middleware/validators.js';
 import logger from '../utils/logger.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
-import { Attendance, User, Class } from '../models/index.js';
+import models from '../models/index.js';
+const { Attendance, User, Class } = models;
 
 const router = express.Router();
 
