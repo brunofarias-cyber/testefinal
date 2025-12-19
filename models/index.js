@@ -6,6 +6,7 @@ import { SubmissionModel } from './Submission.js';
 import { AttendanceModel } from './Attendance.js';
 import { NotificationModel } from './Notification.js';
 import { OAuthTokenModel } from './OAuthToken.js';
+import { GradeModel } from './Grade.js';
 
 // BNCC Models
 import BnccGeneralCompetency from './BnccGeneralCompetency.js';
@@ -44,6 +45,7 @@ const Submission = SubmissionModel(sequelize);
 const Attendance = AttendanceModel(sequelize);
 const Notification = NotificationModel(sequelize);
 const OAuthToken = OAuthTokenModel(sequelize);
+const Grade = GradeModel(sequelize);
 const TheoreticalReference = TheoreticalReferenceModel(sequelize);
 const StudentFeedback = StudentFeedbackModel(sequelize);
 const EvaluationBenchmarks = EvaluationBenchmarksModel(sequelize);
@@ -90,6 +92,16 @@ Attendance.belongsTo(User, { foreignKey: 'studentId', as: 'student' });
 
 User.hasMany(Notification, { foreignKey: 'recipientId', as: 'notifications' });
 Notification.belongsTo(User, { foreignKey: 'recipientId', as: 'recipient' });
+
+// Grade associations
+User.hasMany(Grade, { foreignKey: 'studentId', as: 'gradesReceived' });
+Grade.belongsTo(User, { foreignKey: 'studentId', as: 'student' });
+
+User.hasMany(Grade, { foreignKey: 'teacherId', as: 'gradesGiven' });
+Grade.belongsTo(User, { foreignKey: 'teacherId', as: 'teacher' });
+
+Project.hasMany(Grade, { foreignKey: 'projectId', as: 'grades' });
+Grade.belongsTo(Project, { foreignKey: 'projectId', as: 'project' });
 
 Project.hasMany(Notification, { foreignKey: 'relatedProjectId', as: 'notifications' });
 Notification.belongsTo(Project, { foreignKey: 'relatedProjectId', as: 'project' });
@@ -257,6 +269,7 @@ export default {
     Attendance,
     Notification,
     OAuthToken,
+    Grade,
     BnccGeneralCompetency,
     BnccDiscipline,
     BnccSkill,
