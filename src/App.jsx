@@ -305,7 +305,7 @@ const INITIAL_EVENTS = [
 
 // --- COMPONENTS ---
 
-const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser }) => {
+const Sidebar = ({ activeTab, setActiveTab, role, onLogout, currentUser, notifications }) => {
     const getRoleLabel = () => {
         if (role === 'teacher') return 'Professor';
         if (role === 'student') return 'Aluno';
@@ -2525,7 +2525,7 @@ function DashboardApp() {
 
     return (
         <div className="flex min-h-screen bg-slate-50">
-            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} role={role} onLogout={handleLogout} currentUser={currentUser} />
+            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} role={role} onLogout={handleLogout} currentUser={currentUser} notifications={notifications} />
             <main className="flex-1 ml-72 p-8 min-h-screen">
                 <div className="flex justify-between items-center mb-8">
                     <div>
