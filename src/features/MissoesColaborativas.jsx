@@ -105,7 +105,7 @@ const MissoesColaborativas = () => {
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-slate-800 flex items-center gap-2 mb-2">
           <Trophy className="text-yellow-500" size={32} />
-          Missões Colaborativas
+          Missões Semanais
         </h2>
         <p className="text-slate-500">
           Equipes progridem juntas, sem competição tóxica
