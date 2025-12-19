@@ -8,6 +8,11 @@ import {
     Tooltip,
     Legend,
     ResponsiveContainer,
+    RadarChart,
+    PolarGrid,
+    PolarAngleAxis,
+    PolarRadiusAxis,
+    Radar,
 } from 'recharts';
 import {
     AlertCircle,
@@ -312,6 +317,127 @@ const ProfessorDashboard = ({
                     />
                 </div>
             </div>
+
+            {/* MAPA DE COMPETÊNCIAS */}
+            {data?.mapaCompetencias && data.mapaCompetencias.length > 0 && (
+                <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-3xl shadow-lg p-8 mb-8 border ${darkMode ? 'border-slate-700' : 'border-slate-100'} transition-colors`}>
+                    <div className="mb-6">
+                        <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-slate-800'} flex items-center gap-3 mb-2`}>
+                            🎯 Mapa de Competências da Turma
+                        </h2>
+                        <p className={darkMode ? 'text-slate-400' : 'text-slate-500'}>
+                            Desenvolvimento nas 8 competências principais
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Radar Chart */}
+                        <ResponsiveContainer width="100%" height={400}>
+                            <RadarChart data={data.mapaCompetencias}>
+                                <PolarGrid stroke={darkMode ? '#475569' : '#e2e8f0'} />
+                                <PolarAngleAxis 
+                                    dataKey="competencia" 
+                                    stroke={darkMode ? '#94a3b8' : '#64748b'}
+                                    tick={{ fontSize: 12 }}
+                                />
+                                <PolarRadiusAxis 
+                                    stroke={darkMode ? '#475569' : '#cbd5e1'}
+                                    tick={{ fontSize: 12 }}
+                                />
+                                <Radar 
+                                    name="Desempenho Atual" 
+                                    dataKey="desempenho" 
+                                    stroke="#4f46e5" 
+                                    fill="#4f46e5" 
+                                    fillOpacity={0.6}
+                                />
+                                <Radar 
+                                    name="Meta (100%)" 
+                                    dataKey="meta" 
+                                    stroke="#cbd5e1" 
+                                    fill="transparent"
+                                    strokeDasharray="5 5"
+                                />
+                                <Tooltip 
+                                    contentStyle={{
+                                        backgroundColor: darkMode ? '#1e293b' : '#fff',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        color: darkMode ? '#fff' : '#000',
+                                    }}
+                                    formatter={(value) => `${Number(value).toFixed(1)}%`}
+                                />
+                            </RadarChart>
+                        </ResponsiveContainer>
+
+                        {/* Competências Lista */}
+                        <div className="space-y-3">
+                            {data.mapaCompetencias.map((comp, idx) => (
+                                <div 
+                                    key={idx}
+                                    className={`p-4 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-slate-50 border-slate-200'} transition-all hover:scale-105 cursor-pointer`}
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h3 className={`font-bold ${darkMode ? 'text-white' : 'text-slate-800'}`}>
+                                            {comp.competencia}
+                                        </h3>
+                                        <span className={`text-sm font-bold ${comp.desempenho >= comp.meta ? 'text-green-600' : 'text-orange-600'}`}>
+                                            {Number(comp.desempenho).toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    
+                                    {/* Progress Bar */}
+                                    <div className={`w-full h-2 rounded-full ${darkMode ? 'bg-slate-600' : 'bg-slate-200'} overflow-hidden`}>
+                                        <div 
+                                            className={`h-full ${comp.desempenho >= comp.meta ? 'bg-green-500' : 'bg-blue-500'} transition-all`}
+                                            style={{ width: `${Math.min(comp.desempenho, 100)}%` }}
+                                        ></div>
+                                    </div>
+
+                                    <div className="flex justify-between text-xs mt-2">
+                                        <span className={darkMode ? 'text-slate-400' : 'text-slate-500'}>
+                                            Meta: {comp.meta}%
+                                        </span>
+                                        <span className={`font-bold ${comp.desempenho >= comp.meta ? 'text-green-600' : 'text-orange-600'}`}>
+                                            {comp.desempenho >= comp.meta ? '✓ Alcançado' : `Faltam ${(comp.meta - comp.desempenho).toFixed(1)}%`}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Insights de Competências */}
+                    <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <CompetenciaInsight
+                                label="Média Geral"
+                                valor={`${(data.mapaCompetencias.reduce((acc, c) => acc + c.desempenho, 0) / data.mapaCompetencias.length).toFixed(1)}%`}
+                                cor="indigo"
+                                darkMode={darkMode}
+                            />
+                            <CompetenciaInsight
+                                label="Acima da Meta"
+                                valor={data.mapaCompetencias.filter(c => c.desempenho >= c.meta).length}
+                                cor="green"
+                                darkMode={darkMode}
+                            />
+                            <CompetenciaInsight
+                                label="Abaixo da Meta"
+                                valor={data.mapaCompetencias.filter(c => c.desempenho < c.meta).length}
+                                cor="orange"
+                                darkMode={darkMode}
+                            />
+                            <CompetenciaInsight
+                                label="Potencial de Melhoria"
+                                valor={data.mapaCompetencias.filter(c => c.desempenho < 70).length}
+                                cor="red"
+                                darkMode={darkMode}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* TIMELINE */}
             <div className={`${darkMode ? 'bg-slate-800' : 'bg-white'} rounded-3xl shadow-lg p-8 border ${darkMode ? 'border-slate-700' : 'border-slate-100'} transition-colors`}>
@@ -662,5 +788,27 @@ function formatarDataRelativa(data) {
     
     return data.toLocaleDateString('pt-BR');
 }
+
+// ═══════════════════════════════════════════════════════════════════════
+// COMPONENTE DE INSIGHT DE COMPETÊNCIAS
+// ═══════════════════════════════════════════════════════════════════════
+
+const CompetenciaInsight = ({ label, valor, cor, darkMode }) => {
+    const corPalete = {
+        indigo: darkMode ? 'bg-indigo-900 text-indigo-300 border-indigo-700' : 'bg-indigo-50 text-indigo-700 border-indigo-200',
+        green: darkMode ? 'bg-green-900 text-green-300 border-green-700' : 'bg-green-50 text-green-700 border-green-200',
+        orange: darkMode ? 'bg-orange-900 text-orange-300 border-orange-700' : 'bg-orange-50 text-orange-700 border-orange-200',
+        red: darkMode ? 'bg-red-900 text-red-300 border-red-700' : 'bg-red-50 text-red-700 border-red-200',
+    };
+
+    return (
+        <div className={`${corPalete[cor]} border rounded-lg p-3 text-center transition-colors animate-in fade-in slide-in-from-bottom-2`}>
+            <p className={`text-xs font-bold uppercase tracking-wider mb-1 opacity-70`}>
+                {label}
+            </p>
+            <p className="text-2xl font-extrabold">{valor}</p>
+        </div>
+    );
+};
 
 export default ProfessorDashboard;

@@ -245,6 +245,49 @@ export const mockDashboardData = {
         },
     ],
 
+    mapaCompetencias: [
+        {
+            competencia: "Comunicação",
+            desempenho: 87.5,
+            meta: 100,
+        },
+        {
+            competencia: "Pensamento Crítico",
+            desempenho: 82.3,
+            meta: 100,
+        },
+        {
+            competencia: "Colaboração",
+            desempenho: 91.2,
+            meta: 100,
+        },
+        {
+            competencia: "Criatividade",
+            desempenho: 78.6,
+            meta: 100,
+        },
+        {
+            competencia: "Liderança",
+            desempenho: 85.4,
+            meta: 100,
+        },
+        {
+            competencia: "Resolução de Problemas",
+            desempenho: 88.9,
+            meta: 100,
+        },
+        {
+            competencia: "Responsabilidade",
+            desempenho: 93.1,
+            meta: 100,
+        },
+        {
+            competencia: "Empatia",
+            desempenho: 89.7,
+            meta: 100,
+        },
+    ],
+
     timestamp: new Date().toISOString(),
 };
 
