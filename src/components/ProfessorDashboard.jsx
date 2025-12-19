@@ -374,7 +374,7 @@ const KPICard = ({
     return (
         <button
             onClick={onClick}
-            className={`text-left rounded-2xl p-6 border-2 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4
+            className={`w-full text-left rounded-2xl p-6 border-2 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4
                 ${destaque ? 'border-yellow-400 shadow-lg' : darkMode ? 'border-slate-700' : 'border-slate-100'}
                 hover:shadow-2xl hover:scale-105 hover:-translate-y-1
                 ${alerta ? 'ring-2 ring-red-300' : ''}
@@ -382,9 +382,11 @@ const KPICard = ({
                 ${darkMode ? 'bg-slate-800' : 'bg-gradient-to-br ' + corFundo}`}
         >
             {/* Menu (Melhoria #9) */}
-            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-30">
                 <button 
+                    type="button"
                     onClick={(e) => {
+                        e.preventDefault();
                         e.stopPropagation();
                         onMenu();
                     }}
@@ -394,12 +396,14 @@ const KPICard = ({
                 </button>
                 
                 {menuOpen && (
-                    <div className={`absolute top-10 right-0 rounded-lg shadow-lg border py-2 z-20 min-w-48
+                    <div className={`absolute top-10 right-0 rounded-lg shadow-xl border py-2 z-50 min-w-48
                         ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-200'}`}>
                         {menuItems.map((item, idx) => (
                             <button
+                                type="button"
                                 key={idx}
                                 onClick={(e) => {
+                                    e.preventDefault();
                                     e.stopPropagation();
                                     item.action();
                                     onMenu();
@@ -418,7 +422,7 @@ const KPICard = ({
                 <div className={`${corIcone} p-3 rounded-xl group-hover:scale-110 transition-transform`}>
                     {icone}
                 </div>
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                     <span className={`text-xs font-semibold px-2 py-1 rounded ${darkMode ? 'bg-slate-700 text-slate-200' : 'bg-white/80 text-slate-600'}`}>
                         {acao}
                     </span>
