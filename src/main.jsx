@@ -4,6 +4,10 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App.jsx';
 
+// Debug logging
+console.log('🚀 main.jsx iniciando...');
+console.log('📁 document.getElementById("root"):', document.getElementById('root'));
+
 // Error boundary simples para exibir erros em tela (evita tela em branco)
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -41,12 +45,32 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <BrowserRouter>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
-    </BrowserRouter>
-  </StrictMode>
-);
+console.log('✅ ErrorBoundary criado');
+const rootElement = document.getElementById('root');
+console.log('📍 Root element:', rootElement);
+
+if (!rootElement) {
+  console.error('❌ ERRO: Elemento root não encontrado!');
+  document.body.innerHTML = '<div style="padding: 20px; color: red;">❌ Elemento root não encontrado no HTML</div>';
+} else {
+  try {
+    console.log('🔄 Iniciando createRoot...');
+    const root = createRoot(rootElement);
+    console.log('✅ Root criado com sucesso');
+    
+    console.log('🎨 Renderizando app...');
+    root.render(
+      <StrictMode>
+        <BrowserRouter>
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
+        </BrowserRouter>
+      </StrictMode>
+    );
+    console.log('✅ App renderizado com sucesso');
+  } catch (error) {
+    console.error('❌ Erro ao renderizar:', error);
+    document.body.innerHTML = `<div style="padding: 20px; color: red;"><h1>❌ Erro ao renderizar app</h1><pre>${error.message}</pre></div>`;
+  }
+}
