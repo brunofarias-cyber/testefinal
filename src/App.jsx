@@ -77,6 +77,7 @@ import StudentProgressDashboard from "./components/StudentProgressDashboard";
 import TeacherClassManager from "./components/TeacherClassManager";
 
 import { NotificationCenter, StudentProgress } from "./components/NotificationCenter";
+import { NotificationCenter as NotificationCenterRealTime } from "./components/RealTimeComponents";
 import CoordinatorAdvanced from "./components/CoordinatorAdvanced";
 import CoordinatorIntelligenceCenter from "./components/CoordinatorIntelligenceCenter";
 import TeacherIntelligenceCenter from "./components/TeacherIntelligenceCenter";
@@ -2529,10 +2530,13 @@ function DashboardApp() {
                         <h2 className="text-xs font-extrabold uppercase text-indigo-400 tracking-widest mb-1">Ambiente</h2>
                         <div className="text-sm font-bold text-slate-600 bg-white px-3 py-1 rounded-lg shadow-sm border border-slate-100 inline-block">Demo v5.0</div>
                     </div>
-                    <div className="flex items-center gap-3 bg-white p-2 rounded-full shadow-sm border border-slate-100 pr-4">
-                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser?.name || role}`} className="w-8 h-8 rounded-full bg-slate-100" />
-                        <div className="text-xs text-right">
-                            <p className="font-bold text-slate-700 capitalize">{currentUser?.name || role}</p>
+                    <div className="flex items-center gap-4">
+                        {currentUser && <NotificationCenterRealTime userId={currentUser.id} />}
+                        <div className="flex items-center gap-3 bg-white p-2 rounded-full shadow-sm border border-slate-100 pr-4">
+                            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser?.name || role}`} className="w-8 h-8 rounded-full bg-slate-100" />
+                            <div className="text-xs text-right">
+                                <p className="font-bold text-slate-700 capitalize">{currentUser?.name || role}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
