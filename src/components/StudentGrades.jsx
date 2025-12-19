@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { io } from 'socket.io-client';
+import { useRealTimeGrades } from '../hooks/useRealTime';
 import { 
   Star, TrendingUp, Award, AlertCircle, Download, Filter, CheckCircle,
   BarChart3, Zap, Target, LineChart, ChevronRight, Calendar, User,
@@ -54,6 +55,9 @@ const StudentGrades = () => {
     const [notification, setNotification] = useState(null);
     const [socket, setSocket] = useState(null);
 
+    // Usar hook de grades em tempo real
+    const { grades: realtimeGrades } = useRealTimeGrades(101); // ID do aluno
+
     // Conectar ao Socket.io para receber notificações em tempo real
     useEffect(() => {
         const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000');
@@ -99,6 +103,22 @@ const StudentGrades = () => {
             newSocket.disconnect();
         };
     }, []);
+
+    // Combinar grades reais do hook com dados locais
+    useEffect(() => {
+        if (realtimeGrades && realtimeGrades.length > 0) {
+            setGrades(prevGrades => {
+                // Merge grades do hook com locais, evitando duplicatas
+                const gradeMap = new Map(prevGrades.map(g => [g.id, g]));
+                realtimeGrades.forEach(rg => {
+                    if (!gradeMap.has(rg.id)) {
+                        gradeMap.set(rg.id, rg);
+                    }
+                });
+                return Array.from(gradeMap.values());
+            });
+        }
+    }, [realtimeGrades]);
 
     const filteredGrades = grades.filter(g => {
         if (filterStatus === "all") return true;
