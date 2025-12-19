@@ -464,4 +464,135 @@ router.post('/conversation/create',
   })
 );
 
+// ════════════════════════════════════════════════════════════════════
+// ALIASES PARA COMPATIBILIDADE COM FRONTEND
+// ════════════════════════════════════════════════════════════════════
+
+/**
+ * GET /api/messages/team/:teamId
+ * Alias para buscar mensagens de uma equipe
+ * Redirecionado de /api/teams/messages/team/:teamId
+ */
+router.get('/team/:teamId', async (req, res) => {
+  const { teamId } = req.params;
+  
+  try {
+    // Importar dados mock de teams
+    const MOCK_MESSAGES = [
+      {
+        id: 1,
+        teamId: 1,
+        senderId: 101,
+        senderName: 'João Silva',
+        senderAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Joao',
+        senderRole: 'student',
+        message: 'Pesquisei sobre hortas e encontrei informações interessantes!',
+        timestamp: '2025-01-20T10:30:00',
+        read: true
+      },
+      {
+        id: 2,
+        teamId: 1,
+        senderId: 1,
+        senderName: 'Profª Ana Silva',
+        senderAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ana',
+        senderRole: 'teacher',
+        message: 'Ótimo, João! Podem compartilhar as fontes com o grupo?',
+        timestamp: '2025-01-20T10:35:00',
+        read: true
+      },
+      {
+        id: 3,
+        teamId: 1,
+        senderId: 102,
+        senderName: 'Maria Oliveira',
+        senderAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
+        senderRole: 'student',
+        message: 'Eu posso fazer um resumo das fontes para compartilhar',
+        timestamp: '2025-01-20T10:40:00',
+        read: false
+      },
+      {
+        id: 4,
+        teamId: 2,
+        senderId: 201,
+        senderName: 'Carlos Lima',
+        senderAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos',
+        senderRole: 'student',
+        message: 'Consegui programar os motores! Está funcionando.',
+        timestamp: '2025-01-25T14:15:00',
+        read: true
+      },
+      {
+        id: 5,
+        teamId: 2,
+        senderId: 202,
+        senderName: 'Lucas Pereira',
+        senderAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas',
+        senderRole: 'student',
+        message: 'Bora montar a estrutura hoje então?',
+        timestamp: '2025-01-25T14:45:00',
+        read: true
+      }
+    ];
+
+    const teamIdNum = parseInt(teamId);
+    const teamMessages = MOCK_MESSAGES.filter(msg => msg.teamId === teamIdNum).sort((a, b) => 
+      new Date(a.timestamp) - new Date(b.timestamp)
+    );
+
+    res.json({
+      success: true,
+      data: teamMessages
+    });
+  } catch (error) {
+    console.error('Erro ao buscar mensagens:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erro ao carregar mensagens'
+    });
+  }
+});
+
+/**
+ * POST /api/messages/team/:teamId
+ * Enviar mensagem para uma equipe
+ */
+router.post('/team/:teamId', async (req, res) => {
+  const { teamId } = req.params;
+  const { senderId, senderName, senderRole, message, senderAvatar } = req.body;
+
+  try {
+    if (!senderId || !senderName || !message) {
+      return res.status(400).json({
+        success: false,
+        error: 'Dados inválidos: senderId, senderName e message são obrigatórios'
+      });
+    }
+
+    const newMessage = {
+      id: Math.floor(Math.random() * 10000),
+      teamId: parseInt(teamId),
+      senderId,
+      senderName,
+      senderAvatar: senderAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${senderName}`,
+      senderRole: senderRole || 'student',
+      message,
+      timestamp: new Date().toISOString(),
+      read: false
+    };
+
+    res.json({
+      success: true,
+      data: newMessage
+    });
+  } catch (error) {
+    console.error('Erro ao enviar mensagem:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erro ao enviar mensagem'
+    });
+  }
+});
+
 export default router;
