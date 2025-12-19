@@ -4,62 +4,35 @@ import { asyncHandler } from '../middleware/errorHandler.js';
 import { handleValidationErrors } from '../middleware/validators.js';
 import logger from '../utils/logger.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
+import { Attendance, User, Class } from '../models/index.js';
 
 const router = express.Router();
 
 // Aplicar rate limiter
 router.use(apiLimiter);
 
-// Mock database para presença
-let attendanceDatabase = [
-    {
-        id: 1,
-        student_id: 101,
-        class_id: 1,
-        class_name: 'Biologia - Turma A',
-        date: '2024-12-10',
-        status: 'presente',
-        teacher_name: 'Prof. Ana Silva',
-        created_at: new Date()
-    },
-    {
-        id: 2,
-        student_id: 101,
-        class_id: 1,
-        class_name: 'Biologia - Turma A',
-        date: '2024-12-09',
-        status: 'presente',
-        teacher_name: 'Prof. Ana Silva',
-        created_at: new Date()
-    },
-    {
-        id: 3,
-        student_id: 101,
-        class_id: 2,
-        class_name: 'Matemática - Turma A',
-        date: '2024-12-10',
-        status: 'falta',
-        teacher_name: 'Prof. Roberto Lima',
-        created_at: new Date()
-    }
-];
-
-let nextId = 4;
-
 /**
  * GET /api/attendance/student/:studentId
  * Recupera o histórico de presença de um aluno
  */
 router.get('/student/:studentId',
-  param('studentId').isInt({ min: 1 }).withMessage('ID do aluno deve ser um número positivo'),
+  param('studentId').notEmpty().withMessage('ID do aluno é obrigatório'),
   handleValidationErrors,
   asyncHandler(async (req, res) => {
     const { studentId } = req.params;
-    const studentAttendance = attendanceDatabase.filter(a => a.student_id === parseInt(studentId));
+    
+    const studentAttendance = await Attendance.findAll({
+        where: { studentId },
+        include: [
+            { model: User, as: 'student', attributes: ['id', 'name', 'email'] },
+            { model: Class, as: 'class', attributes: ['id', 'name'] }
+        ],
+        order: [['date', 'DESC']]
+    });
     
     logger.info(`Recuperando presença do aluno ${studentId}`, { count: studentAttendance.length });
 
-    return res.json({
+    res.json({
         success: true,
         data: studentAttendance,
         count: studentAttendance.length,
@@ -73,15 +46,22 @@ router.get('/student/:studentId',
  * Recupera a presença de toda uma turma
  */
 router.get('/class/:classId',
-  param('classId').isInt({ min: 1 }).withMessage('ID da turma deve ser um número positivo'),
+  param('classId').notEmpty().withMessage('ID da turma é obrigatório'),
   handleValidationErrors,
   asyncHandler(async (req, res) => {
     const { classId } = req.params;
-    const classAttendance = attendanceDatabase.filter(a => a.class_id === parseInt(classId));
+    
+    const classAttendance = await Attendance.findAll({
+        where: { classId },
+        include: [
+            { model: User, as: 'student', attributes: ['id', 'name', 'email'] }
+        ],
+        order: [['date', 'DESC']]
+    });
     
     logger.info(`Recuperando presença da turma ${classId}`, { count: classAttendance.length });
 
-    return res.json({
+    res.json({
         success: true,
         data: classAttendance,
         count: classAttendance.length,
@@ -95,11 +75,15 @@ router.get('/class/:classId',
  * Calcula estatísticas de presença do aluno
  */
 router.get('/stats/:studentId',
-  param('studentId').isInt({ min: 1 }).withMessage('ID do aluno deve ser um número positivo'),
+  param('studentId').notEmpty().withMessage('ID do aluno é obrigatório'),
   handleValidationErrors,
   asyncHandler(async (req, res) => {
     const { studentId } = req.params;
-    const studentAttendance = attendanceDatabase.filter(a => a.student_id === parseInt(studentId));
+    
+    const studentAttendance = await Attendance.findAll({
+        where: { studentId },
+        attributes: ['id', 'status', 'date']
+    });
     
     const totalClasses = studentAttendance.length;
     const presences = studentAttendance.filter(a => a.status === 'presente').length;
@@ -113,10 +97,10 @@ router.get('/stats/:studentId',
       attendancePercentage 
     });
 
-    return res.json({
+    res.json({
         success: true,
         data: {
-            studentId: parseInt(studentId),
+            studentId,
             totalClasses,
             presences,
             absences,
@@ -126,7 +110,8 @@ router.get('/stats/:studentId',
         },
         message: 'Estatísticas calculadas com sucesso'
     });
-  }));
+  })
+);
 
 /**
  * POST /api/attendance/mark
@@ -134,137 +119,162 @@ router.get('/stats/:studentId',
  * 
  * Body:
  * {
- *   studentId: number,
- *   classId: number,
- *   className: string,
+ *   studentId: string (UUID),
+ *   classId: string (UUID),
  *   status: 'presente' | 'falta' | 'atraso',
- *   teacherName: string,
  *   notes?: string
  * }
  */
 router.post('/mark',
   [
-    body('studentId').isInt({ min: 1 }).withMessage('ID do aluno deve ser um número positivo'),
-    body('classId').isInt({ min: 1 }).withMessage('ID da turma deve ser um número positivo'),
-    body('className').trim().notEmpty().withMessage('Nome da turma é obrigatório'),
+    body('studentId').notEmpty().withMessage('ID do aluno é obrigatório'),
+    body('classId').notEmpty().withMessage('ID da turma é obrigatório'),
     body('status').isIn(['presente', 'falta', 'atraso']).withMessage('Status deve ser: presente, falta ou atraso'),
-    body('teacherName').trim().notEmpty().withMessage('Nome do professor é obrigatório'),
     body('notes').optional().isLength({ max: 200 }).withMessage('Notas não podem exceder 200 caracteres')
   ],
   handleValidationErrors,
   asyncHandler(async (req, res) => {
-    const { studentId, classId, className, status, teacherName, notes } = req.body;
+    const { studentId, classId, status, notes } = req.body;
 
-    // Criar novo registro
-    const attendanceRecord = {
-        id: nextId++,
-        student_id: parseInt(studentId),
-        class_id: parseInt(classId),
-        class_name: className,
-        date: new Date().toISOString().split('T')[0],
-        status: status,
-        teacher_name: teacherName,
-        notes: notes || null,
-        created_at: new Date()
-    };
+    try {
+      // Verificar se já existe registro para este aluno/turma/data
+      const today = new Date().toISOString().split('T')[0];
+      
+      let attendance = await Attendance.findOne({
+        where: { studentId, classId, date: today }
+      });
 
-    attendanceDatabase.push(attendanceRecord);
-    logger.info('Presença marcada', { studentId, classId, status });
+      if (attendance) {
+        // Atualizar registro existente
+        attendance.status = status;
+        attendance.notes = notes || attendance.notes;
+        await attendance.save();
+        logger.info('Presença atualizada', { studentId, classId, status });
+      } else {
+        // Criar novo registro
+        attendance = await Attendance.create({
+          studentId,
+          classId,
+          status,
+          notes: notes || null,
+          date: new Date()
+        });
+        logger.info('Presença marcada', { studentId, classId, status });
+      }
 
-    // 🔔 Socket.io - Notificar o aluno em tempo real
-    if (req.app.io) {
+      // 🔔 Socket.io - Notificar o aluno em tempo real
+      if (req.app.io) {
         req.app.io.to(`student-${studentId}`).emit('attendance-marked', {
-            classId,
-            className,
-            status,
-            teacher: teacherName,
-            notes: notes || null,
-            timestamp: new Date()
+          classId,
+          status,
+          notes: notes || null,
+          timestamp: new Date()
         });
         logger.info(`Notificação de presença enviada para aluno ${studentId}`);
-    }
+      }
 
-    return res.status(201).json({
+      res.status(201).json({
         success: true,
-        data: attendanceRecord,
-        message: `Presença marcada com sucesso! ${teacherName} registrou ${status} para a aula de ${className}`
-    });
+        data: attendance,
+        message: `Presença marcada com sucesso como ${status}`
+      });
+    } catch (error) {
+      logger.error('Erro ao marcar presença', { error: error.message });
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
   })
 );
 
 /**
- * PUT /api/attendance/:attendanceId
+ * PUT /api/attendance/:id
  * Atualiza um registro de presença
  */
-router.put('/:attendanceId', (req, res) => {
-    const { attendanceId } = req.params;
+router.put('/:id', 
+  [
+    body('status').optional().isIn(['presente', 'falta', 'atraso']).withMessage('Status inválido'),
+    body('notes').optional().isLength({ max: 200 }).withMessage('Notas não podem exceder 200 caracteres')
+  ],
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
     const { status, notes } = req.body;
 
-    const attendance = attendanceDatabase.find(a => a.id === parseInt(attendanceId));
+    try {
+      const attendance = await Attendance.findByPk(id);
 
-    if (!attendance) {
+      if (!attendance) {
         return res.status(404).json({
-            success: false,
-            error: 'Registro de presença não encontrado'
+          success: false,
+          error: 'Registro de presença não encontrado'
         });
-    }
+      }
 
-    if (status && !['presente', 'falta', 'atraso'].includes(status)) {
-        return res.status(400).json({
-            success: false,
-            error: 'Status inválido. Use: presente, falta ou atraso'
+      if (status) attendance.status = status;
+      if (notes !== undefined) attendance.notes = notes;
+      
+      await attendance.save();
+      
+      logger.info(`Presença atualizada: ${id}`, { status });
+
+      // 🔔 Socket.io - Notificar
+      if (req.app.io) {
+        req.app.io.to(`student-${attendance.studentId}`).emit('attendance-updated', {
+          classId: attendance.classId,
+          status: attendance.status,
+          timestamp: new Date()
         });
-    }
+      }
 
-    // Atualizar
-    if (status) attendance.status = status;
-    if (notes !== undefined) attendance.notes = notes;
-    attendance.updated_at = new Date();
-
-    console.log(`✏️ PUT /api/attendance/${attendanceId} - Presença atualizada`);
-
-    // 🔔 Socket.io - Notificar
-    if (req.app.io) {
-        req.app.io.to(`student-${attendance.student_id}`).emit('attendance-updated', {
-            classId: attendance.class_id,
-            className: attendance.class_name,
-            status: attendance.status,
-            teacher: attendance.teacher_name,
-            timestamp: new Date()
-        });
-    }
-
-    return res.json({
+      res.json({
         success: true,
         data: attendance,
         message: 'Presença atualizada com sucesso'
-    });
-});
+      });
+    } catch (error) {
+      logger.error('Erro ao atualizar presença', { error: error.message });
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  })
+);
 
 /**
- * DELETE /api/attendance/:attendanceId
+ * DELETE /api/attendance/:id
  * Deleta um registro de presença
  */
-router.delete('/:attendanceId', (req, res) => {
-    const { attendanceId } = req.params;
-    const index = attendanceDatabase.findIndex(a => a.id === parseInt(attendanceId));
+router.delete('/:id', asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-    if (index === -1) {
+    try {
+      const attendance = await Attendance.findByPk(id);
+
+      if (!attendance) {
         return res.status(404).json({
-            success: false,
-            error: 'Registro de presença não encontrado'
+          success: false,
+          error: 'Registro de presença não encontrado'
         });
-    }
+      }
 
-    const deleted = attendanceDatabase.splice(index, 1)[0];
+      await attendance.destroy();
+      
+      logger.info(`Presença deletada: ${id}`);
 
-    console.log(`🗑️ DELETE /api/attendance/${attendanceId} - Presença deletada`);
-
-    return res.json({
+      res.json({
         success: true,
-        data: deleted,
         message: 'Presença deletada com sucesso'
-    });
-});
+      });
+    } catch (error) {
+      logger.error('Erro ao deletar presença', { error: error.message });
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+}));
 
 export default router;
