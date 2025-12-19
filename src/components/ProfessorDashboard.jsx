@@ -17,6 +17,7 @@ import {
     Zap,
     MessageSquare,
     FileText,
+    ArrowRight,
 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -25,11 +26,40 @@ import {
 
 const ProfessorDashboard = ({
     teacherId = "default_teacher",
-    classId = "default_class"
+    classId = "default_class",
+    onNavigateTo = () => {}
 }) => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // ⌨️ Atalhos de teclado para navegação rápida
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            // Ignorar se estiver digitando em input/textarea
+            if (e.target.matches('input, textarea')) return;
+
+            switch(e.key.toUpperCase()) {
+                case 'R':
+                    e.preventDefault();
+                    onNavigateTo('reports');
+                    break;
+                case 'M':
+                    e.preventDefault();
+                    onNavigateTo('messages');
+                    break;
+                case 'P':
+                    e.preventDefault();
+                    onNavigateTo('planning');
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [onNavigateTo]);
 
     // 🔄 Buscar dados da API
     useEffect(() => {
@@ -81,9 +111,20 @@ const ProfessorDashboard = ({
                 <p className="text-slate-600">
                     Visão 360° do desempenho da sua turma em tempo real
                 </p>
-                <p className="text-xs text-slate-400 mt-2">
-                    Última atualização: {new Date(data.timestamp).toLocaleTimeString('pt-BR')}
-                </p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
+                    <p className="text-xs text-slate-400">
+                        Última atualização: {new Date(data.timestamp).toLocaleTimeString('pt-BR')}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg w-fit">
+                        <span className="font-mono">⌨️ Atalhos:</span>
+                        <kbd className="bg-white px-1.5 py-0.5 rounded border border-slate-300">R</kbd>
+                        <span>Relatórios</span>
+                        <kbd className="bg-white px-1.5 py-0.5 rounded border border-slate-300">M</kbd>
+                        <span>Mensagens</span>
+                        <kbd className="bg-white px-1.5 py-0.5 rounded border border-slate-300">P</kbd>
+                        <span>Projetos</span>
+                    </div>
+                </div>
             </div>
 
             {/* ═══════════════════════════════════════════════════════════════ */}
@@ -101,6 +142,8 @@ const ProfessorDashboard = ({
                     corIcone="bg-blue-200 text-blue-600"
                     descricao="Entregas aguardando avaliação"
                     destaque={data.kpis.correcoesPendentes > 0}
+                    onClick={() => onNavigateTo('reports')}
+                    acao="Ir para Relatórios"
                 />
 
                 {/* Card 2: Alunos em Risco */}
@@ -114,6 +157,8 @@ const ProfessorDashboard = ({
                     descricao="Média abaixo de 6.0"
                     destaque={data.kpis.alunosEmRisco > 0}
                     alerta={true}
+                    onClick={() => onNavigateTo('messages')}
+                    acao="Enviar Mensagem"
                 />
 
                 {/* Card 3: Projetos Concluídos */}
@@ -126,6 +171,8 @@ const ProfessorDashboard = ({
                     corIcone="bg-green-200 text-green-600"
                     descricao="Progresso geral da turma"
                     destaque={data.kpis.projetosConcluidos === 100}
+                    onClick={() => onNavigateTo('planning')}
+                    acao="Ver Projetos"
                 />
             </div>
 
@@ -276,15 +323,24 @@ const KPICard = ({
     descricao,
     destaque,
     alerta,
+    onClick,
+    acao
 }) => (
-    <div
-        className={`bg-gradient-to-br ${corFundo} rounded-2xl p-6 border-2 ${destaque ? 'border-yellow-400 shadow-lg' : 'border-slate-100'
-            } transition-all hover:shadow-lg hover:scale-105 ${alerta ? 'ring-2 ring-red-300' : ''
-            }`}
+    <button
+        onClick={onClick}
+        className={`text-left bg-gradient-to-br ${corFundo} rounded-2xl p-6 border-2 ${destaque ? 'border-yellow-400 shadow-lg' : 'border-slate-100'
+            } transition-all duration-200 hover:shadow-xl hover:scale-105 hover:border-slate-300 ${alerta ? 'ring-2 ring-red-300' : ''
+            } cursor-pointer group`}
     >
         <div className="flex justify-between items-start mb-4">
-            <div className={`${corIcone} p-3 rounded-xl`}>{icone}</div>
-            {destaque && <span className="text-sm font-bold text-yellow-600">⭐ Destaque</span>}
+            <div className={`${corIcone} p-3 rounded-xl group-hover:scale-110 transition-transform`}>{icone}</div>
+            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-xs font-semibold text-slate-600 bg-white/80 px-2 py-1 rounded">
+                    {acao}
+                </span>
+                <ArrowRight size={16} className="text-slate-600" />
+            </div>
+            {destaque && <span className="text-sm font-bold text-yellow-600">⭐</span>}
         </div>
 
         <h3 className={`text-sm font-bold ${corTexto} uppercase tracking-wider mb-2`}>
@@ -293,8 +349,13 @@ const KPICard = ({
 
         <p className={`text-4xl font-extrabold ${corTexto} mb-2`}>{valor}</p>
 
-        <p className="text-sm text-slate-600">{descricao}</p>
-    </div>
+        <div className="flex justify-between items-end">
+            <p className="text-sm text-slate-600">{descricao}</p>
+            <kbd className="hidden sm:inline text-xs font-mono bg-white/50 px-2 py-1 rounded border border-slate-200 text-slate-600">
+                {acao === "Ir para Relatórios" ? "R" : acao === "Enviar Mensagem" ? "M" : "P"}
+            </kbd>
+        </div>
+    </button>
 );
 
 const TimelineItem = ({
