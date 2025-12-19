@@ -87,6 +87,7 @@ import TeacherRubricEditablePoints from "./components/TeacherRubricEditablePoint
 import TeacherReportsEditavel from "./components/TeacherReportsEditavel";
 import TeacherBnccPage from "./pages/TeacherBnccPage";
 import StudentBnccPage from "./pages/StudentBnccPage";
+import TeamChatPage from "./pages/TeamChatPage";
 
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import GerenciadorColaboradores from "./components/coteaching/GerenciadorColaboradores";
@@ -2504,6 +2505,7 @@ function DashboardApp() {
             if (activeTab === 'student-central') return <StudentCentralHub studentId={currentUser?.id || 101} />;
             if (activeTab === 'calendar') return <StudentCalendar events={calendarEvents} />;
             if (activeTab === 'messages') return <MessagingSystemV2 userRole="student" currentUserId={currentUser?.id || 101} currentUserName={currentUser?.name || 'Aluno'} />;
+            if (activeTab === 'team-chat') return <TeamChatPage teamId={1} teamName="Equipe 01" userId={currentUser?.id || 101} userName={currentUser?.name || 'Aluno'} onBack={() => setActiveTab('student-home')} />;
             if (activeTab === 'notifications') return <NotificationCenter notifications={notifications} setNotifications={setNotifications} userRole={role} />;
             if (activeTab === 'skills') return <StudentBnccPage studentId={currentUser?.id || 101} />;
             return <div className="text-center py-20"><h3 className="text-2xl font-bold text-slate-800 mb-2">Em desenvolvimento</h3><p className="text-slate-500">Esta funcionalidade será implementada em breve!</p></div>;
