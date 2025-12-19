@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Test</title>
+    <style>
+        body {
+            font-size: 24px;
+            background: #fff;
+            color: #000;
+            font-family: Arial;
+        }
+    </style>
+</head>
+<body>
+    <h1>✅ Server is working!</h1>
+    <p>If you can see this, the server is responding correctly.</p>
+    <p>Timestamp: <span id="time"></span></p>
+    
+    <script>
+        document.getElementById('time').textContent = new Date().toISOString();
+    </script>
+</body>
+</html>

@@ -60,11 +60,13 @@ if (!rootElement) {
     
     console.log('🎨 Renderizando app...');
     root.render(
-      <BrowserRouter>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
-      </BrowserRouter>
+      <StrictMode>
+        <BrowserRouter>
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
+        </BrowserRouter>
+      </StrictMode>
     );
     console.log('✅ App renderizado com sucesso');
     

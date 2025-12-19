@@ -6,7 +6,7 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Teste Final</title>
-  <script type="module" crossorigin src="/assets/index-CGPg1zhS.js"></script>
+  <script type="module" crossorigin src="/assets/index-eDMx6lRe.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/vendor-utils-BeLtu-UY.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-charts-CHrXQyhJ.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-react-CqF3XmSZ.js">
@@ -17,6 +17,43 @@
 
 <body>
   <div id="root"></div>
+  
+  <script>
+    // Send all console logs to the server for debugging
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    function sendToServer(level, args) {
+      const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      const data = JSON.stringify({ level, message, timestamp: new Date().toISOString() });
+      
+      // Use Blob + sendBeacon for better compatibility
+      const blob = new Blob([data], { type: 'application/json' });
+      navigator.sendBeacon('/api/client-log', blob);
+      
+      if (level === 'log') originalLog.apply(console, args);
+      else originalError.apply(console, args);
+    }
+    
+    console.log = function(...args) {
+      sendToServer('log', args);
+    };
+    
+    console.error = function(...args) {
+      sendToServer('error', args);
+    };
+    
+    window.addEventListener('error', (event) => {
+      console.error('Uncaught Error:', event.error?.message || String(event));
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('Unhandled Promise Rejection:', event.reason);
+    });
+    
+    console.log('🚀 App starting...');
+  </script>
+  
 </body>
 
 </html>

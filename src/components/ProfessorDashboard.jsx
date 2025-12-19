@@ -498,7 +498,7 @@ const KPICard = ({
     ];
 
     return (
-        <button
+        <div
             onClick={onClick}
             className={`w-full text-left rounded-2xl p-6 border-2 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4
                 ${destaque ? 'border-yellow-400 shadow-lg' : darkMode ? 'border-slate-700' : 'border-slate-100'}
@@ -635,7 +635,7 @@ const KPICard = ({
                     />
                 </svg>
             </div>
-        </button>
+        </div>
     );
 };
 
