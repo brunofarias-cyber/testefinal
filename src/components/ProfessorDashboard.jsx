@@ -498,7 +498,7 @@ const KPICard = ({
     ];
 
     return (
-        <div
+        <button
             onClick={onClick}
             className={`w-full text-left rounded-2xl p-6 border-2 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4
                 ${destaque ? 'border-yellow-400 shadow-lg' : darkMode ? 'border-slate-700' : 'border-slate-100'}
@@ -508,18 +508,27 @@ const KPICard = ({
                 ${darkMode ? 'bg-slate-800' : 'bg-gradient-to-br ' + corFundo}`}
         >
             {/* Menu (Melhoria #9) */}
-            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-30">
-                <button 
-                    type="button"
+            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-30 pointer-events-auto">
+                <div 
+                    role="button"
+                    tabIndex={0}
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         onMenu();
                     }}
-                    className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-slate-700' : 'hover:bg-white/50'}`}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onMenu();
+                        }
+                    }}
+                    className={`p-2 rounded-lg transition-colors cursor-pointer ${darkMode ? 'hover:bg-slate-700' : 'hover:bg-white/50'}`}
+                    aria-label="Menu de opções"
                 >
                     <MoreVertical size={18} className={corTexto} />
-                </button>
+                </div>
                 
                 {menuOpen && (
                     <div className={`absolute top-10 right-0 rounded-lg shadow-xl border py-2 z-50 min-w-48
@@ -635,7 +644,7 @@ const KPICard = ({
                     />
                 </svg>
             </div>
-        </div>
+        </button>
     );
 };
 
