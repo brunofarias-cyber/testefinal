@@ -1,0 +1,1 @@
+Criação de uma migração para adicionar a tabela `Teams` com colunas básicas como `id`, `name`, `description`, `createdAt` e `updatedAt`.

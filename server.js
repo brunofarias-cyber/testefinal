@@ -184,10 +184,12 @@ app.post('/api/client-log', express.json({ limit: '1MB' }), (req, res) => {
   try {
     console.log(`📝 Raw req.body type:`, typeof req.body, `keys:`, Object.keys(req.body || {}));
     const { level, message, timestamp } = req.body || {};
-    if (level && message) {
+    if (typeof level === 'string' && message) {
       const logEntry = { level, message, timestamp, clientTime: new Date().toISOString() };
       clientLogs.push(logEntry);
       console.log(`📱 [CLIENT-${level.toUpperCase()}] ${message}`);
+    } else {
+      console.log(`📱 [CLIENT-INVALID-LOG] Dados inválidos recebidos:`, req.body);
     }
   } catch (e) {
     console.log(`📱 [CLIENT-ERROR] ${e.message}`);
