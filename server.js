@@ -36,6 +36,7 @@ import submissionsRoutes from './routes/submissions.js';
 import rubricsRoutes from './routes/rubrics.js';
 import http from 'http';
 import { Server } from 'socket.io';
+import { Sequelize } from 'sequelize';
 
 dotenv.config();
 
@@ -615,6 +616,26 @@ if (process.env.NODE_ENV !== 'test') {
       console.log(`   💾 Banco: ⚠️  Offline (usando mock data)`);
     });
 }
+
+// Remover duplicação da declaração de sequelize
+// Reutilizar a instância já existente para criar a tabela Teams
+async function createTeamsTable() {
+    try {
+        await sequelize.query(`
+            CREATE TABLE IF NOT EXISTS Teams (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+        console.log('✅ Tabela Teams criada com sucesso!');
+    } catch (error) {
+        console.error('❌ Erro ao criar tabela Teams:', error);
+    }
+}
+
+createTeamsTable();
 
 // ===== MIDDLEWARE DE ERRO (DEVE ESTAR AO FINAL) =====
 app.use(notFoundHandler);
