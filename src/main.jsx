@@ -49,6 +49,38 @@ console.log('✅ ErrorBoundary criado');
 const rootElement = document.getElementById('root');
 console.log('📍 Root element:', rootElement);
 
+// Captura global de erros para enviar ao backend (/api/client-log)
+const sendClientLog = (level, message, extra = {}) => {
+  try {
+    const payload = JSON.stringify({
+      level,
+      message,
+      extra,
+      timestamp: new Date().toISOString()
+    });
+    const blob = new Blob([payload], { type: 'application/json' });
+    navigator.sendBeacon('/api/client-log', blob);
+  } catch (err) {
+    // evita loop em caso de falha de log
+    console.warn('client-log failed', err);
+  }
+};
+
+window.addEventListener('error', (event) => {
+  sendClientLog('error', event.message || 'window.onerror', {
+    filename: event.filename,
+    lineno: event.lineno,
+    colno: event.colno,
+    error: event.error?.stack || String(event.error)
+  });
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  sendClientLog('error', event.reason?.message || 'unhandledrejection', {
+    stack: event.reason?.stack || String(event.reason)
+  });
+});
+
 if (!rootElement) {
   console.error('❌ ERRO: Elemento root não encontrado!');
   document.body.innerHTML = '<div style="padding: 20px; color: red;">❌ Elemento root não encontrado no HTML</div>';
