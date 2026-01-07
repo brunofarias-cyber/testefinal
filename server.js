@@ -43,7 +43,7 @@ dotenv.config();
 console.log('✅ TODAS as rotas importadas com sucesso');
 
 const app = express();
-const PORT = process.env.PORT || 4000; // Alterar a porta para 4000
+const PORT = process.env.PORT || 5173; // Porta padrão 5173
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
