@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import io from 'socket.io-client';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
 
 /**
  * Hook useSocket - Gerenciar conexão Socket.io
@@ -26,7 +26,7 @@ export const useSocket = () => {
     } else if (typeof window !== 'undefined' && window.location.origin) {
       socketUrl = window.location.origin;
     } else {
-      socketUrl = 'http://localhost:3000';
+      socketUrl = `${window.location.protocol}//${window.location.host}`;
     }
 
     const newSocket = io(socketUrl, {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle, ArrowRight } from "lucide-react";
 
 // URL da API - usa env em produção; vazio usa proxy/mesma origem em dev
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || window.location.origin;
 
 // ========== GERENCIADOR DE AUTENTICAÇÃO COM API ==========
 

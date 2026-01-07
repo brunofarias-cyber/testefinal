@@ -60,7 +60,7 @@ const StudentGrades = () => {
 
     // Conectar ao Socket.io para receber notificações em tempo real
     useEffect(() => {
-        const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000');
+        const newSocket = io(import.meta.env.VITE_API_URL || window.location.origin);
         
         newSocket.on('connect', () => {
             console.log('✅ Conectado ao servidor');

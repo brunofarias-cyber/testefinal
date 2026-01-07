@@ -41,7 +41,7 @@ const StudentAttendanceView = () => {
 
     // Conectar ao Socket.io
     useEffect(() => {
-        const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000');
+        const newSocket = io(import.meta.env.VITE_API_URL || window.location.origin);
 
         newSocket.on('connect', () => {
             console.log('✅ Conectado ao servidor');

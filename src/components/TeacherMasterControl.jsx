@@ -204,7 +204,7 @@ const TeacherMasterControl = ({ onNavigateTo }) => {
         }
 
         // Socket.io initialization
-        const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000');
+        const newSocket = io(import.meta.env.VITE_API_URL || window.location.origin);
         newSocket.on('connect', () => console.log('✅ Conectado ao servidor'));
         setSocket(newSocket);
         return () => newSocket.disconnect();

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, Send, Search, X, ArrowLeft, Loader, Users } from 'lucide-react';
 import io from 'socket.io-client';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
 const api = (path) => (API_BASE ? `${API_BASE}${path}` : path);
 
 /**
@@ -47,11 +47,11 @@ const MessagingSystemV2 = ({ userRole = "teacher", currentUserId = 1, currentUse
             // Se VITE_API_URL está definida, usa ela
             socketUrl = API_BASE;
         } else if (typeof window !== 'undefined' && window.location.origin) {
-            // Usa a origem atual (localhost:3000, render URL, etc)
+            // Usa a origem atual (localhost, Render, etc)
             socketUrl = window.location.origin;
         } else {
-            // Fallback apenas para localhost em desenvolvimento
-            socketUrl = 'http://localhost:3000';
+            // Fallback para mesma origem
+            socketUrl = `${window.location.protocol}//${window.location.host}`;
         }
         
         const newSocket = io(socketUrl, {

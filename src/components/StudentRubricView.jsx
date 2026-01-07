@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Target, Award, CheckCircle, AlertCircle, TrendingUp, Star, ChevronLeft } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
 const api = (path) => (API_BASE ? `${API_BASE}${path}` : path);
 
 const StudentRubricView = ({ projectId, currentUserId = 101 }) => {
