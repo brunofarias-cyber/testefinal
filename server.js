@@ -658,47 +658,6 @@ if (process.env.NODE_ENV !== 'test') {
   }
 }
 
-// Sincronizar todos os modelos com o banco de dados
-async function syncDatabase() {
-    try {
-        if (sequelize) {
-            await sequelize.sync({ alter: true, force: false });
-            console.log('✅ Banco de dados sincronizado com sucesso!');
-        }
-    } catch (error) {
-        console.error('❌ Erro ao sincronizar banco de dados:', error);
-    }
-}
-
-syncDatabase();
-
-// Adicionando logs para identificar problemas durante a inicialização
-console.log('✅ Inicializando servidor...');
-
-// Verificar conexão com o banco de dados
-if (sequelize) {
-  sequelize.authenticate()
-    .then(() => {
-      console.log('✅ Conexão com o banco de dados bem-sucedida!');
-    })
-    .catch((err) => {
-      console.error('❌ Erro ao conectar ao banco de dados:', err);
-    });
-}
-
-// Log para verificar se o servidor está escutando na porta correta
-app.listen(PORT, () => {
-  console.log(`✅ Servidor rodando na porta ${PORT}`);
-});
-
-// Log para verificar se os arquivos estáticos estão sendo servidos
-const staticPath = path.join(__dirname, 'dist');
-if (fs.existsSync(staticPath)) {
-  console.log(`✅ Servindo arquivos estáticos de: ${staticPath}`);
-} else {
-  console.error(`❌ Pasta estática não encontrada: ${staticPath}`);
-}
-
 // ===== MIDDLEWARE DE ERRO (DEVE ESTAR AO FINAL) =====
 app.use(notFoundHandler);
 app.use(errorHandler);
