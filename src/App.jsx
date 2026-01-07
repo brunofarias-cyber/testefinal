@@ -2469,7 +2469,7 @@ function DashboardApp() {
 
         if (role === 'teacher') {
             if (activeTab === 'teacher-intelligence') return <TeacherIntelligenceCenter onNavigateTo={setActiveTab} />;
-            if (activeTab === 'dashboard') return <ProfessorDashboard />;
+            if (activeTab === 'dashboard') return <ProfessorDashboard teacherId={currentUser?.id || 1} classId={1} onNavigateTo={setActiveTab} />;
             if (activeTab === 'classes' || activeTab === 'manage-classes') return <TeacherClassManager />;
             if (activeTab === 'attendance') return <TeacherAttendance />;
             if (activeTab === 'calendar') return <TeacherCalendar events={calendarEvents} onAddEvent={handleAddCalendarEvent} />;

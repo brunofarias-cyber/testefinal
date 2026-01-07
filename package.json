@@ -44,7 +44,8 @@
     "docker:down": "docker-compose down",
     "docker:stop": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
-    "docker:restart": "docker-compose restart"
+    "docker:restart": "docker-compose restart",
+    "db:push": "drizzle-kit push"
   },
   "keywords": [
     "education",
@@ -89,6 +90,7 @@
     "@vitejs/plugin-react": "^4.2.0",
     "autoprefixer": "^10.4.16",
     "concurrently": "^8.2.2",
+    "drizzle-kit": "^0.31.8",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",

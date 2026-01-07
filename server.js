@@ -43,7 +43,7 @@ dotenv.config();
 console.log('✅ TODAS as rotas importadas com sucesso');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000; // Alterar a porta para 4000
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -583,7 +583,7 @@ if (process.env.NODE_ENV !== 'test') {
   const isProduction = process.env.NODE_ENV === 'production';
   const host = isProduction ? '0.0.0.0' : '127.0.0.1';
 
-  server.listen(PORT, host, () => {
+  server.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Servidor NEXO rodando!`);
     console.log(`   🌐 URL: http://localhost:${PORT}`);
     console.log(`   🏥 Health: http://localhost:${PORT}/api/health`);
@@ -602,40 +602,63 @@ if (process.env.NODE_ENV !== 'test') {
   });
 
   // Conectar ao banco de dados EM BACKGROUND (não bloqueia o servidor)
-  sequelize.authenticate()
-    .then(() => {
-      console.log('✅ Banco de dados conectado com sucesso!');
-      return sequelize.sync({ alter: true });
-    })
-    .then(() => {
-      console.log(`   💾 Banco: ✅ PostgreSQL Conectado`);
-    })
-    .catch((err) => {
-      console.error('❌ Erro ao conectar banco de dados:', err.message);
-      console.warn('⚠️  Operando em modo offline (dados não persistirão)');
-      console.log(`   💾 Banco: ⚠️  Offline (usando mock data)`);
-    });
+  if (sequelize) {
+    sequelize.authenticate()
+      .then(() => {
+        console.log('✅ Banco de dados conectado com sucesso!');
+        return sequelize.sync({ alter: true, force: false });
+      })
+      .then(() => {
+        console.log(`   💾 Banco: ✅ PostgreSQL Conectado`);
+      })
+      .catch((err) => {
+        console.error('❌ Erro ao conectar banco de dados:', err.message);
+        console.warn('⚠️  Operando em modo offline (dados não persistirão)');
+        console.log(`   💾 Banco: ⚠️  Offline (usando mock data)`);
+      });
+  }
 }
 
-// Remover duplicação da declaração de sequelize
-// Reutilizar a instância já existente para criar a tabela Teams
-async function createTeamsTable() {
+// Sincronizar todos os modelos com o banco de dados
+async function syncDatabase() {
     try {
-        await sequelize.query(`
-            CREATE TABLE IF NOT EXISTS Teams (
-                id SERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        `);
-        console.log('✅ Tabela Teams criada com sucesso!');
+        if (sequelize) {
+            await sequelize.sync({ alter: true, force: false });
+            console.log('✅ Banco de dados sincronizado com sucesso!');
+        }
     } catch (error) {
-        console.error('❌ Erro ao criar tabela Teams:', error);
+        console.error('❌ Erro ao sincronizar banco de dados:', error);
     }
 }
 
-createTeamsTable();
+syncDatabase();
+
+// Adicionando logs para identificar problemas durante a inicialização
+console.log('✅ Inicializando servidor...');
+
+// Verificar conexão com o banco de dados
+if (sequelize) {
+  sequelize.authenticate()
+    .then(() => {
+      console.log('✅ Conexão com o banco de dados bem-sucedida!');
+    })
+    .catch((err) => {
+      console.error('❌ Erro ao conectar ao banco de dados:', err);
+    });
+}
+
+// Log para verificar se o servidor está escutando na porta correta
+app.listen(PORT, () => {
+  console.log(`✅ Servidor rodando na porta ${PORT}`);
+});
+
+// Log para verificar se os arquivos estáticos estão sendo servidos
+const staticPath = path.join(__dirname, 'dist');
+if (fs.existsSync(staticPath)) {
+  console.log(`✅ Servindo arquivos estáticos de: ${staticPath}`);
+} else {
+  console.error(`❌ Pasta estática não encontrada: ${staticPath}`);
+}
 
 // ===== MIDDLEWARE DE ERRO (DEVE ESTAR AO FINAL) =====
 app.use(notFoundHandler);

@@ -1,7 +1,4 @@
 import express from 'express';
-import { User, Submission, Project, Task } from '../models/index.js'; // Adjust based on your model exports
-import { Op } from 'sequelize';
-import { mockDashboardData } from '../backend/mocks/dashboardData.js';
 
 const router = express.Router();
 
@@ -10,14 +7,27 @@ router.get('/stats/:teacherId/:classId', async (req, res) => {
     try {
         const { teacherId, classId } = req.params;
 
-        // For development/demo purposes, we'll serve the robust mock data
-        // This toggles easily: change condition or just uncomment real logic later
+        // Return default mock data for dashboard
+        const mockDashboardData = {
+            pendingSubmissions: 5,
+            averageGrade: 7.8,
+            classEngagement: 85,
+            completedTasks: 12,
+            totalTasks: 15,
+            students: 28,
+            recentActivity: [
+                { id: 1, type: 'submission', description: 'João enviou projeto', time: '2 horas atrás' },
+                { id: 2, type: 'grade', description: 'Nota adicionada para Maria', time: '4 horas atrás' },
+                { id: 3, type: 'task', description: 'Nova tarefa criada', time: '1 dia atrás' }
+            ],
+            performance: {
+                excellent: 8,
+                good: 12,
+                average: 6,
+                poor: 2
+            }
+        };
 
-        // In a real scenario:
-        // const pendingSubmissions = await Submission.count(...);
-        // ...
-
-        // For now, return the mock data directly as requested
         res.json(mockDashboardData);
 
     } catch (error) {

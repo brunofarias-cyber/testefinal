@@ -74,19 +74,27 @@ const ProfessorDashboard = ({
         const fetchDashboard = async () => {
             try {
                 setLoading(true);
+                console.log('📊 Buscando dados do dashboard...', { teacherId, classId });
+                
                 const response = await fetch(
                     `/api/dashboard/stats/${teacherId}/${classId}`
                 );
 
-                if (!response.ok) throw new Error('Erro ao carregar dashboard');
+                console.log('📊 Response status:', response.status);
+
+                if (!response.ok) {
+                    console.error(`API Error: ${response.status} ${response.statusText}`);
+                    throw new Error(`Erro ao carregar dashboard: ${response.status}`);
+                }
 
                 const dadosAPI = await response.json();
+                console.log('📊 Dados recebidos:', dadosAPI);
+                
                 setData(dadosAPI);
                 setError(null);
             } catch (err) {
-                console.error(err);
+                console.error('📊 Fetch error:', err);
                 setError(err.message || 'Erro desconhecido');
-                setLoading(false);
             } finally {
                 setLoading(false);
             }
