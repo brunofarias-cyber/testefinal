@@ -11,7 +11,7 @@ export const TeamMessageModel = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Teams',
+        model: 'teams',
         key: 'id',
       },
       index: true,
@@ -20,7 +20,7 @@ export const TeamMessageModel = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Users',
+        model: 'users',
         key: 'id',
       },
     },
@@ -59,7 +59,7 @@ export const TeamMessageModel = (sequelize) => {
       defaultValue: DataTypes.NOW,
     },
   }, {
-    tableName: 'TeamMessages',
+    tableName: 'teammessages',
     timestamps: true,
     indexes: [
       { fields: ['teamId', 'createdAt'] },
